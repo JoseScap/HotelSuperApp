@@ -42,7 +42,8 @@ const es: Translations = {
     passwordFieldLabel: "Contraseña",
     emailFieldPlaceholder: "Ingresa tu email",
     passwordFieldPlaceholder: "Contraseña super secreta aquí",
-    tapToLogIn: "¡Presiona acá para iniciar sesión!",
+    tapToLogIn: "¡Iniciar sesión!",
+    tapToLogInWithGoogle: "¡Iniciar sesión con Google!",
     hint: "Consejo: puedes usar cualquier email y tu contraseña preferida :)",
   },
   demoNavigator: {
