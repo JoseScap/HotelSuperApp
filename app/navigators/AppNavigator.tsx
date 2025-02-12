@@ -14,6 +14,16 @@ import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
+import { DarkTheme, DefaultTheme } from "@react-navigation/native"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { useColorScheme } from "react-native"
+import { WelcomeScreen } from "../screens/WelcomeScreen"
+import { LoginScreen } from "../screens/LoginScreen"
+import { HomeScreen } from "../screens/HomeScreen"
+import { ServicesScreen } from "../screens/ServicesScreen"
+import { ProfileScreen } from "../screens/ProfileScreen"
+import { BookingScreen } from "../screens/BookingScreen"
+import { SearchScreen } from "../screens/SearchScreen"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -31,9 +41,18 @@ import { ComponentProps } from "react"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
+  MainTabs: undefined
+  Booking: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+}
+
+export type MainTabsParamList = {
+  Home: undefined
+  Services: undefined
+  Search: undefined
+  Profile: undefined
 }
 
 /**
@@ -49,6 +68,7 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
 const Stack = createNativeStackNavigator<AppStackParamList>()
+const Tab = createBottomTabNavigator<MainTabsParamList>()
 
 const AppStack = observer(function AppStack() {
   const {
@@ -72,13 +92,13 @@ const AppStack = observer(function AppStack() {
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="MainTabs" component={MainTabs} />
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>
       ) : (
         <>
-          <Stack.Screen name="Login" component={Screens.LoginScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
         </>
       )}
 
@@ -88,17 +108,29 @@ const AppStack = observer(function AppStack() {
   )
 })
 
+function MainTabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Services" component={ServicesScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  )
+}
+
 export interface NavigationProps extends Partial<ComponentProps<typeof NavigationContainer>> {}
 
 export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
   const { themeScheme, navigationTheme, setThemeContextOverride, ThemeProvider } =
     useThemeProvider()
+  const colorScheme = useColorScheme()
 
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
   return (
     <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
+      <NavigationContainer ref={navigationRef} theme={colorScheme === "dark" ? DarkTheme : DefaultTheme} {...props}>
         <AppStack />
       </NavigationContainer>
     </ThemeProvider>

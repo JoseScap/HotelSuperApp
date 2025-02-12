@@ -15,16 +15,16 @@ const welcomeFace = require("../../assets/images/welcome-face.png")
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
-export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(_props) {
+export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(props) {
   const { themed, theme } = useAppTheme()
 
-  const { navigation } = _props
+  const { navigation } = props
   const {
     authenticationStore: { logout },
   } = useStores()
 
   function goNext() {
-    navigation.navigate("Demo", { screen: "DemoShowroom", params: {} })
+    navigation.navigate("Login")
   }
 
   useHeader(
@@ -38,37 +38,45 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
   return (
-    <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
-      <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={themed($welcomeHeading)}
-          tx="welcomeScreen:readyForLaunch"
-          preset="heading"
-        />
-        <Text tx="welcomeScreen:exciting" preset="subheading" />
-        <Image
-          style={$welcomeFace}
-          source={welcomeFace}
-          resizeMode="contain"
-          tintColor={theme.isDark ? theme.colors.palette.neutral900 : undefined}
+    <Screen preset="auto" contentContainerStyle={$container}>
+      <View style={$logoContainer}>
+        <Image 
+          style={$logo} 
+          source={welcomeLogo} 
+          resizeMode="contain" 
         />
       </View>
-
-      <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-        <Text tx="welcomeScreen:postscript" size="md" />
-
-        <Button
-          testID="next-screen-button"
-          preset="reversed"
-          tx="welcomeScreen:letsGo"
-          onPress={goNext}
-        />
-      </View>
+      <Text 
+        preset="heading" 
+        tx="welcomeScreen.title" 
+        style={$title} 
+      />
+      <Button
+        tx="welcomeScreen.letsGo"
+        onPress={goNext}
+      />
     </Screen>
   )
 })
+
+const $container: ViewStyle = {
+  flex: 1,
+  padding: $styles.spacing.lg,
+}
+
+const $logoContainer: ViewStyle = {
+  alignItems: "center",
+  marginBottom: $styles.spacing.xxl,
+}
+
+const $logo: ImageStyle = {
+  height: 100,
+  width: "100%",
+}
+
+const $title: TextStyle = {
+  marginBottom: $styles.spacing.xl,
+}
 
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexShrink: 1,
