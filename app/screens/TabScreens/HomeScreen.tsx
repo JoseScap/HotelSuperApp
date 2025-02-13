@@ -1,18 +1,28 @@
 import { FC } from "react"
-import { Platform } from "react-native"
+import { Platform, TextStyle } from "react-native"
 import { Screen } from "@/components/Screen"
-import { $styles } from "@/theme"
+import { $styles, ThemedStyle } from "@/theme"
 import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
+import { Text } from "@/components"
+import { useAppTheme } from "@/utils/useAppTheme"
 
 const isAndroid = Platform.OS === "android"
 
 export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_props) {
+  const { themed } = useAppTheme()
+
   return (
     <Screen
-      preset="fixed"
+      preset="scroll"
       safeAreaEdges={["top"]}
-      contentContainerStyle={$styles.flex1}
+      contentContainerStyle={$styles.container}
       {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
-    ></Screen>
+    >
+      <Text tx="homeScreen:title" preset="heading" style={themed($title)} />
+    </Screen>
   )
 }
+
+const $title: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  marginBottom: spacing.sm,
+})

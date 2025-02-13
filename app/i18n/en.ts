@@ -1,34 +1,12 @@
 import demoEn from "./demo-en"
 
 const en = {
+  // Common and generics
   common: {
     ok: "OK!",
     cancel: "Cancel",
     back: "Back",
     logOut: "Log Out",
-  },
-  landingScreen: {
-    title: "Welcome to {{brand}}!",
-    lookingForARoom: "Looking to book a room?",
-    bookNow: "Book now!",
-    haveAnAccount: "Already have an account?",
-    signIn: "Sign in",
-    notHaveAnAccount: "First time here?",
-    signUp: "Create an account",
-  },
-  welcomeScreen: {
-    postscript:
-      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
-    readyForLaunch: "Your app, almost ready for launch!",
-    exciting: "(ohh, this is exciting!)",
-    letsGo: "Let's go!",
-  },
-  errorScreen: {
-    title: "Something went wrong!",
-    friendlySubtitle:
-      "This is the screen that your users will see in production when an error is thrown. You'll want to customize this message (located in `app/i18n/en.ts`) and probably the layout as well (`app/screens/ErrorScreen`). If you want to remove this entirely, check `app/app.tsx` for the <ErrorBoundary> component.",
-    reset: "RESET APP",
-    traceTitle: "Error from %{name} stack",
   },
   emptyStateComponent: {
     generic: {
@@ -38,8 +16,22 @@ const en = {
     },
   },
 
-  errors: {
-    invalidEmail: "Invalid email address.",
+  // Screens
+  landingScreen: {
+    title: "Welcome to {{brand}}!",
+    lookingForARoom: "Looking to book a room?",
+    bookNow: "Book now!",
+    haveAnAccount: "Already have an account?",
+    signIn: "Sign in",
+    notHaveAnAccount: "First time here?",
+    signUp: "Create an account",
+  },
+  errorScreen: {
+    title: "Something went wrong!",
+    friendlySubtitle:
+      "This is the screen that your users will see in production when an error is thrown. You'll want to customize this message (located in `app/i18n/en.ts`) and probably the layout as well (`app/screens/ErrorScreen`). If you want to remove this entirely, check `app/app.tsx` for the <ErrorBoundary> component.",
+    reset: "RESET APP",
+    traceTitle: "Error from %{name} stack",
   },
   loginScreen: {
     logIn: "Sign In",
@@ -57,6 +49,14 @@ const en = {
       invalidEmailAddress: "must be a valid email address",
     },
   },
+  homeScreen: {
+    title: "Home",
+  },
+  profileScreen: {
+    title: "Profile",
+  },
+
+  // Navigators
   demoNavigator: {
     componentsTab: "Components",
     debugTab: "Debug",
@@ -65,7 +65,10 @@ const en = {
   },
   homeNavigator: {
     homeTab: "Home",
+    profileTab: "Profile",
   },
+
+  // To delete
   demoCommunityScreen: {
     title: "Connect with the community",
     tagLine:

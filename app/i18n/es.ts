@@ -2,34 +2,12 @@ import demoEs from "./demo-es"
 import { Translations } from "./en"
 
 const es: Translations = {
+  // Common and generics
   common: {
     ok: "OK",
     cancel: "Cancelar",
     back: "Volver",
     logOut: "Cerrar sesión",
-  },
-  landingScreen: {
-    title: "¡Bienvenido a {{brand}}!",
-    lookingForARoom: "¿Querés reservar una habitación?",
-    bookNow: "¡Reservar ahora!",
-    haveAnAccount: "¿Ya tenés una cuenta?",
-    signIn: "Iniciar sesión",
-    notHaveAnAccount: "¿Es tu primera vez aquí?",
-    signUp: "Crear cuenta",
-  },
-  welcomeScreen: {
-    postscript:
-      "psst — Esto probablemente no es cómo se va a ver tu app. (A menos que tu diseñador te haya enviado estas pantallas, y en ese caso, ¡lánzalas en producción!)",
-    readyForLaunch: "Tu app, casi lista para su lanzamiento",
-    exciting: "(¡ohh, esto es emocionante!)",
-    letsGo: "¡Vamos!",
-  },
-  errorScreen: {
-    title: "¡Algo salió mal!",
-    friendlySubtitle:
-      "Esta es la pantalla que verán tus usuarios en producción cuando haya un error. Vas a querer personalizar este mensaje (que está ubicado en `app/i18n/es.ts`) y probablemente también su diseño (`app/screens/ErrorScreen`). Si quieres eliminarlo completamente, revisa `app/app.tsx` y el componente <ErrorBoundary>.",
-    reset: "REINICIA LA APP",
-    traceTitle: "Error desde %{name}",
   },
   emptyStateComponent: {
     generic: {
@@ -40,8 +18,22 @@ const es: Translations = {
     },
   },
 
-  errors: {
-    invalidEmail: "Email inválido.",
+  // Screens
+  landingScreen: {
+    title: "¡Bienvenido a {{brand}}!",
+    lookingForARoom: "¿Querés reservar una habitación?",
+    bookNow: "¡Reservar ahora!",
+    haveAnAccount: "¿Ya tenés una cuenta?",
+    signIn: "Iniciar sesión",
+    notHaveAnAccount: "¿Es tu primera vez aquí?",
+    signUp: "Crear cuenta",
+  },
+  errorScreen: {
+    title: "¡Algo salió mal!",
+    friendlySubtitle:
+      "Esta es la pantalla que verán tus usuarios en producción cuando haya un error. Vas a querer personalizar este mensaje (que está ubicado en `app/i18n/es.ts`) y probablemente también su diseño (`app/screens/ErrorScreen`). Si quieres eliminarlo completamente, revisa `app/app.tsx` y el componente <ErrorBoundary>.",
+    reset: "REINICIA LA APP",
+    traceTitle: "Error desde %{name}",
   },
   loginScreen: {
     logIn: "Iniciar sesión",
@@ -59,6 +51,14 @@ const es: Translations = {
       invalidEmailAddress: "Debe ser un email valido.",
     },
   },
+  homeScreen: {
+    title: "Inicio",
+  },
+  profileScreen: {
+    title: "Perfil",
+  },
+
+  // Navigators
   demoNavigator: {
     componentsTab: "Componentes",
     debugTab: "Debug",
@@ -69,6 +69,8 @@ const es: Translations = {
     homeTab: "Inicio",
     profileTab: "Perfil",
   },
+
+  // To delete
   demoCommunityScreen: {
     title: "Conecta con la comunidad",
     tagLine:
