@@ -67,6 +67,7 @@ const es: Translations = {
   },
   homeNavigator: {
     homeTab: "Inicio",
+    profileTab: "Perfil",
   },
   demoCommunityScreen: {
     title: "Conecta con la comunidad",

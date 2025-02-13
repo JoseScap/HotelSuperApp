@@ -5,12 +5,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { HomeScreen } from "@/screens/HomeScreen"
 import { translate } from "@/i18n"
 import { Icon } from "@/components"
+import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
+import { ProfileScreen } from "@/screens/TabScreens/ProfileScreen"
 
 export type HomeTabParamList = {
   Home: undefined
+  Profile: undefined
 }
 
 /**
@@ -58,6 +60,16 @@ export function HomeNavigator() {
           tabBarLabel: translate("homeNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: translate("homeNavigator:profileTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="heart" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />

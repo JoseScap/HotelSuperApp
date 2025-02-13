@@ -20,37 +20,21 @@ export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScre
       safeAreaEdges={["top", "bottom"]}
     >
       <Text
-        testID="login-heading"
         tx="landingScreen:title"
         txOptions={{ brand: BRAND }}
         preset="heading"
         style={themed($bottomSpace)}
       />
 
-      <Text
-        testID="login-heading"
-        tx="landingScreen:lookingForARoom"
-        preset="subheading"
-        style={themed($bottomSpace)}
-      />
+      <Text tx="landingScreen:lookingForARoom" preset="subheading" style={themed($bottomSpace)} />
 
       <Button tx="landingScreen:bookNow" disabled />
 
-      <Text
-        testID="login-heading"
-        tx="landingScreen:haveAnAccount"
-        preset="subheading"
-        style={themed($bottomSpace)}
-      />
+      <Text tx="landingScreen:haveAnAccount" preset="subheading" style={themed($bottomSpace)} />
 
       <Button tx="landingScreen:signIn" onPress={() => navigation.navigate("Login")} />
 
-      <Text
-        testID="login-heading"
-        tx="landingScreen:notHaveAnAccount"
-        preset="subheading"
-        style={themed($bottomSpace)}
-      />
+      <Text tx="landingScreen:notHaveAnAccount" preset="subheading" style={themed($bottomSpace)} />
 
       <Button tx="landingScreen:signUp" />
     </Screen>

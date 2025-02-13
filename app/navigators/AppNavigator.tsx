@@ -30,9 +30,8 @@ import { HomeNavigator, HomeTabParamList } from "./HomeNavigator"
  */
 export type AppStackParamList = {
   Landing: undefined
-  Welcome: undefined
   Login: undefined
-  Home: NavigatorScreenParams<HomeTabParamList>
+  HomeNavigator: NavigatorScreenParams<HomeTabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -69,13 +68,11 @@ const AppStack = observer(function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Landing"}
+      initialRouteName={isAuthenticated ? "HomeNavigator" : "Landing"}
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-
-          <Stack.Screen name="Home" component={HomeNavigator} />
+          <Stack.Screen name="HomeNavigator" component={HomeNavigator} />
         </>
       ) : (
         <>
