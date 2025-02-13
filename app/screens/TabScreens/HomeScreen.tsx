@@ -23,19 +23,12 @@ export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_p
       contentContainerStyle={$styles.flex1}
       {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
     >
-      <View style={themed($drawer)}>
-        <View style={themed($logoContainer)}>
-          <Image source={logo} style={$logoImage} />
-        </View>
+      <View style={themed($logoContainer)}>
+        <Image source={logo} style={$logoImage} />
       </View>
     </Screen>
   )
 }
-
-const $drawer: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.background,
-  flex: 1,
-})
 
 const $logoImage: ImageStyle = {
   height: 42,

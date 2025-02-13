@@ -57,6 +57,11 @@ const es: Translations = {
   profileScreen: {
     title: "Perfil",
   },
+  activitiesScreen: {
+    title: "Actividades",
+    subtitle: "Dentro del hotel",
+    city: "La ciudad",
+  },
 
   // Navigators
   demoNavigator: {
@@ -68,6 +73,7 @@ const es: Translations = {
   homeNavigator: {
     homeTab: "Inicio",
     profileTab: "Perfil",
+    activitiesTab: "Actividades",
   },
 
   // To delete

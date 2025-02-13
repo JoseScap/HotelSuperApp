@@ -55,6 +55,11 @@ const en = {
   profileScreen: {
     title: "Profile",
   },
+  activitiesScreen: {
+    title: "Activities",
+    subtitle: "Inside hotel",
+    city: "The city",
+  },
 
   // Navigators
   demoNavigator: {
@@ -66,6 +71,7 @@ const en = {
   homeNavigator: {
     homeTab: "Home",
     profileTab: "Profile",
+    activitiesTab: "Activities",
   },
 
   // To delete

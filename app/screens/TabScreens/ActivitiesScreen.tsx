@@ -1,0 +1,107 @@
+import { FC } from "react"
+import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle } from "react-native"
+import { Screen } from "@/components/Screen"
+import { $styles, ThemedStyle } from "@/theme"
+import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
+import { useHeader } from "@/utils/useHeader"
+import { Card, Text } from "@/components"
+import { useAppTheme } from "@/utils/useAppTheme"
+
+const isAndroid = Platform.OS === "android"
+const logo = require("../../../assets/images/logo.png")
+
+const hotelActivities = [
+  "Spa & Wellness",
+  "Gimnasio",
+  "Piscina & Jacuzzi",
+  "Clases de Yoga",
+  "Cata de vinos",
+  "Noche de cine",
+  "Clases de cocina",
+  "Torneos de juegos de mesa",
+  "Música en vivo",
+  "Actividades para niños",
+]
+
+const cityActivities = [
+  "Tour por el casco histórico",
+  "Visita a un museo local",
+  "Excursión a la montaña",
+  "Paseo en bicicleta",
+  "Degustación gastronómica",
+  "Paseo en barco por el río",
+  "Visita a mercados locales",
+  "Espectáculo de danzas tradicionales",
+  "Parque de diversiones",
+  "Tour de bares y pubs",
+]
+
+export const ActivitiesScreen: FC<HomeTabScreenProps<"Activities">> = function ActivitiesScreen(
+  _props,
+) {
+  const { themed } = useAppTheme()
+
+  useHeader({
+    leftTx: "activitiesScreen:title",
+  })
+
+  return (
+    <Screen
+      preset="scroll"
+      safeAreaEdges={["top"]}
+      contentContainerStyle={$styles.screen}
+      {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
+    >
+      <Text tx="activitiesScreen:subtitle" preset="subheading" style={themed($bottomSpace)} />
+      {hotelActivities.map((activity, index) => (
+        <Card
+          key={`hotel-${index}`}
+          HeadingComponent={
+            <View>
+              <Text>{activity}</Text>
+            </View>
+          }
+          ContentComponent={
+            <View style={themed($logoContainer)}>
+              <Image source={logo} style={$logoImage} />
+            </View>
+          }
+          style={themed($bottomSpace)}
+        />
+      ))}
+      <Text tx="activitiesScreen:city" preset="subheading" style={themed($bottomSpace)} />
+      {cityActivities.map((activity, index) => (
+        <Card
+          key={`city-${index}`}
+          HeadingComponent={
+            <View>
+              <Text>{activity}</Text>
+            </View>
+          }
+          ContentComponent={
+            <View style={themed($logoContainer)}>
+              <Image source={logo} style={$logoImage} />
+            </View>
+          }
+          style={themed($bottomSpace)}
+        />
+      ))}
+    </Screen>
+  )
+}
+
+const $bottomSpace: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  marginBottom: spacing.sm,
+})
+
+const $logoImage: ImageStyle = {
+  height: 42,
+  width: 77,
+}
+
+const $logoContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  alignSelf: "flex-start",
+  justifyContent: "center",
+  height: 56,
+  paddingHorizontal: spacing.lg,
+})

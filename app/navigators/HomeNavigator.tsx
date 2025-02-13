@@ -9,10 +9,12 @@ import { translate } from "@/i18n"
 import { Icon } from "@/components"
 import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
 import { ProfileScreen } from "@/screens/TabScreens/ProfileScreen"
+import { ActivitiesScreen } from "@/screens/TabScreens/ActivitiesScreen"
 
 export type HomeTabParamList = {
   Home: undefined
   Profile: undefined
+  Activities: undefined
 }
 
 /**
@@ -60,6 +62,16 @@ export function HomeNavigator() {
           tabBarLabel: translate("homeNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused ? colors.tint : colors.tintInactive} size={30} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Activities"
+        component={ActivitiesScreen}
+        options={{
+          tabBarLabel: translate("homeNavigator:activitiesTab"),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="clap" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
