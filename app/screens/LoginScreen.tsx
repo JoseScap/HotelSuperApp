@@ -49,8 +49,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
-    console.log(data.user)
-    console.log(data.session.access_token)
     setAuthToken(data.session?.access_token || "")
   }
 
