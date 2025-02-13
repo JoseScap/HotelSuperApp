@@ -1,15 +1,16 @@
 import { FC } from "react"
-import { Platform, TextStyle } from "react-native"
+import { Platform } from "react-native"
 import { Screen } from "@/components/Screen"
-import { $styles, ThemedStyle } from "@/theme"
+import { $styles } from "@/theme"
 import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
-import { Text } from "@/components"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { useHeader } from "@/utils/useHeader"
 
 const isAndroid = Platform.OS === "android"
 
 export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_props) {
-  const { themed } = useAppTheme()
+  useHeader({
+    leftTx: "homeScreen:title",
+  })
 
   return (
     <Screen
@@ -17,12 +18,6 @@ export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_p
       safeAreaEdges={["top"]}
       contentContainerStyle={$styles.flex1}
       {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
-    >
-      <Text tx="homeScreen:title" preset="heading" style={themed($title)} />
-    </Screen>
+    ></Screen>
   )
 }
-
-const $title: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
