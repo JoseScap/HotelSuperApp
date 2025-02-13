@@ -27,7 +27,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useAppTheme()
 
   useEffect(() => {
-    setAuthEmail("juanpuentescapolatempo@gmail.com")
+    setAuthEmail("test@tuzgle.com")
   }, [setAuthEmail])
 
   async function login() {

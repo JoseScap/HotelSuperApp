@@ -15,7 +15,7 @@ export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_p
     <Screen
       preset="scroll"
       safeAreaEdges={["top"]}
-      contentContainerStyle={$styles.container}
+      contentContainerStyle={$styles.flex1}
       {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
     >
       <Text tx="homeScreen:title" preset="heading" style={themed($title)} />
