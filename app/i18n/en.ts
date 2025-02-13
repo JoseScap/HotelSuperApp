@@ -7,6 +7,15 @@ const en = {
     back: "Back",
     logOut: "Log Out",
   },
+  landingScreen: {
+    title: "Welcome to tuzgle!",
+    lookingForARoom: "Looking to book a room?",
+    bookNow: "Book now!",
+    haveAnAccount: "Already have an account?",
+    signIn: "Sign in",
+    notHaveAnAccount: "First time here?",
+    signUp: "Create an account",
+  },
   welcomeScreen: {
     postscript:
       "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",

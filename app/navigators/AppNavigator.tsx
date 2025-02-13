@@ -29,6 +29,7 @@ import { ComponentProps } from "react"
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
 export type AppStackParamList = {
+  Landing: undefined
   Welcome: undefined
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
@@ -68,7 +69,7 @@ const AppStack = observer(function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"}
+      initialRouteName={isAuthenticated ? "Welcome" : "Landing"}
     >
       {isAuthenticated ? (
         <>
@@ -78,12 +79,10 @@ const AppStack = observer(function AppStack() {
         </>
       ) : (
         <>
+          <Stack.Screen name="Landing" component={Screens.LandingScreen} />
           <Stack.Screen name="Login" component={Screens.LoginScreen} />
         </>
       )}
-
-      {/** 🔥 Your screens go here */}
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })

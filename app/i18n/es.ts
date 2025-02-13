@@ -8,6 +8,15 @@ const es: Translations = {
     back: "Volver",
     logOut: "Cerrar sesión",
   },
+  landingScreen: {
+    title: "¡Bienvenido a Tuzgle!",
+    lookingForARoom: "¿Querés reservar una habitación?",
+    bookNow: "¡Reservar ahora!",
+    haveAnAccount: "¿Ya tenés una cuenta?",
+    signIn: "Iniciar sesión",
+    notHaveAnAccount: "¿Es tu primera vez aquí?",
+    signUp: "Crear cuenta",
+  },
   welcomeScreen: {
     postscript:
       "psst — Esto probablemente no es cómo se va a ver tu app. (A menos que tu diseñador te haya enviado estas pantallas, y en ese caso, ¡lánzalas en producción!)",
