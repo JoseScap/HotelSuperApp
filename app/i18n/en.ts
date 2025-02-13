@@ -51,6 +51,11 @@ const en = {
     tapToLogIn: "Sign In",
     tapToLogInWithGoogle: "Continue with Google",
     hint: "Need help? Use your registered email and password.",
+    errors: {
+      cannotBeBlank: "can't be blank",
+      minimunCharacters: "must be at least 6 characters",
+      invalidEmailAddress: "must be a valid email address",
+    },
   },
   demoNavigator: {
     componentsTab: "Components",

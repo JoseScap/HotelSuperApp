@@ -26,8 +26,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     theme: { colors },
   } = useAppTheme()
 
-  const error = isSubmitted ? validationError : ""
-
   async function login() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
@@ -88,8 +86,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         keyboardType="email-address"
         labelTx="loginScreen:emailFieldLabel"
         placeholderTx="loginScreen:emailFieldPlaceholder"
-        helper={error}
-        status={error ? "error" : undefined}
+        helperTx={isSubmitted ? validationError : undefined}
+        status={isSubmitted && validationError ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
       />
 

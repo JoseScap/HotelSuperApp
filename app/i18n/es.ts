@@ -53,6 +53,11 @@ const es: Translations = {
     tapToLogIn: "Iniciar sesión",
     tapToLogInWithGoogle: "Continuar con Google",
     hint: "¿Necesitas ayuda? Usa tu correo registrado y contraseña.",
+    errors: {
+      cannotBeBlank: "Campo obligatorío.",
+      minimunCharacters: "Debe tener al menos 6 caracteres.",
+      invalidEmailAddress: "Debe ser un email valido.",
+    },
   },
   demoNavigator: {
     componentsTab: "Componentes",

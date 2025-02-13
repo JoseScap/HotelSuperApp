@@ -1,3 +1,4 @@
+import { TxKeyPath } from "@/i18n"
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 
 export const AuthenticationStoreModel = types
@@ -10,12 +11,12 @@ export const AuthenticationStoreModel = types
     get isAuthenticated() {
       return !!store.authToken
     },
-    get validationError() {
-      if (store.authEmail.length === 0) return "can't be blank"
-      if (store.authEmail.length < 6) return "must be at least 6 characters"
+    get validationError(): TxKeyPath | undefined {
+      if (store.authEmail.length === 0) return "loginScreen:errors.cannotBeBlank"
+      if (store.authEmail.length < 6) return "loginScreen:errors.minimunCharacters"
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(store.authEmail))
-        return "must be a valid email address"
-      return ""
+        return "loginScreen:errors.invalidEmailAddress"
+      return
     },
   }))
   .actions((store) => ({
