@@ -5,11 +5,13 @@ import { Button, Screen, Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { BRAND } from "@/constants/common"
 
 interface LandingScreenProps extends AppStackScreenProps<"Landing"> {}
 
 export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScreen(_props) {
   const { themed } = useAppTheme()
+  const { navigation } = _props
 
   return (
     <Screen
@@ -20,6 +22,7 @@ export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScre
       <Text
         testID="login-heading"
         tx="landingScreen:title"
+        txOptions={{ brand: BRAND }}
         preset="heading"
         style={themed($bottomSpace)}
       />
@@ -40,7 +43,7 @@ export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScre
         style={themed($bottomSpace)}
       />
 
-      <Button tx="landingScreen:signIn" />
+      <Button tx="landingScreen:signIn" onPress={() => navigation.navigate("Login")} />
 
       <Text
         testID="login-heading"

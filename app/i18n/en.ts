@@ -8,7 +8,7 @@ const en = {
     logOut: "Log Out",
   },
   landingScreen: {
-    title: "Welcome to tuzgle!",
+    title: "Welcome to {{brand}}!",
     lookingForARoom: "Looking to book a room?",
     bookNow: "Book now!",
     haveAnAccount: "Already have an account?",
@@ -42,16 +42,15 @@ const en = {
     invalidEmail: "Invalid email address.",
   },
   loginScreen: {
-    logIn: "Log In",
-    enterDetails:
-      "Enter your details below to unlock top secret info. You'll never guess what we've got waiting. Or maybe you will; it's not rocket science here.",
-    emailFieldLabel: "Email",
+    logIn: "Sign In",
+    enterDetails: "Access your account by entering your credentials below.",
+    emailFieldLabel: "Email Address",
     passwordFieldLabel: "Password",
-    emailFieldPlaceholder: "Enter your email address",
-    passwordFieldPlaceholder: "Super secret password here",
-    tapToLogIn: "Log in!",
-    tapToLogInWithGoogle: "Log in with Google!",
-    hint: "Hint: you can use any email address and your favorite password :)",
+    emailFieldPlaceholder: "Enter your email",
+    passwordFieldPlaceholder: "Enter your password",
+    tapToLogIn: "Sign In",
+    tapToLogInWithGoogle: "Continue with Google",
+    hint: "Need help? Use your registered email and password.",
   },
   demoNavigator: {
     componentsTab: "Components",

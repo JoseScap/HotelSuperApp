@@ -9,7 +9,7 @@ const es: Translations = {
     logOut: "Cerrar sesión",
   },
   landingScreen: {
-    title: "¡Bienvenido a Tuzgle!",
+    title: "¡Bienvenido a {{brand}}!",
     lookingForARoom: "¿Querés reservar una habitación?",
     bookNow: "¡Reservar ahora!",
     haveAnAccount: "¿Ya tenés una cuenta?",
@@ -45,15 +45,14 @@ const es: Translations = {
   },
   loginScreen: {
     logIn: "Iniciar sesión",
-    enterDetails:
-      "Ingresa tus datos a continuación para desbloquear información ultra secreta. Nunca vas a adivinar lo que te espera al otro lado. O quizás si lo harás; la verdad no hay mucha ciencia alrededor.",
-    emailFieldLabel: "Email",
+    enterDetails: "Accede a tu cuenta ingresando tus credenciales.",
+    emailFieldLabel: "Correo electrónico",
     passwordFieldLabel: "Contraseña",
-    emailFieldPlaceholder: "Ingresa tu email",
-    passwordFieldPlaceholder: "Contraseña super secreta aquí",
-    tapToLogIn: "¡Iniciar sesión!",
-    tapToLogInWithGoogle: "¡Iniciar sesión con Google!",
-    hint: "Consejo: puedes usar cualquier email y tu contraseña preferida :)",
+    emailFieldPlaceholder: "Ingresa tu correo",
+    passwordFieldPlaceholder: "Ingresa tu contraseña",
+    tapToLogIn: "Iniciar sesión",
+    tapToLogInWithGoogle: "Continuar con Google",
+    hint: "¿Necesitas ayuda? Usa tu correo registrado y contraseña.",
   },
   demoNavigator: {
     componentsTab: "Componentes",
