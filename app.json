@@ -28,7 +28,10 @@
     "ios": {
       "icon": "./assets/images/app-icon-ios.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.hotelsuperapp"
+      "bundleIdentifier": "com.hotelsuperapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "web": {
       "favicon": "./assets/images/app-icon-web-favicon.png",

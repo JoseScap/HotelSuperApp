@@ -48,6 +48,7 @@ const en = {
       minimunCharacters: "must be at least 6 characters",
       invalidEmailAddress: "must be a valid email address",
     },
+    or: "Or",
   },
   homeScreen: {
     title: "Home",

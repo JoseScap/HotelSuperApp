@@ -50,6 +50,7 @@ const es: Translations = {
       minimunCharacters: "Debe tener al menos 6 caracteres.",
       invalidEmailAddress: "Debe ser un email valido.",
     },
+    or: "O",
   },
   homeScreen: {
     title: "Inicio",
