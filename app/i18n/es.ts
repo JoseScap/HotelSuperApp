@@ -65,6 +65,9 @@ const es: Translations = {
     communityTab: "Comunidad",
     podcastListTab: "Podcasts",
   },
+  homeNavigator: {
+    homeTab: "Inicio",
+  },
   demoCommunityScreen: {
     title: "Conecta con la comunidad",
     tagLine:

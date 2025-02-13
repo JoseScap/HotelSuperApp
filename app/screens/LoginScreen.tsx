@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useMemo, useRef, useState } from "react"
+import { ComponentType, FC, useEffect, useMemo, useRef, useState } from "react"
 import { TextInput, TextStyle, ViewStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
@@ -26,6 +26,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     theme: { colors },
   } = useAppTheme()
 
+  useEffect(() => {
+    setAuthEmail("juanpuentescapolatempo@gmail.com")
+  }, [setAuthEmail])
+
   async function login() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
@@ -45,6 +49,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
+    console.log(data.user)
+    console.log(data.session.access_token)
     setAuthToken(data.session?.access_token || "")
   }
 

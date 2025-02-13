@@ -63,6 +63,9 @@ const en = {
     communityTab: "Community",
     podcastListTab: "Podcast",
   },
+  homeNavigator: {
+    homeTab: "Home",
+  },
   demoCommunityScreen: {
     title: "Connect with the community",
     tagLine:

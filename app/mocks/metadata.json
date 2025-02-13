@@ -1,0 +1,10 @@
+{
+    "brand": "Tuzgle",
+    "activeModules": [
+        "serviceOne", "serviceTwo", "serviceFour"
+    ],
+    "serviceOne": {},
+    "serviceTwo": {},
+    "serviceThree": {},
+    "serviceFour": {}
+}
