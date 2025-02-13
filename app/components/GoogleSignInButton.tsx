@@ -1,7 +1,12 @@
 import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
 import { supabase } from "@/utils/supabaseClient"
+import { useStores } from "@/models"
 
 export function GoogleSignInButton() {
+  const {
+    authenticationStore: { setAuthToken },
+  } = useStores()
+
   return (
     <GoogleSigninButton
       style={{ width: "100%", height: 48 }}
@@ -12,11 +17,11 @@ export function GoogleSignInButton() {
           await GoogleSignin.hasPlayServices()
           const userInfo = await GoogleSignin.signIn()
           if (userInfo?.data?.idToken) {
-            const { data, error } = await supabase.auth.signInWithIdToken({
+            const { data } = await supabase.auth.signInWithIdToken({
               provider: 'google',
               token: userInfo.data.idToken,
             })
-            console.log(error, data)
+            setAuthToken(data.session?.access_token || "")
           } else {
             throw new Error('no ID token present!')
           }
