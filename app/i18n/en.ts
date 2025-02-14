@@ -15,6 +15,15 @@ const en = {
       button: "Let's try this again",
     },
   },
+  googleSignInButton: {
+    error: {
+      cancelled: "Canceled",
+      inProgress: "In progress",
+      playServicesNotAvailable: "Play Services not available",
+      signInRequired: "Sign in required",
+      other: "Something went wrong, please try again.",
+    },
+  },
 
   // Screens
   landingScreen: {
@@ -50,6 +59,27 @@ const en = {
     },
     or: "Or",
   },
+  registrationScreen: {
+    signUp: "Create Account",
+    enterDetails: "Enter your details below to create your account.",
+    emailFieldLabel: "Email Address",
+    passwordFieldLabel: "Password",
+    confirmPasswordFieldLabel: "Confirm Password",
+    emailFieldPlaceholder: "Enter your email",
+    passwordFieldPlaceholder: "Enter your password",
+    confirmPasswordFieldPlaceholder: "Confirm your password",
+    tapToSignUp: "Create Account",
+    errors: {
+      emailRequired: "Email is required",
+      emailInvalid: "Please enter a valid email address",
+      passwordRequired: "Password is required",
+      passwordTooShort: "Password must be at least 8 characters",
+      passwordInvalid: "Password must contain only letters and numbers",
+      passwordsDontMatch: "Passwords don't match",
+    },
+    or: "Or",
+    tapToSignUpWithGoogle: "Continue with Google",
+  },
   homeScreen: {
     title: "Home",
   },
@@ -60,6 +90,11 @@ const en = {
     title: "Activities",
     subtitle: "Inside hotel",
     city: "The city",
+  },
+  registerSuccessScreen: {
+    heading: "Account Created Successfully! ✅",
+    content: "Your account has been created. Please check your email to verify your account before logging in.",
+    button: "Go to Login",
   },
 
   // Navigators
@@ -148,6 +183,8 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
+
+  
 
   ...demoEn,
 }

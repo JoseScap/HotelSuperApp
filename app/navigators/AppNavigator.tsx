@@ -14,6 +14,7 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
 import { HomeNavigator, HomeTabParamList } from "./HomeNavigator"
+import React from "react"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -31,6 +32,8 @@ import { HomeNavigator, HomeTabParamList } from "./HomeNavigator"
 export type AppStackParamList = {
   Landing: undefined
   Login: undefined
+  Register: undefined
+  RegisterSuccess: undefined
   HomeNavigator: NavigatorScreenParams<HomeTabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
@@ -78,6 +81,8 @@ const AppStack = observer(function AppStack() {
         <>
           <Stack.Screen name="Landing" component={Screens.LandingScreen} />
           <Stack.Screen name="Login" component={Screens.LoginScreen} />
+          <Stack.Screen name="Register" component={Screens.RegisterScreen} />
+          <Stack.Screen name="RegisterSuccess" component={Screens.RegisterSuccessScreen} />
         </>
       )}
     </Stack.Navigator>

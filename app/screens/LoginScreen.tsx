@@ -8,6 +8,7 @@ import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { supabase } from "@/utils/supabaseClient"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
+import { TxKeyPath } from "@/i18n"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 
@@ -52,11 +53,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     setAuthEmail("")
     setAuthToken(data.session?.access_token || "")
   }
-
-  GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || "",
-  })
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
     () =>

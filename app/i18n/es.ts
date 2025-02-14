@@ -17,6 +17,15 @@ const es: Translations = {
       button: "Intentemos de nuevo",
     },
   },
+  googleSignInButton: {
+    error: {
+      cancelled: "Cancelado",
+      inProgress: "En progreso",
+      playServicesNotAvailable: "Play Services no disponibles",
+      signInRequired: "Requiere inicio de sesión",
+      other: "Ocurrió un error, por favor intenta nuevamente.",
+    },
+  },
 
   // Screens
   landingScreen: {
@@ -52,6 +61,27 @@ const es: Translations = {
     },
     or: "O",
   },
+  registrationScreen: {
+    signUp: "Crear cuenta",
+    enterDetails: "Ingresa tus datos para crear tu cuenta.",
+    emailFieldLabel: "Correo electrónico",
+    passwordFieldLabel: "Contraseña",
+    confirmPasswordFieldLabel: "Confirmar contraseña",
+    emailFieldPlaceholder: "Ingresa tu correo",
+    passwordFieldPlaceholder: "Ingresa tu contraseña",
+    confirmPasswordFieldPlaceholder: "Confirma tu contraseña",
+    tapToSignUp: "Crear cuenta",
+    errors: {
+      emailRequired: "El email es requerido",
+      emailInvalid: "Por favor ingrese un email válido",
+      passwordRequired: "La contraseña es requerida",
+      passwordTooShort: "La contraseña debe tener al menos 8 caracteres",
+      passwordInvalid: "La contraseña solo debe contener letras y números",
+      passwordsDontMatch: "Las contraseñas no coinciden",
+    },
+    or: "O",
+    tapToSignUpWithGoogle: "Continuar con Google",
+  },
   homeScreen: {
     title: "Inicio",
   },
@@ -62,6 +92,11 @@ const es: Translations = {
     title: "Actividades",
     subtitle: "Dentro del hotel",
     city: "La ciudad",
+  },
+  registerSuccessScreen: {
+    heading: "¡Cuenta Creada Exitosamente! ✅",
+    content: "Tu cuenta ha sido creada. Por favor revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
+    button: "Ir a Iniciar Sesión",
   },
 
   // Navigators
@@ -151,6 +186,8 @@ const es: Translations = {
         "No se han agregado episodios favoritos todavía. ¡Presiona el corazón dentro de un episodio para agregarlo a tus favoritos!",
     },
   },
+
+  
 
   ...demoEs,
 }

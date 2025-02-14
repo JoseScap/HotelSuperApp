@@ -36,7 +36,7 @@ export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScre
 
       <Text tx="landingScreen:notHaveAnAccount" preset="subheading" style={themed($bottomSpace)} />
 
-      <Button tx="landingScreen:signUp" />
+      <Button tx="landingScreen:signUp" onPress={() => navigation.navigate("Register")} />
     </Screen>
   )
 })
