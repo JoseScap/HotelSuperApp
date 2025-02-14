@@ -1,53 +1,39 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle, View } from "react-native"
+import { ComponentType, FC } from "react"
+import { TextStyle, ViewStyle, View } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps, GoogleSignInButton } from "../components"
-import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
+import { useRegisterScreen } from "@/hooks/useRegisterScreen"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { supabase } from "@/utils/supabaseClient"
-import { TxKeyPath } from "@/i18n"
 
 interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
-export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(_props) {
-  const { navigation } = _props
-  const passwordInput = useRef<TextInput>(null)
-  const confirmPasswordInput = useRef<TextInput>(null)
-
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
-  const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(true)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-
+export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(props) {
   const {
-    registrationStore: { email, password, passwordConfirmation, validationError, setProp, reset },
-  } = useStores()
+    // Refs
+    passwordInput,
+    confirmPasswordInput,
+    // State
+    isAuthPasswordHidden,
+    isConfirmPasswordHidden,
+    isSubmitted,
+    email,
+    password,
+    passwordConfirmation,
+    validationError,
+    signUpError,
+    // Actions
+    setProp,
+    register,
+    toggleAuthPassword,
+    toggleConfirmPassword,
+  } = useRegisterScreen(props)
 
   const {
     themed,
     theme: { colors },
   } = useAppTheme()
-
-  async function register() {
-    setIsSubmitted(true)
-
-    if (validationError) return
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
-    if (error) {
-      console.error("Registration error:", error.message)
-      return
-    }
-
-    setIsSubmitted(false)
-    reset()
-    navigation.navigate("RegisterSuccess")
-  }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = function PasswordRightAccessory(
     props: TextFieldAccessoryProps,
@@ -58,7 +44,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         color={colors.palette.neutral800}
         containerStyle={props.style}
         size={20}
-        onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
+        onPress={toggleAuthPassword}
       />
     )
   }
@@ -71,7 +57,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
           color={colors.palette.neutral800}
           containerStyle={props.style}
           size={20}
-          onPress={() => setIsConfirmPasswordHidden(!isConfirmPasswordHidden)}
+          onPress={toggleConfirmPassword}
         />
       )
     }
@@ -137,6 +123,14 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         preset="reversed"
         onPress={register}
       />
+      
+      {signUpError && (
+        <Text
+          tx={signUpError}
+          preset="default"
+          style={themed($errorText)}
+        />
+      )}
 
       <View style={themed($separator)}>
         <Text size="sm" weight="bold" tx="registrationScreen:or" />
@@ -172,5 +166,11 @@ const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginVertical: spacing.sm,
   alignItems: "center",
   justifyContent: "center",
+})
+
+const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.error,
+  marginTop: spacing.xs,
+  textAlign: "center",
 })
 

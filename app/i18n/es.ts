@@ -78,6 +78,7 @@ const es: Translations = {
       passwordTooShort: "La contraseña debe tener al menos 8 caracteres",
       passwordInvalid: "La contraseña solo debe contener letras y números",
       passwordsDontMatch: "Las contraseñas no coinciden",
+      signUpFailed: "El registro falló. Por favor intenta nuevamente.",
     },
     or: "O",
     tapToSignUpWithGoogle: "Continuar con Google",
