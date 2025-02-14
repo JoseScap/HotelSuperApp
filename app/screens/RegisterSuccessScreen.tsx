@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { ViewStyle } from "react-native"
-import { EmptyState, Icon, Screen } from "../components"
+import { EmptyState, Screen } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -11,6 +11,7 @@ interface RegisterSuccessScreenProps extends AppStackScreenProps<"RegisterSucces
 
 export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function RegisterSuccessScreen(_props) {
   const { themed } = useAppTheme()
+  const { navigation } = _props
 
   return (
     <Screen
@@ -22,7 +23,7 @@ export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function Re
         headingTx="registerSuccessScreen:heading"
         contentTx="registerSuccessScreen:content"
         buttonTx="registerSuccessScreen:button"
-        buttonOnPress={() => _props.navigation.navigate("Login")}
+        buttonOnPress={() => navigation.navigate("Login")}
         style={themed($emptyState)}
         imageSource={checkIcon}
       />

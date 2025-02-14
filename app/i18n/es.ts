@@ -58,6 +58,7 @@ const es: Translations = {
       cannotBeBlank: "Campo obligatorío.",
       minimunCharacters: "Debe tener al menos 6 caracteres.",
       invalidEmailAddress: "Debe ser un email valido.",
+      loginFailed: "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
     },
     or: "O",
   },

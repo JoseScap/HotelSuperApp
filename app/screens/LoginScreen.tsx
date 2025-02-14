@@ -9,50 +9,33 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import { supabase } from "@/utils/supabaseClient"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { TxKeyPath } from "@/i18n"
+import { useLoginScreen } from "@/hooks/useLoginScreen"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
-  const authPasswordInput = useRef<TextInput>(null)
-
-  const [authPassword, setAuthPassword] = useState("")
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [attemptsCount, setAttemptsCount] = useState(0)
+export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(props) {
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
-  } = useStores()
+    // Refs
+    authPasswordInput,
+    // State
+    authPassword,
+    isAuthPasswordHidden,
+    isSubmitted,
+    attemptsCount,
+    authEmail,
+    validationError,
+    loginError,
+    // Actions
+    setAuthPassword,
+    setAuthEmail,
+    toggleAuthPassword,
+    login,
+  } = useLoginScreen(props)
 
   const {
     themed,
     theme: { colors },
   } = useAppTheme()
-
-  useEffect(() => {
-    setAuthEmail("test@tuzgle.com")
-  }, [setAuthEmail])
-
-  async function login() {
-    setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
-
-    if (validationError) return
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: authEmail,
-      password: authPassword,
-    })
-
-    if (error) {
-      console.error("Login error:", error.message)
-      return
-    }
-
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
-    setAuthToken(data.session?.access_token || "")
-  }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
     () =>
@@ -63,7 +46,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             color={colors.palette.neutral800}
             containerStyle={props.style}
             size={20}
-            onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
+            onPress={toggleAuthPassword}
           />
         )
       },
@@ -92,7 +75,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         keyboardType="email-address"
         labelTx="loginScreen:emailFieldLabel"
         placeholderTx="loginScreen:emailFieldPlaceholder"
-        helperTx={isSubmitted ? validationError : undefined}
+        helper={isSubmitted ? validationError : undefined}
         status={isSubmitted && validationError ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
       />
@@ -119,6 +102,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         preset="reversed"
         onPress={login}
       />
+
+      {loginError && (
+        <Text
+          tx={loginError}
+          preset="default"
+          style={themed($errorText)}
+        />
+      )}
 
       <View style={themed($separator)}>
         <Text size="sm" weight="bold" tx="loginScreen:or" />
@@ -159,4 +150,10 @@ const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginVertical: spacing.sm,
   alignItems: "center",
   justifyContent: "center",
+})
+
+const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.error,
+  marginTop: spacing.xs,
+  textAlign: "center",
 })

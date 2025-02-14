@@ -56,6 +56,7 @@ const en = {
       cannotBeBlank: "can't be blank",
       minimunCharacters: "must be at least 6 characters",
       invalidEmailAddress: "must be a valid email address",
+      loginFailed: "Login failed. Please check your credentials and try again.",
     },
     or: "Or",
   },
