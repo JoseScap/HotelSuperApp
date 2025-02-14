@@ -87,6 +87,10 @@ const en = {
   },
   profileScreen: {
     title: "Profile",
+    displayNameLabel: "Display Name",
+    errors: {
+      updateFailed: "Failed to update display name. Please try again.",
+    },
   },
   activitiesScreen: {
     title: "Activities",

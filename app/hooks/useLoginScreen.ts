@@ -1,13 +1,8 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
 import { supabase } from "@/utils/supabaseClient"
-import { AppStackScreenProps } from "@/navigators"
 import { TxKeyPath } from "@/i18n"
-
-interface UseLoginScreenParams {
-  navigation: AppStackScreenProps<"Login">["navigation"]
-}
 
 interface UseLoginScreenReturn {
   // Refs
@@ -27,7 +22,7 @@ interface UseLoginScreenReturn {
   login: () => Promise<void>
 }
 
-export function useLoginScreen({ navigation }: UseLoginScreenParams): UseLoginScreenReturn {
+export function useLoginScreen(): UseLoginScreenReturn {
   const authPasswordInput = useRef<TextInput>(null)
 
   const [authPassword, setAuthPassword] = useState("")
@@ -37,7 +32,7 @@ export function useLoginScreen({ navigation }: UseLoginScreenParams): UseLoginSc
   const [loginError, setLoginError] = useState<TxKeyPath>()
 
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
+    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError, setDisplayName },
   } = useStores()
 
   async function login() {
@@ -61,11 +56,16 @@ export function useLoginScreen({ navigation }: UseLoginScreenParams): UseLoginSc
     setAuthPassword("")
     setAuthEmail("")
     setAuthToken(data.session?.access_token || "")
+    setDisplayName(data.user?.user_metadata?.display_name || "")
   }
 
   function toggleAuthPassword() {
     setIsAuthPasswordHidden(!isAuthPasswordHidden)
   }
+
+  useEffect(() => {
+    setAuthEmail("test@tuzgle.com")
+  }, [])
 
   return {
     // Refs

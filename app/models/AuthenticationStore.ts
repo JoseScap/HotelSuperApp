@@ -6,6 +6,7 @@ export const AuthenticationStoreModel = types
   .props({
     authToken: types.maybe(types.string),
     authEmail: "",
+    displayName: "",
   })
   .views((store) => ({
     get isAuthenticated() {
@@ -25,6 +26,9 @@ export const AuthenticationStoreModel = types
     },
     setAuthEmail(value: string) {
       store.authEmail = value.replace(/ /g, "")
+    },
+    setDisplayName(value: string) {
+      store.displayName = value
     },
     logout() {
       store.authToken = undefined

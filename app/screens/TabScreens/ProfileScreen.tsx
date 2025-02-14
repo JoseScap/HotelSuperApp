@@ -1,32 +1,41 @@
 import { FC } from "react"
-import { Platform } from "react-native"
-import { Screen } from "@/components/Screen"
+import { Platform, TextStyle, ViewStyle } from "react-native"
+import { Screen, TextField, Icon, Text } from "@/components"
 import { $styles } from "@/theme"
 import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useStores } from "@/models"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
+import { useProfileScreen } from "@/hooks/useProfileScreen"
+import { useAppTheme } from "@/utils/useAppTheme"
+import type { ThemedStyle } from "@/theme"
+import React from "react"
 
 const isAndroid = Platform.OS === "android"
 
 export const ProfileScreen: FC<HomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
   const {
-    authenticationStore: { logout },
-  } = useStores()
+    displayName,
+    isEditing,
+    error,
+    startEditing,
+    cancelEditing,
+    saveDisplayName,
+    changeDisplayName,
+    handleLogout,
+  } = useProfileScreen()
 
-  async function handleLogout() {
-    await logout()
-    // tambien debe desloguear el usuario de google
-    await GoogleSignin.signOut()
-    navigation.navigate("Landing")
-  }
+  const {
+    themed,
+    theme: { colors },
+  } = useAppTheme()
 
   useHeader(
     {
       leftTx: "profileScreen:title",
       rightTx: "common:logOut",
-      onRightPress: handleLogout,
+      onRightPress: () => handleLogout(() => navigation.navigate("Landing")),
     },
     [handleLogout],
   )
@@ -35,8 +44,56 @@ export const ProfileScreen: FC<HomeTabScreenProps<"Profile">> = function HomeScr
     <Screen
       preset="scroll"
       safeAreaEdges={["top"]}
-      contentContainerStyle={$styles.flex1}
+      contentContainerStyle={[$styles.flex1, themed($container)]}
       {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
-    ></Screen>
+    >
+      <TextField
+        value={displayName}
+        onChangeText={changeDisplayName}
+        containerStyle={themed($textField)}
+        labelTx="profileScreen:displayNameLabel"
+        editable={isEditing}
+        status={error ? "error" : undefined}
+        helperTx={error}
+        RightAccessory={(props) => (
+          <>
+            {isEditing ? (
+              <>
+                <Icon
+                  icon="check"
+                  color={colors.palette.neutral800}
+                  containerStyle={props.style}
+                  size={20}
+                  onPress={() => saveDisplayName(displayName)}
+                />
+                <Icon
+                  icon="x"
+                  color={colors.palette.neutral800}
+                  containerStyle={props.style}
+                  size={20}
+                  onPress={cancelEditing}
+                />
+              </>
+            ) : (
+              <Icon
+                icon="pin"
+                color={colors.palette.neutral800}
+                containerStyle={props.style}
+                size={20}
+                onPress={startEditing}
+              />
+            )}
+          </>
+        )}
+      />
+    </Screen>
   )
 }
+
+const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  padding: spacing.lg,
+})
+
+const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginBottom: spacing.lg,
+})

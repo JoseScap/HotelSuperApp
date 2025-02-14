@@ -89,6 +89,10 @@ const es: Translations = {
   },
   profileScreen: {
     title: "Perfil",
+    displayNameLabel: "Nombre para mostrar",
+    errors: {
+      updateFailed: "No se pudo actualizar el nombre. Por favor intenta nuevamente.",
+    },
   },
   activitiesScreen: {
     title: "Actividades",

@@ -30,7 +30,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
     setAuthEmail,
     toggleAuthPassword,
     login,
-  } = useLoginScreen(props)
+  } = useLoginScreen()
 
   const {
     themed,

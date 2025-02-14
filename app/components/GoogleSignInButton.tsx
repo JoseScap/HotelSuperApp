@@ -12,7 +12,7 @@ export function GoogleSignInButton() {
   const { themed } = useAppTheme()
   const [googleSignInError, setGoogleSignInError] = useState<TxKeyPath | undefined>()
   const {
-    authenticationStore: { setAuthToken },
+    authenticationStore: { setAuthToken, setDisplayName },
   } = useStores()
 
   GoogleSignin.configure({
@@ -35,6 +35,7 @@ export function GoogleSignInButton() {
                 token: userInfo.data.idToken,
               })
               setAuthToken(data.session?.access_token || "")
+              setDisplayName(data.user?.user_metadata?.display_name || "")
             } else {
               throw new Error('no ID token present!')
             }
