@@ -1,12 +1,14 @@
 import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
 import { supabase } from "@/utils/supabaseClient"
 import { useStores } from "@/models"
-import { TextStyle, ViewStyle } from "react-native"
+import { Platform, TextStyle, ViewStyle } from "react-native"
 import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
 import { TxKeyPath } from "@/i18n"
 import { Text } from "./Text"
 import React, { useState } from "react"
+
+const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
   const { themed } = useAppTheme()
@@ -19,6 +21,8 @@ export function GoogleSignInButton() {
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || "",
     offlineAccess: true,
   })
+
+  if (isIos) <></>
 
   return (
     <>
