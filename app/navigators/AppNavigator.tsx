@@ -13,7 +13,7 @@ import { useStores } from "../models"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps } from "react"
-import { HomeNavigator, HomeTabParamList } from "./HomeNavigator"
+import { BottomNavigator, BottomTabParamList } from "./BottomNavigator"
 import React from "react"
 
 /**
@@ -34,7 +34,7 @@ export type AppStackParamList = {
   Login: undefined
   Register: undefined
   RegisterSuccess: undefined
-  HomeNavigator: NavigatorScreenParams<HomeTabParamList>
+  BottomNavigator: NavigatorScreenParams<BottomTabParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -71,11 +71,11 @@ const AppStack = observer(function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "HomeNavigator" : "Landing"}
+      initialRouteName={isAuthenticated ? "BottomNavigator" : "Landing"}
     >
       {isAuthenticated ? (
         <>
-          <Stack.Screen name="HomeNavigator" component={HomeNavigator} />
+          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
         </>
       ) : (
         <>

@@ -58,7 +58,7 @@ export function useLoginScreen(): UseLoginScreenReturn {
     setIsSubmitted(true)
     setLoginError(undefined)
 
-    if (!password || !email) return undefined;
+    if (!password || !email || emailValidation || passwordValidation) return undefined;
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
