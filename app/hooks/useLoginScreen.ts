@@ -16,9 +16,9 @@ interface UseLoginScreenReturn {
   isSubmitted: boolean
 
   // Validations
-  emailValidation: TxKeyPath | undefined
-  passwordValidation: TxKeyPath | undefined
-  loginError: TxKeyPath | undefined
+  emailValidation?: TxKeyPath
+  passwordValidation?: TxKeyPath
+  loginError?: TxKeyPath
 
   // Actions
   setPassword: (value: string) => void
