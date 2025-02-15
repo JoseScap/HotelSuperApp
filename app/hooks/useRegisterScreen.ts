@@ -53,10 +53,6 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [signUpError, setSignUpError] = useState<TxKeyPath>()
 
-  const {
-    registrationStore: { validationError, setProp, reset },
-  } = useStores()
-
   // Validations
   const emailValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!email) return "registrationScreen:errors.emailRequired"
