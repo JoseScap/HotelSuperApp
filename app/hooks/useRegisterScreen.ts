@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
 import { supabase } from "@/utils/supabaseClient"
@@ -11,46 +11,81 @@ interface UseRegisterScreenParams {
 
 interface UseRegisterScreenReturn {
   // Refs
+  emailInput: React.RefObject<TextInput>
   passwordInput: React.RefObject<TextInput>
   confirmPasswordInput: React.RefObject<TextInput>
-  // State
-  isAuthPasswordHidden: boolean
+
+  // Values
+  email: string | null
+  password: string | null
+  confirmPassword: string | null
+  isPasswordHidden: boolean
   isConfirmPasswordHidden: boolean
   isSubmitted: boolean
-  email: string
-  password: string
-  passwordConfirmation: string
-  validationError: TxKeyPath | undefined
-  signUpError: TxKeyPath | undefined
+
+  // Validations
+  emailValidation?: TxKeyPath
+  passwordValidation?: TxKeyPath
+  confirmPasswordValidation?: TxKeyPath
+  signUpError?: TxKeyPath
+
   // Actions
-  setProp: (key: "email" | "password" | "passwordConfirmation", value: string) => void
-  register: () => Promise<void>
-  toggleAuthPassword: () => void
+  setEmail: (value: string) => void
+  setPassword: (value: string) => void
+  setConfirmPassword: (value: string) => void
+  togglePassword: () => void
   toggleConfirmPassword: () => void
+  register: () => Promise<void>
 }
 
 export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseRegisterScreenReturn {
+  // Refs
+  const emailInput = useRef<TextInput>(null)
   const passwordInput = useRef<TextInput>(null)
   const confirmPasswordInput = useRef<TextInput>(null)
 
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
+  // State
+  const [email, setEmail] = useState<string | null>(null)
+  const [password, setPassword] = useState<string | null>(null)
+  const [confirmPassword, setConfirmPassword] = useState<string | null>(null)
+  const [isPasswordHidden, setIsPasswordHidden] = useState(true)
   const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [signUpError, setSignUpError] = useState<TxKeyPath>()
 
   const {
-    registrationStore: { email, password, passwordConfirmation, validationError, setProp, reset },
+    registrationStore: { validationError, setProp, reset },
   } = useStores()
+
+  // Validations
+  const emailValidation = useMemo<TxKeyPath | undefined>(() => {
+    if (!email) return "registrationScreen:errors.emailRequired"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "registrationScreen:errors.emailInvalid"
+    return undefined
+  }, [email])
+
+  const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
+    if (!password) return "registrationScreen:errors.passwordRequired"
+    if (password.length < 8) return "registrationScreen:errors.passwordTooShort"
+    if (!/^[a-zA-Z0-9]+$/.test(password)) return "registrationScreen:errors.passwordInvalid"
+    return undefined
+  }, [password])
+
+  const confirmPasswordValidation = useMemo<TxKeyPath | undefined>(() => {
+    if (!confirmPassword) return "registrationScreen:errors.passwordRequired"
+    if (password !== confirmPassword) return "registrationScreen:errors.passwordsDontMatch"
+    return undefined
+  }, [password, confirmPassword])
 
   async function register() {
     setIsSubmitted(true)
     setSignUpError(undefined)
 
-    if (validationError) return
+    if (!email || !password || !confirmPassword) return
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+    const { error } = await supabase.auth.signUp({
+      email: email,
+      password: password!,
     })
 
     if (error) {
@@ -63,8 +98,8 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
     navigation.navigate("RegisterSuccess")
   }
 
-  function toggleAuthPassword() {
-    setIsAuthPasswordHidden(!isAuthPasswordHidden)
+  function togglePassword() {
+    setIsPasswordHidden(!isPasswordHidden)
   }
 
   function toggleConfirmPassword() {
@@ -73,21 +108,30 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
 
   return {
     // Refs
+    emailInput,
     passwordInput,
     confirmPasswordInput,
-    // State
-    isAuthPasswordHidden,
-    isConfirmPasswordHidden,
-    isSubmitted,
+
+    // Values
     email,
     password,
-    passwordConfirmation,
-    validationError,
+    confirmPassword,
+    isPasswordHidden,
+    isConfirmPasswordHidden,
+    isSubmitted,
+
+    // Validations
+    emailValidation,
+    passwordValidation,
+    confirmPasswordValidation,
     signUpError,
+
     // Actions
-    setProp,
-    register,
-    toggleAuthPassword,
+    setEmail,
+    setPassword,
+    setConfirmPassword,
+    togglePassword,
     toggleConfirmPassword,
+    register,
   }
 }
