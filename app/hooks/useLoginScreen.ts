@@ -8,7 +8,7 @@ interface UseLoginScreenReturn {
   // Refs
   authPasswordInput: React.RefObject<TextInput>
   // State
-  authPassword: string
+  authPassword: string | null
   isAuthPasswordHidden: boolean
   isSubmitted: boolean
   attemptsCount: number
@@ -24,7 +24,7 @@ interface UseLoginScreenReturn {
 
 export function useLoginScreen(): UseLoginScreenReturn {
   const authPasswordInput = useRef<TextInput>(null)
-  const [authPassword, setAuthPassword] = useState("")
+  const [authPassword, setAuthPassword] = useState<string | null>(null)
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
@@ -39,7 +39,9 @@ export function useLoginScreen(): UseLoginScreenReturn {
     setAttemptsCount(attemptsCount + 1)
     setLoginError(undefined)
 
-    if (validationError) return
+    if (validationError) return undefined;
+
+    if (!authPassword) return undefined;
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: authEmail,
@@ -48,7 +50,7 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
     if (error) {
       setLoginError("loginScreen:errors.loginFailed")
-      return
+      return undefined;
     }
 
     setIsSubmitted(false)

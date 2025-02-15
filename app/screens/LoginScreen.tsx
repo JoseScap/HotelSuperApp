@@ -82,7 +82,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
 
       <TextField
         ref={authPasswordInput}
-        value={authPassword}
+        value={authPassword ?? ""}
         onChangeText={setAuthPassword}
         containerStyle={themed($textField)}
         autoCapitalize="none"
