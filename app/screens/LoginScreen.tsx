@@ -1,34 +1,35 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, View, ViewStyle } from "react-native"
+import { ComponentType, FC, useMemo } from "react"
+import { TextStyle, View, ViewStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps, GoogleSignInButton } from "../components"
-import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { supabase } from "@/utils/supabaseClient"
-import { GoogleSignin } from "@react-native-google-signin/google-signin"
-import { TxKeyPath } from "@/i18n"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(props) {
+export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const {
     // Refs
-    authPasswordInput,
-    // State
-    authPassword,
+    emailInput,
+    passwordInput,
+
+    // Values
+    email,
+    password,
     isAuthPasswordHidden,
     isSubmitted,
-    attemptsCount,
-    authEmail,
-    validationError,
+
+    // Validations
+    emailValidation,
+    passwordValidation,
     loginError,
+
     // Actions
-    setAuthPassword,
-    setAuthEmail,
-    toggleAuthPassword,
+    setPassword,
+    setEmail,
+    togglePassword,
     login,
   } = useLoginScreen()
 
@@ -46,7 +47,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
             color={colors.palette.neutral800}
             containerStyle={props.style}
             size={20}
-            onPress={toggleAuthPassword}
+            onPress={togglePassword}
           />
         )
       },
@@ -61,13 +62,11 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
     >
       <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
       <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
-      {attemptsCount > 2 && (
-        <Text tx="loginScreen:hint" size="sm" weight="light" style={themed($hint)} />
-      )}
 
       <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
+        ref={emailInput}
+        value={email ?? ""}
+        onChangeText={setEmail}
         containerStyle={themed($textField)}
         autoCapitalize="none"
         autoComplete="email"
@@ -75,15 +74,15 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
         keyboardType="email-address"
         labelTx="loginScreen:emailFieldLabel"
         placeholderTx="loginScreen:emailFieldPlaceholder"
-        helper={isSubmitted ? validationError : undefined}
-        status={isSubmitted && validationError ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
+        helperTx={isSubmitted ? emailValidation : undefined}
+        status={isSubmitted && emailValidation ? "error" : undefined}
+        onSubmitEditing={() => passwordInput.current?.focus()}
       />
 
       <TextField
-        ref={authPasswordInput}
-        value={authPassword ?? ""}
-        onChangeText={setAuthPassword}
+        ref={passwordInput}
+        value={password ?? ""}
+        onChangeText={setPassword}
         containerStyle={themed($textField)}
         autoCapitalize="none"
         autoComplete="password"
@@ -91,6 +90,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(p
         secureTextEntry={isAuthPasswordHidden}
         labelTx="loginScreen:passwordFieldLabel"
         placeholderTx="loginScreen:passwordFieldPlaceholder"
+        helperTx={isSubmitted ? passwordValidation : undefined}
+        status={isSubmitted && passwordValidation ? "error" : undefined}
         onSubmitEditing={login}
         RightAccessory={PasswordRightAccessory}
       />
