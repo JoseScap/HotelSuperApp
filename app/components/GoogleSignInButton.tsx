@@ -7,7 +7,7 @@ import type { ThemedStyle } from "@/theme"
 import { TxKeyPath } from "@/i18n"
 import { Text } from "./Text"
 import React, { useState } from "react"
-
+import { GOOGLE_SIGNIN_SIZE, GOOGLE_SIGNIN_COLOR } from "@/constants/common"
 const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
@@ -28,8 +28,8 @@ export function GoogleSignInButton() {
     <>
       <GoogleSigninButton
         style={themed($button)}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
+        size={GOOGLE_SIGNIN_SIZE}
+        color={GOOGLE_SIGNIN_COLOR}
         onPress={async () => {
           try {
             const userInfo = await GoogleSignin.signIn()
