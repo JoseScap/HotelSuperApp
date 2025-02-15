@@ -24,7 +24,6 @@ interface UseLoginScreenReturn {
 
 export function useLoginScreen(): UseLoginScreenReturn {
   const authPasswordInput = useRef<TextInput>(null)
-
   const [authPassword, setAuthPassword] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
