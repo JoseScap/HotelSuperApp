@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
-import { useStores } from "@/models"
 import { supabase } from "@/utils/supabaseClient"
 import { AppStackScreenProps } from "@/navigators"
 import { TxKeyPath } from "@/i18n"
@@ -90,7 +89,6 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
     }
 
     setIsSubmitted(false)
-    reset()
     navigation.navigate("RegisterSuccess")
   }
 
