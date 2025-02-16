@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { Platform, TextStyle, View, ViewStyle } from "react-native"
 import {
   Button,
   Screen,
@@ -50,6 +50,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
   } = useRegisterScreen(props)
 
   const { themed } = useAppTheme()
+  const isIos = Platform.OS === "ios"
 
   useHeader({
     leftIcon: "caretLeft",
@@ -141,7 +142,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         <Text size="sm" weight="bold" tx="registrationScreen:or" />
       </View>
 
-      <GoogleSignInButton />
+      {!isIos && <GoogleSignInButton />}
     </Screen>
   )
 })
