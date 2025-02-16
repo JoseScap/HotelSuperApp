@@ -1,7 +1,6 @@
 import { FC, Fragment } from "react"
 import { ViewStyle } from "react-native"
 import { Screen, TextField, Icon } from "@/components"
-import { $styles } from "@/theme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useProfileScreen } from "@/hooks/useProfileScreen"
