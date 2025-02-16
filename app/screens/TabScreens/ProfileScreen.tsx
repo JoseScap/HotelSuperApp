@@ -1,6 +1,6 @@
 import { FC, Fragment } from "react"
-import { ViewStyle } from "react-native"
-import { Screen, TextField, Icon } from "@/components"
+import { TextStyle, ViewStyle } from "react-native"
+import { Screen, Text, TextField, Icon, Checkbox } from "@/components"
 import { $styles } from "@/theme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
@@ -24,7 +24,8 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
 
   const {
     themed,
-    theme: { colors },
+    theme: { colors, isDark },
+    setThemeContextOverride,
   } = useAppTheme()
 
   const bottomProps = useBottomProps()
@@ -45,6 +46,12 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
       contentContainerStyle={[$styles.flex1, themed($container)]}
       {...bottomProps}
     >
+      <Text
+        preset="subheading"
+        style={themed($sectionSubtitle)}
+        tx="profileScreen:sectionPersonalDataTitle"
+      />
+
       <TextField
         value={displayName}
         onChangeText={changeDisplayName}
@@ -84,6 +91,20 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
           </Fragment>
         )}
       />
+
+      <Text
+        preset="subheading"
+        style={themed($sectionSubtitle)}
+        tx="profileScreen:sectionPreferencesTitle"
+      />
+
+      <Text preset="bold" style={themed($sectionSubtitle)} tx="profileScreen:darkModeTitle" />
+
+      <Checkbox
+        labelTx={isDark ? "profileScreen:deactivateDarkMode" : "profileScreen:activateDarkMode"}
+        value={isDark}
+        onValueChange={() => setThemeContextOverride(isDark ? "light" : "dark")}
+      />
     </Screen>
   )
 }
@@ -94,4 +115,8 @@ const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
+})
+
+const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  marginBottom: spacing.md,
 })
