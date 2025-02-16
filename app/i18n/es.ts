@@ -79,7 +79,7 @@ const es: Translations = {
       emailRequired: "El email es requerido",
       emailInvalid: "Por favor ingrese un email válido",
       passwordRequired: "La contraseña es requerida",
-      passwordTooShort: "La contraseña debe tener al menos 8 caracteres",
+      passwordTooShort: "La contraseña debe tener al menos 12 caracteres",
       passwordInvalid: "La contraseña solo debe contener letras y números",
       passwordsDontMatch: "Las contraseñas no coinciden",
       signUpFailed: "El registro falló. Por favor intenta nuevamente.",

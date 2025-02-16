@@ -76,11 +76,12 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
     setIsSubmitted(true)
     setSignUpError(undefined)
 
-    if (!email || !password || !confirmPassword) return
+    if (!email || !password || !confirmPassword || emailValidation || passwordValidation || confirmPasswordValidation)
+      return undefined;
 
     const { error } = await supabase.auth.signUp({
       email: email,
-      password: password!,
+      password: password,
     })
 
     if (error) {

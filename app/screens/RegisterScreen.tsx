@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useMemo } from "react"
+import { FC } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps, GoogleSignInButton } from "../components"
+import { Button, Screen, Text, TextField, GoogleSignInButton, PasswordRightAccessory } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -44,38 +44,6 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
     theme: { colors },
   } = useAppTheme()
 
-  const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
-    () =>
-      function PasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <Icon
-            icon={isPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={togglePassword}
-          />
-        )
-      },
-    [isPasswordHidden, colors.palette.neutral800],
-  )
-
-  const ConfirmPasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
-    () =>
-      function ConfirmPasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <Icon
-            icon={isConfirmPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={toggleConfirmPassword}
-          />
-        )
-      },
-    [isConfirmPasswordHidden, colors.palette.neutral800],
-  )
-
   return (
     <Screen
       preset="auto"
@@ -115,7 +83,10 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         helperTx={isSubmitted ? passwordValidation : undefined}
         status={isSubmitted && passwordValidation ? "error" : undefined}
         onSubmitEditing={() => confirmPasswordInput.current?.focus()}
-        RightAccessory={PasswordRightAccessory}
+        RightAccessory={PasswordRightAccessory({ 
+          isPasswordHidden: isPasswordHidden, 
+          onTogglePassword: togglePassword 
+        })}
       />
 
       <TextField
@@ -132,7 +103,10 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         helperTx={isSubmitted ? confirmPasswordValidation : undefined}
         status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
         onSubmitEditing={register}
-        RightAccessory={ConfirmPasswordRightAccessory}
+        RightAccessory={PasswordRightAccessory({ 
+          isPasswordHidden: isConfirmPasswordHidden, 
+          onTogglePassword: toggleConfirmPassword 
+        })}
       />
 
       <Button

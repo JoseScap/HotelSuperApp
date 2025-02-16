@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite"
-import { ComponentType, FC, useMemo } from "react"
+import { FC } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps, GoogleSignInButton } from "../components"
+import { Button, Screen, Text, TextField, GoogleSignInButton, PasswordRightAccessory } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -37,22 +37,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     themed,
     theme: { colors },
   } = useAppTheme()
-
-  const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
-    () =>
-      function PasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <Icon
-            icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={togglePassword}
-          />
-        )
-      },
-    [isAuthPasswordHidden, colors.palette.neutral800],
-  )
 
   return (
     <Screen
@@ -93,7 +77,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         helperTx={isSubmitted ? passwordValidation : undefined}
         status={isSubmitted && passwordValidation ? "error" : undefined}
         onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
+        RightAccessory={PasswordRightAccessory({ 
+          isPasswordHidden: isAuthPasswordHidden, 
+          onTogglePassword: togglePassword 
+        })}
       />
 
       <Button
