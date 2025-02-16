@@ -104,8 +104,8 @@ const HELPER_BASE = "mt-1"
 const ACCESSORY_BASE = "h-10 justify-center items-center z-[1]"
 
 // Estado error
-const ERROR_INPUT_WRAPPER = "border-error"
-const ERROR_HELPER = "text-error"
+const ERROR_INPUT_WRAPPER = "border-red-500 dark:border-red-400"
+const ERROR_HELPER = "text-red-500 dark:text-red-400"
 
 // Estado disabled
 const DISABLED_INPUT = "text-neutral-600 dark:text-neutral-400"
