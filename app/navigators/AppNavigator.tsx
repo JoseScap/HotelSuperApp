@@ -12,9 +12,8 @@ import Config from "../config"
 import { useStores } from "../models"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
-import { ComponentProps } from "react"
-import { BottomHomeNavigator } from "./BottomNavigator"
-import React from "react"
+import { ComponentProps, Fragment } from "react"
+import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -34,7 +33,7 @@ export type AppStackParamList = {
   Login: undefined
   Register: undefined
   RegisterSuccess: undefined
-  BottomNavigator: NavigatorScreenParams<BottomHomeNavigator>
+  BottomNavigator: NavigatorScreenParams<BottomHomeParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -74,16 +73,16 @@ const AppStack = observer(function AppStack() {
       initialRouteName={isAuthenticated ? "BottomNavigator" : "Landing"}
     >
       {isAuthenticated ? (
-        <>
+        <Fragment>
           <Stack.Screen name="BottomNavigator" component={BottomHomeNavigator} />
-        </>
+        </Fragment>
       ) : (
-        <>
+        <Fragment>
           <Stack.Screen name="Landing" component={Screens.LandingScreen} />
           <Stack.Screen name="Login" component={Screens.LoginScreen} />
           <Stack.Screen name="Register" component={Screens.RegisterScreen} />
           <Stack.Screen name="RegisterSuccess" component={Screens.RegisterSuccessScreen} />
-        </>
+        </Fragment>
       )}
     </Stack.Navigator>
   )

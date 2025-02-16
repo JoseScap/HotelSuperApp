@@ -1,13 +1,20 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
-import { Button, Screen, Text, TextField, GoogleSignInButton, PasswordRightAccessory } from "../components"
+import {
+  Button,
+  Screen,
+  Text,
+  TextField,
+  GoogleSignInButton,
+  PasswordRightAccessory,
+} from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
+interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const {
@@ -33,10 +40,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     login,
   } = useLoginScreen()
 
-  const {
-    themed,
-    theme: { colors },
-  } = useAppTheme()
+  const { themed } = useAppTheme()
 
   return (
     <Screen
@@ -77,9 +81,9 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         helperTx={isSubmitted ? passwordValidation : undefined}
         status={isSubmitted && passwordValidation ? "error" : undefined}
         onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory({ 
-          isPasswordHidden: isAuthPasswordHidden, 
-          onTogglePassword: togglePassword 
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isAuthPasswordHidden,
+          onTogglePassword: togglePassword,
         })}
       />
 
@@ -91,13 +95,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         onPress={login}
       />
 
-      {loginError && (
-        <Text
-          tx={loginError}
-          preset="default"
-          style={themed($errorText)}
-        />
-      )}
+      {loginError && <Text tx={loginError} preset="default" style={themed($errorText)} />}
 
       <View style={themed($separator)}>
         <Text size="sm" weight="bold" tx="loginScreen:or" />
@@ -119,11 +117,6 @@ const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
 
 const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-})
-
-const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.tint,
-  marginBottom: spacing.md,
 })
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({

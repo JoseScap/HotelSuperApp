@@ -1,13 +1,19 @@
-import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin"
-import { supabase } from "@/utils/supabaseClient"
-import { useStores } from "@/models"
+import { useState, Fragment } from "react"
 import { Platform, TextStyle, ViewStyle } from "react-native"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
-import { TxKeyPath } from "@/i18n"
-import { Text } from "./Text"
-import React, { useState } from "react"
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from "@react-native-google-signin/google-signin"
+
 import { GOOGLE_SIGNIN_SIZE, GOOGLE_SIGNIN_COLOR } from "@/constants/common"
+import { TxKeyPath } from "@/i18n"
+import { useStores } from "@/models"
+import type { ThemedStyle } from "@/theme"
+import { Text } from "./Text"
+import { supabase } from "@/utils/supabaseClient"
+import { useAppTheme } from "@/utils/useAppTheme"
+
 const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
@@ -22,10 +28,10 @@ export function GoogleSignInButton() {
     offlineAccess: true,
   })
 
-  if (isIos) <></>
+  if (isIos) return <Fragment></Fragment>
 
   return (
-    <>
+    <Fragment>
       <GoogleSigninButton
         style={themed($button)}
         size={GOOGLE_SIGNIN_SIZE}
@@ -35,13 +41,13 @@ export function GoogleSignInButton() {
             const userInfo = await GoogleSignin.signIn()
             if (userInfo?.data?.idToken) {
               const { data } = await supabase.auth.signInWithIdToken({
-                provider: 'google',
+                provider: "google",
                 token: userInfo.data.idToken,
               })
               setAuthToken(data.session?.access_token || "")
               setDisplayName(data.user?.user_metadata?.display_name || "")
             } else {
-              throw new Error('no ID token present!')
+              throw new Error("no ID token present!")
             }
           } catch (error: any) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -61,7 +67,7 @@ export function GoogleSignInButton() {
       {googleSignInError && (
         <Text tx={googleSignInError} preset="default" style={themed($errorText)} />
       )}
-    </>
+    </Fragment>
   )
 }
 

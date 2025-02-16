@@ -11,7 +11,7 @@ import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
 import { ProfileScreen } from "@/screens/TabScreens/ProfileScreen"
 import { ActivitiesScreen } from "@/screens/TabScreens/ActivitiesScreen"
 
-export type BottomHomeNavigator = {
+export type BottomHomeParamList = {
   Home: undefined
   Profile: undefined
   Activities: undefined
@@ -22,12 +22,12 @@ export type BottomHomeNavigator = {
  *
  * More info: https://reactnavigation.org/docs/typescript/#organizing-types
  */
-export type BottomHomeTabScreenProps<T extends keyof BottomHomeNavigator> = CompositeScreenProps<
-  BottomTabScreenProps<BottomHomeNavigator, T>,
+export type BottomHomeTabScreenProps<T extends keyof BottomHomeParamList> = CompositeScreenProps<
+  BottomTabScreenProps<BottomHomeParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
 >
 
-const Tab = createBottomTabNavigator<BottomHomeNavigator>()
+const Tab = createBottomTabNavigator<BottomHomeParamList>()
 
 /**
  * This is the main navigator for the demo screens with a bottom tab bar.
@@ -103,4 +103,3 @@ const $tabBarLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   lineHeight: 16,
   color: colors.text,
 })
-

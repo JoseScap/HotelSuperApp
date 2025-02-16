@@ -42,18 +42,21 @@ export function useProfileScreen(): UseProfileScreenReturn {
 
   async function saveDisplayName(value: string) {
     try {
-      const { data, error: updateError } = await supabase.auth.updateUser({
-        data: { 
-          display_name: value
-        }
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          display_name: value,
+        },
       })
 
-      if (updateError) throw updateError
+      if (error) {
+        setError("profileScreen:errors.updateFailed")
+        return undefined
+      }
 
       setDisplayName(value)
       setIsEditing(false)
       setError(undefined)
-    } catch (error) {
+    } catch {
       setError("profileScreen:errors.updateFailed")
     }
   }
@@ -78,4 +81,4 @@ export function useProfileScreen(): UseProfileScreenReturn {
     saveDisplayName,
     handleLogout,
   }
-} 
+}

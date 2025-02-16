@@ -1,18 +1,13 @@
-import { FC } from "react"
-import { Platform, TextStyle, ViewStyle } from "react-native"
-import { Screen, TextField, Icon, Text } from "@/components"
+import { FC, Fragment } from "react"
+import { ViewStyle } from "react-native"
+import { Screen, TextField, Icon } from "@/components"
 import { $styles } from "@/theme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
-import { useStores } from "@/models"
-import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { useProfileScreen } from "@/hooks/useProfileScreen"
 import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
-import React from "react"
 import { useBottomProps } from "@/hooks/useBottomProps"
-
-const isAndroid = Platform.OS === "android"
 
 export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
@@ -59,9 +54,9 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
         status={error ? "error" : undefined}
         helperTx={error}
         RightAccessory={(props) => (
-          <>
+          <Fragment>
             {isEditing ? (
-              <>
+              <Fragment>
                 <Icon
                   icon="check"
                   color={colors.palette.neutral800}
@@ -76,7 +71,7 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
                   size={20}
                   onPress={cancelEditing}
                 />
-              </>
+              </Fragment>
             ) : (
               <Icon
                 icon="pin"
@@ -86,7 +81,7 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
                 onPress={startEditing}
               />
             )}
-          </>
+          </Fragment>
         )}
       />
     </Screen>

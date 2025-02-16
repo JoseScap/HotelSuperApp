@@ -37,7 +37,9 @@ interface UseRegisterScreenReturn {
   register: () => Promise<void>
 }
 
-export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseRegisterScreenReturn {
+export function useRegisterScreen({
+  navigation,
+}: UseRegisterScreenParams): UseRegisterScreenReturn {
   // Refs
   const emailInput = useRef<TextInput>(null)
   const passwordInput = useRef<TextInput>(null)
@@ -76,8 +78,15 @@ export function useRegisterScreen({ navigation }: UseRegisterScreenParams): UseR
     setIsSubmitted(true)
     setSignUpError(undefined)
 
-    if (!email || !password || !confirmPassword || emailValidation || passwordValidation || confirmPasswordValidation)
-      return undefined;
+    if (
+      !email ||
+      !password ||
+      !confirmPassword ||
+      emailValidation ||
+      passwordValidation ||
+      confirmPasswordValidation
+    )
+      return undefined
 
     const { error } = await supabase.auth.signUp({
       email: email,

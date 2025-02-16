@@ -102,7 +102,8 @@ const en = {
   },
   registerSuccessScreen: {
     heading: "Account Created Successfully! ✅",
-    content: "Your account has been created. Please check your email to verify your account before logging in.",
+    content:
+      "Your account has been created. Please check your email to verify your account before logging in.",
     button: "Go to Login",
   },
 
@@ -192,8 +193,6 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
-
-  
 
   ...demoEn,
 }

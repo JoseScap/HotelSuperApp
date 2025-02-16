@@ -9,7 +9,9 @@ const checkIcon = require("../../assets/icons/check.png")
 
 interface RegisterSuccessScreenProps extends AppStackScreenProps<"RegisterSuccess"> {}
 
-export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function RegisterSuccessScreen(_props) {
+export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function RegisterSuccessScreen(
+  _props,
+) {
   const { themed } = useAppTheme()
   const { navigation } = _props
 
@@ -40,12 +42,4 @@ const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $emptyState: ThemedStyle<ViewStyle> = () => ({
   height: "100%",
-}) 
-
-const $tapButton: ThemedStyle<ViewStyle> = () => ({
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  right: 0,
 })
-

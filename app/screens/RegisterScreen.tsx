@@ -1,7 +1,14 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
-import { Button, Screen, Text, TextField, GoogleSignInButton, PasswordRightAccessory } from "../components"
+import {
+  Button,
+  Screen,
+  Text,
+  TextField,
+  GoogleSignInButton,
+  PasswordRightAccessory,
+} from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -39,10 +46,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
     register,
   } = useRegisterScreen(props)
 
-  const {
-    themed,
-    theme: { colors },
-  } = useAppTheme()
+  const { themed } = useAppTheme()
 
   return (
     <Screen
@@ -50,8 +54,17 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
       contentContainerStyle={themed($screenContentContainer)}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="register-heading" tx="registrationScreen:signUp" preset="heading" style={themed($signUp)} />
-      <Text tx="registrationScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+      <Text
+        testID="register-heading"
+        tx="registrationScreen:signUp"
+        preset="heading"
+        style={themed($signUp)}
+      />
+      <Text
+        tx="registrationScreen:enterDetails"
+        preset="subheading"
+        style={themed($enterDetails)}
+      />
 
       <TextField
         ref={emailInput}
@@ -83,9 +96,9 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         helperTx={isSubmitted ? passwordValidation : undefined}
         status={isSubmitted && passwordValidation ? "error" : undefined}
         onSubmitEditing={() => confirmPasswordInput.current?.focus()}
-        RightAccessory={PasswordRightAccessory({ 
-          isPasswordHidden: isPasswordHidden, 
-          onTogglePassword: togglePassword 
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isPasswordHidden,
+          onTogglePassword: togglePassword,
         })}
       />
 
@@ -103,9 +116,9 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         helperTx={isSubmitted ? confirmPasswordValidation : undefined}
         status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
         onSubmitEditing={register}
-        RightAccessory={PasswordRightAccessory({ 
-          isPasswordHidden: isConfirmPasswordHidden, 
-          onTogglePassword: toggleConfirmPassword 
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isConfirmPasswordHidden,
+          onTogglePassword: toggleConfirmPassword,
         })}
       />
 
@@ -117,13 +130,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         onPress={register}
       />
 
-      {signUpError && (
-        <Text
-          tx={signUpError}
-          preset="default"
-          style={themed($errorText)}
-        />
-      )}
+      {signUpError && <Text tx={signUpError} preset="default" style={themed($errorText)} />}
 
       <View style={themed($separator)}>
         <Text size="sm" weight="bold" tx="registrationScreen:or" />
@@ -166,4 +173,3 @@ const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   marginTop: spacing.xs,
   textAlign: "center",
 })
-

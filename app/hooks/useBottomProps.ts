@@ -10,4 +10,4 @@ export function useBottomProps(): BottomProps {
   const isAndroid = Platform.OS === "android"
 
   return isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {}
-} 
+}

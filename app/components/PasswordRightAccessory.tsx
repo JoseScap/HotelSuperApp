@@ -8,9 +8,9 @@ interface Props {
   onTogglePassword: () => void
 }
 
-export function PasswordRightAccessory({ 
+export function PasswordRightAccessory({
   isPasswordHidden,
-  onTogglePassword 
+  onTogglePassword,
 }: Props): ComponentType<TextFieldAccessoryProps> {
   const {
     theme: { colors },
@@ -31,4 +31,4 @@ export function PasswordRightAccessory({
       },
     [isPasswordHidden, colors.palette.neutral800],
   )
-} 
+}

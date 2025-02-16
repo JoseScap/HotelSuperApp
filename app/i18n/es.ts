@@ -61,7 +61,8 @@ const es: Translations = {
       passwordRequired: "La contraseña es requerida",
       passwordTooShort: "La contraseña debe tener al menos 12 caracteres",
       passwordInvalid: "La contraseña solo debe contener letras y números",
-      loginFailed: "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
+      loginFailed:
+        "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
     },
     or: "O",
   },
@@ -104,7 +105,8 @@ const es: Translations = {
   },
   registerSuccessScreen: {
     heading: "¡Cuenta Creada Exitosamente! ✅",
-    content: "Tu cuenta ha sido creada. Por favor revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
+    content:
+      "Tu cuenta ha sido creada. Por favor revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
     button: "Ir a Iniciar Sesión",
   },
 
@@ -195,8 +197,6 @@ const es: Translations = {
         "No se han agregado episodios favoritos todavía. ¡Presiona el corazón dentro de un episodio para agregarlo a tus favoritos!",
     },
   },
-
-  
 
   ...demoEs,
 }
