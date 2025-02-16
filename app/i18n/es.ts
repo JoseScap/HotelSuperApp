@@ -29,6 +29,7 @@ const es: Translations = {
 
   // Screens
   landingScreen: {
+    header: "Bienvenido",
     title: "¡Bienvenido a {{brand}}!",
     lookingForARoom: "¿Querés reservar una habitación?",
     bookNow: "¡Reservar ahora!",
@@ -64,7 +65,7 @@ const es: Translations = {
       loginFailed:
         "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
     },
-    or: "O",
+    or: "O puedes continuar con",
   },
   registrationScreen: {
     signUp: "Crear cuenta",
@@ -85,7 +86,7 @@ const es: Translations = {
       passwordsDontMatch: "Las contraseñas no coinciden",
       signUpFailed: "El registro falló. Por favor intenta nuevamente.",
     },
-    or: "O",
+    or: "O puedes continuar con",
     tapToSignUpWithGoogle: "Continuar con Google",
   },
   homeScreen: {

@@ -1,12 +1,13 @@
 import { FC } from "react"
 import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { Screen } from "@/components/Screen"
-import { $styles, ThemedStyle } from "@/theme"
+import { ThemedStyle } from "@/theme"
 import { useHeader } from "@/utils/useHeader"
 import { Card, Text } from "@/components"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useBottomProps } from "@/hooks/useBottomProps"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -48,8 +49,7 @@ export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
     return (
       <Screen
         preset="scroll"
-        safeAreaEdges={["top"]}
-        contentContainerStyle={$styles.screen}
+        contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
         {...bottomProps}
       >
         <Text tx="activitiesScreen:subtitle" preset="subheading" style={themed($bottomSpace)} />

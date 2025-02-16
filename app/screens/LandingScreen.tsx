@@ -1,24 +1,24 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { TextStyle, ViewStyle } from "react-native"
+import { TextStyle } from "react-native"
 import { Button, Screen, Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { BRAND } from "@/constants/common"
-
+import { $SCREEN_CONTENT_CONTAINER, BRAND } from "@/constants/common"
+import { useHeader } from "@/utils/useHeader"
 interface LandingScreenProps extends AppStackScreenProps<"Landing"> {}
 
 export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScreen(_props) {
   const { themed } = useAppTheme()
   const { navigation } = _props
 
+  useHeader({
+    titleTx: "landingScreen:header",
+  })
+
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={themed($screenContentContainer)}
-      safeAreaEdges={["top", "bottom"]}
-    >
+    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
       <Text
         tx="landingScreen:title"
         txOptions={{ brand: BRAND }}
@@ -39,11 +39,6 @@ export const LandingScreen: FC<LandingScreenProps> = observer(function LoginScre
       <Button tx="landingScreen:signUp" onPress={() => navigation.navigate("Register")} />
     </Screen>
   )
-})
-
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xxl,
-  paddingHorizontal: spacing.lg,
 })
 
 const $bottomSpace: ThemedStyle<TextStyle> = ({ spacing }) => ({

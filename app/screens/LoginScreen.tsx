@@ -13,10 +13,13 @@ import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
+import { useHeader } from "@/utils/useHeader"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+  const { navigation } = _props
   const {
     // Refs
     emailInput,
@@ -42,12 +45,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const { themed } = useAppTheme()
 
+  useHeader({
+    leftIcon: "caretLeft",
+    rightTx: "loginScreen:logIn",
+    onLeftPress: () => navigation.goBack(),
+  })
+
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={themed($screenContentContainer)}
-      safeAreaEdges={["top", "bottom"]}
-    >
+    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
       <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
       <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
 
@@ -104,11 +109,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       <GoogleSignInButton />
     </Screen>
   )
-})
-
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xxl,
-  paddingHorizontal: spacing.lg,
 })
 
 const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({

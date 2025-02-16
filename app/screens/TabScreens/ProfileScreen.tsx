@@ -1,13 +1,14 @@
 import { FC, Fragment } from "react"
-import { TextStyle, ViewStyle } from "react-native"
-import { Screen, Text, TextField, Icon, Checkbox } from "@/components"
-import { $styles } from "@/theme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useProfileScreen } from "@/hooks/useProfileScreen"
 import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
 import { useBottomProps } from "@/hooks/useBottomProps"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { Checkbox, Icon, Screen, Text, TextField } from "@/components"
+import { TextStyle } from "react-native"
+import { ViewStyle } from "react-native"
 
 export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
@@ -42,8 +43,7 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
   return (
     <Screen
       preset="scroll"
-      safeAreaEdges={["top"]}
-      contentContainerStyle={[$styles.flex1, themed($container)]}
+      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
       {...bottomProps}
     >
       <Text
@@ -108,10 +108,6 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
     </Screen>
   )
 }
-
-const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.lg,
-})
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
