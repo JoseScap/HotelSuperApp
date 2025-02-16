@@ -16,6 +16,7 @@ import { $styles } from "../theme"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { nwMerge } from "@/utils/nativeWindMerge"
 
 export const DEFAULT_BOTTOM_OFFSET = 50
 
@@ -60,6 +61,10 @@ interface BaseScreenProps {
    * Pass any additional props directly to the KeyboardAvoidingView component.
    */
   KeyboardAvoidingViewProps?: KeyboardAvoidingViewProps
+  /**
+   * NativeWind class names
+   */
+  className?: string
 }
 
 interface FixedScreenProps extends BaseScreenProps {
@@ -167,25 +172,26 @@ function useAutoPreset(props: AutoScreenProps): {
   }
 }
 
-/**
- * @param {ScreenProps} props - The props for the `ScreenWithoutScrolling` component.
- * @returns {JSX.Element} - The rendered `ScreenWithoutScrolling` component.
- */
+const BASE_SCREEN_CLASSES = {
+  container: "flex-1 h-full w-full",
+  innerContainer: "flex-1 h-full w-full justify-start items-stretch",
+} as const
+
 function ScreenWithoutScrolling(props: ScreenProps) {
-  const { style, contentContainerStyle, children, preset } = props
+  const { style, contentContainerStyle, children, preset, className } = props
   return (
-    <View style={[$outerStyle, style]}>
-      <View style={[$innerStyle, preset === "fixed" && $justifyFlexEnd, contentContainerStyle]}>
+    <View className={nwMerge(BASE_SCREEN_CLASSES.container, className)}>
+      <View
+        className={nwMerge(BASE_SCREEN_CLASSES.innerContainer, {
+          "justify-end": preset === "fixed",
+        })}
+      >
         {children}
       </View>
     </View>
   )
 }
 
-/**
- * @param {ScreenProps} props - The props for the `ScreenWithScrolling` component.
- * @returns {JSX.Element} - The rendered `ScreenWithScrolling` component.
- */
 function ScreenWithScrolling(props: ScreenProps) {
   const {
     children,
@@ -194,14 +200,11 @@ function ScreenWithScrolling(props: ScreenProps) {
     contentContainerStyle,
     ScrollViewProps,
     style,
+    className,
   } = props as ScrollScreenProps
 
   const ref = useRef<ScrollView>(null)
-
   const { scrollEnabled, onContentSizeChange, onLayout } = useAutoPreset(props as AutoScreenProps)
-
-  // Add native behavior of pressing the active tab to scroll to the top of the content
-  // More info at: https://reactnavigation.org/docs/use-scroll-to-top/
   useScrollToTop(ref)
 
   return (
@@ -217,12 +220,7 @@ function ScreenWithScrolling(props: ScreenProps) {
         onContentSizeChange(w, h)
         ScrollViewProps?.onContentSizeChange?.(w, h)
       }}
-      style={[$outerStyle, ScrollViewProps?.style, style]}
-      contentContainerStyle={[
-        $innerStyle,
-        ScrollViewProps?.contentContainerStyle,
-        contentContainerStyle,
-      ]}
+      className={nwMerge(BASE_SCREEN_CLASSES.container, className)}
     >
       {children}
     </KeyboardAwareScrollView>
@@ -249,17 +247,15 @@ export function Screen(props: ScreenProps) {
     safeAreaEdges,
     StatusBarProps,
     statusBarStyle,
+    className,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
 
   return (
     <View
-      style={[
-        $containerStyle,
-        { backgroundColor: backgroundColor || colors.background },
-        $containerInsets,
-      ]}
+      className={nwMerge(BASE_SCREEN_CLASSES.container, className)}
+      style={[{ backgroundColor: backgroundColor || colors.background }, $containerInsets]}
     >
       <StatusBar
         style={statusBarStyle || (themeContext === "dark" ? "light" : "dark")}
@@ -270,7 +266,7 @@ export function Screen(props: ScreenProps) {
         behavior={isIos ? "padding" : "height"}
         keyboardVerticalOffset={keyboardOffset}
         {...KeyboardAvoidingViewProps}
-        style={[$styles.flex1, KeyboardAvoidingViewProps?.style]}
+        className={BASE_SCREEN_CLASSES.container}
       >
         {isNonScrolling(props.preset) ? (
           <ScreenWithoutScrolling {...props} />

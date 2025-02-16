@@ -5,6 +5,7 @@ import type { ThemedStyle, ThemedStyleArray } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { typography } from "@/theme/typography"
 import { ReactNode } from "react"
+import { nwMerge } from "@/utils/nativeWindMerge"
 
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
@@ -44,6 +45,10 @@ export interface TextProps extends RNTextProps {
    * Children components.
    */
   children?: ReactNode
+  /**
+   * NativeWind class names
+   */
+  className?: string
 }
 
 /**
@@ -54,23 +59,61 @@ export interface TextProps extends RNTextProps {
  * @returns {JSX.Element} The rendered `Text` component.
  */
 export function Text(props: TextProps) {
-  const { weight, size, tx, txOptions, text, children, style: $styleOverride, ...rest } = props
-  const { themed } = useAppTheme()
+  const {
+    weight = "normal",
+    size = "sm",
+    tx,
+    txOptions,
+    text,
+    children,
+    className,
+    preset = "default",
+    ...rest
+  } = props
 
   const i18nText = tx && translate(tx, txOptions)
   const content = i18nText || text || children
 
-  const preset: Presets = props.preset ?? "default"
-  const $styles: StyleProp<TextStyle> = [
-    $rtlStyle,
-    themed($presets[preset]),
-    weight && $fontWeightStyles[weight],
-    size && $sizeStyles[size],
-    $styleOverride,
-  ]
+  const TEXT_CLASSES = {
+    size: {
+      xxl: "text-[36px] leading-[44px]",
+      xl: "text-[24px] leading-[34px]",
+      lg: "text-[20px] leading-[32px]",
+      md: "text-[18px] leading-[26px]",
+      sm: "text-[16px] leading-[24px]",
+      xs: "text-[14px] leading-[21px]",
+      xxs: "text-[12px] leading-[18px]",
+    },
+    weight: {
+      light: "font-light",
+      normal: "font-normal",
+      medium: "font-medium",
+      semiBold: "font-semibold",
+      bold: "font-bold",
+    },
+    preset: {
+      default: "text-base font-normal text-text",
+      bold: "text-base font-bold text-text",
+      heading: "text-[36px] leading-[44px] font-bold text-text",
+      subheading: "text-[20px] leading-[32px] font-medium text-text",
+      formLabel: "text-base font-medium text-text",
+      formHelper: "text-base font-normal text-text",
+    },
+  } as const
 
   return (
-    <RNText {...rest} style={$styles}>
+    <RNText
+      {...rest}
+      className={nwMerge(
+        TEXT_CLASSES.preset[preset],
+        TEXT_CLASSES.size[size],
+        TEXT_CLASSES.weight[weight],
+        {
+          "text-right": Boolean(isRTL),
+        },
+        className,
+      )}
+    >
       {content}
     </RNText>
   )

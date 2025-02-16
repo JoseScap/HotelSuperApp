@@ -1,4 +1,4 @@
-import { ComponentType } from "react"
+import React, { ComponentType, ReactNode } from "react"
 import {
   Pressable,
   PressableProps,
@@ -7,15 +7,32 @@ import {
   TextStyle,
   ViewStyle,
 } from "react-native"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { $styles } from "../theme"
 import { Text, TextProps } from "./Text"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { nwMerge } from "@/utils/nativeWindMerge"
 
 type Presets = "default" | "filled" | "reversed"
 
+const BUTTON_CLASSES = {
+  base: "min-h-[56px] rounded flex-row justify-center items-center py-2 px-4",
+  text: {
+    base: "text-base font-medium text-center flex-shrink flex-grow-0 z-[2]",
+    default: "text-text",
+    filled: "text-text",
+    reversed: "text-palette-neutral100",
+  },
+  accessory: {
+    left: "mr-2 z-[1]",
+    right: "ml-2 z-[1]",
+  },
+  preset: {
+    default: "border border-palette-neutral400 bg-palette-neutral100 active:bg-palette-neutral200",
+    filled: "bg-palette-neutral300 active:bg-palette-neutral400",
+    reversed: "bg-palette-neutral800 active:bg-palette-neutral700",
+  },
+} as const
+
 export interface ButtonAccessoryProps {
-  style: StyleProp<any>
+  className?: string
   pressableState: PressableStateCallbackType
   disabled?: boolean
 }
@@ -35,52 +52,29 @@ export interface ButtonProps extends PressableProps {
    */
   txOptions?: TextProps["txOptions"]
   /**
-   * An optional style override useful for padding & margin.
-   */
-  style?: StyleProp<ViewStyle>
-  /**
-   * An optional style override for the "pressed" state.
-   */
-  pressedStyle?: StyleProp<ViewStyle>
-  /**
-   * An optional style override for the button text.
-   */
-  textStyle?: StyleProp<TextStyle>
-  /**
-   * An optional style override for the button text when in the "pressed" state.
-   */
-  pressedTextStyle?: StyleProp<TextStyle>
-  /**
-   * An optional style override for the button text when in the "disabled" state.
-   */
-  disabledTextStyle?: StyleProp<TextStyle>
-  /**
    * One of the different types of button presets.
    */
   preset?: Presets
   /**
    * An optional component to render on the right side of the text.
-   * Example: `RightAccessory={(props) => <View {...props} />}`
    */
   RightAccessory?: ComponentType<ButtonAccessoryProps>
   /**
    * An optional component to render on the left side of the text.
-   * Example: `LeftAccessory={(props) => <View {...props} />}`
    */
   LeftAccessory?: ComponentType<ButtonAccessoryProps>
   /**
    * Children components.
    */
-  children?: React.ReactNode
+  children?: ReactNode
   /**
-   * disabled prop, accessed directly for declarative styling reasons.
-   * https://reactnative.dev/docs/pressable#disabled
+   * disabled prop
    */
   disabled?: boolean
   /**
-   * An optional style override for the disabled state
+   * NativeWind class names
    */
-  disabledStyle?: StyleProp<ViewStyle>
+  className?: string
 }
 
 /**
@@ -102,71 +96,54 @@ export function Button(props: ButtonProps) {
     tx,
     text,
     txOptions,
-    style: $viewStyleOverride,
-    pressedStyle: $pressedViewStyleOverride,
-    textStyle: $textStyleOverride,
-    pressedTextStyle: $pressedTextStyleOverride,
-    disabledTextStyle: $disabledTextStyleOverride,
     children,
     RightAccessory,
     LeftAccessory,
     disabled,
-    disabledStyle: $disabledViewStyleOverride,
+    className,
+    preset = "default",
     ...rest
   } = props
 
-  const { themed } = useAppTheme()
-
-  const preset: Presets = props.preset ?? "default"
-  /**
-   * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-   * @param {boolean} root0.pressed - The pressed state.
-   * @returns {StyleProp<ViewStyle>} The view style based on the pressed state.
-   */
-  function $viewStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
-    return [
-      themed($viewPresets[preset]),
-      $viewStyleOverride,
-      !!pressed && themed([$pressedViewPresets[preset], $pressedViewStyleOverride]),
-      !!disabled && $disabledViewStyleOverride,
-    ]
-  }
-  /**
-   * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-   * @param {boolean} root0.pressed - The pressed state.
-   * @returns {StyleProp<TextStyle>} The text style based on the pressed state.
-   */
-  function $textStyle({ pressed }: PressableStateCallbackType): StyleProp<TextStyle> {
-    return [
-      themed($textPresets[preset]),
-      $textStyleOverride,
-      !!pressed && themed([$pressedTextPresets[preset], $pressedTextStyleOverride]),
-      !!disabled && $disabledTextStyleOverride,
-    ]
-  }
-
   return (
     <Pressable
-      style={$viewStyle}
+      className={nwMerge(
+        BUTTON_CLASSES.base,
+        BUTTON_CLASSES.preset[preset],
+        { "opacity-50": Boolean(disabled) },
+        className,
+      )}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
       {...rest}
       disabled={disabled}
     >
-      {(state) => (
+      {({ pressed }) => (
         <>
           {!!LeftAccessory && (
-            <LeftAccessory style={$leftAccessoryStyle} pressableState={state} disabled={disabled} />
+            <LeftAccessory
+              className={BUTTON_CLASSES.accessory.left}
+              pressableState={{ pressed }}
+              disabled={disabled}
+            />
           )}
 
-          <Text tx={tx} text={text} txOptions={txOptions} style={$textStyle(state)}>
+          <Text
+            tx={tx}
+            text={text}
+            txOptions={txOptions}
+            className={nwMerge(BUTTON_CLASSES.text.base, BUTTON_CLASSES.text[preset], {
+              "opacity-90": pressed,
+              "opacity-50": Boolean(disabled),
+            })}
+          >
             {children}
           </Text>
 
           {!!RightAccessory && (
             <RightAccessory
-              style={$rightAccessoryStyle}
-              pressableState={state}
+              className={BUTTON_CLASSES.accessory.right}
+              pressableState={{ pressed }}
               disabled={disabled}
             />
           )}
@@ -174,73 +151,4 @@ export function Button(props: ButtonProps) {
       )}
     </Pressable>
   )
-}
-
-const $baseViewStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  minHeight: 56,
-  borderRadius: 4,
-  justifyContent: "center",
-  alignItems: "center",
-  paddingVertical: spacing.sm,
-  paddingHorizontal: spacing.sm,
-  overflow: "hidden",
-})
-
-const $baseTextStyle: ThemedStyle<TextStyle> = ({ typography }) => ({
-  fontSize: 16,
-  lineHeight: 20,
-  fontFamily: typography.primary.medium,
-  textAlign: "center",
-  flexShrink: 1,
-  flexGrow: 0,
-  zIndex: 2,
-})
-
-const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginStart: spacing.xs,
-  zIndex: 1,
-})
-const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginEnd: spacing.xs,
-  zIndex: 1,
-})
-
-const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
-  default: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({
-      borderWidth: 1,
-      borderColor: colors.palette.neutral400,
-      backgroundColor: colors.palette.neutral100,
-    }),
-  ],
-  filled: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({ backgroundColor: colors.palette.neutral300 }),
-  ],
-  reversed: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({ backgroundColor: colors.palette.neutral800 }),
-  ],
-}
-
-const $textPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [$baseTextStyle],
-  filled: [$baseTextStyle],
-  reversed: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.neutral100 })],
-}
-
-const $pressedViewPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
-  default: ({ colors }) => ({ backgroundColor: colors.palette.neutral200 }),
-  filled: ({ colors }) => ({ backgroundColor: colors.palette.neutral400 }),
-  reversed: ({ colors }) => ({ backgroundColor: colors.palette.neutral700 }),
-}
-
-const $pressedTextPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
-  default: () => ({ opacity: 0.9 }),
-  filled: () => ({ opacity: 0.9 }),
-  reversed: () => ({ opacity: 0.9 }),
 }
