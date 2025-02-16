@@ -1,12 +1,5 @@
-import React, { ComponentType, ReactNode } from "react"
-import {
-  Pressable,
-  PressableProps,
-  PressableStateCallbackType,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from "react-native"
+import { ComponentType, ReactNode } from "react"
+import { Pressable, PressableProps, PressableStateCallbackType } from "react-native"
 import { Text, TextProps } from "./Text"
 import { nwMerge } from "@/utils/nativeWindMerge"
 

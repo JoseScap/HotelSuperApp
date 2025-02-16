@@ -12,7 +12,6 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { $styles } from "../theme"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { useAppTheme } from "@/utils/useAppTheme"
@@ -178,7 +177,7 @@ const BASE_SCREEN_CLASSES = {
 } as const
 
 function ScreenWithoutScrolling(props: ScreenProps) {
-  const { style, contentContainerStyle, children, preset, className } = props
+  const { children, preset, className } = props
   return (
     <View className={nwMerge(BASE_SCREEN_CLASSES.container, className)}>
       <View
@@ -197,9 +196,7 @@ function ScreenWithScrolling(props: ScreenProps) {
     children,
     keyboardShouldPersistTaps = "handled",
     keyboardBottomOffset = DEFAULT_BOTTOM_OFFSET,
-    contentContainerStyle,
     ScrollViewProps,
-    style,
     className,
   } = props as ScrollScreenProps
 
@@ -276,25 +273,4 @@ export function Screen(props: ScreenProps) {
       </KeyboardAvoidingView>
     </View>
   )
-}
-
-const $containerStyle: ViewStyle = {
-  flex: 1,
-  height: "100%",
-  width: "100%",
-}
-
-const $outerStyle: ViewStyle = {
-  flex: 1,
-  height: "100%",
-  width: "100%",
-}
-
-const $justifyFlexEnd: ViewStyle = {
-  justifyContent: "flex-end",
-}
-
-const $innerStyle: ViewStyle = {
-  justifyContent: "flex-start",
-  alignItems: "stretch",
 }
