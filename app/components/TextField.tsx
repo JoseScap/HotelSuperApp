@@ -1,25 +1,20 @@
 import { ComponentType, forwardRef, Ref, useImperativeHandle, useRef } from "react"
-import {
-  ImageStyle,
-  StyleProp,
-  TextInput,
-  TextInputProps,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native"
+import { TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
 import { isRTL, translate } from "@/i18n"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { $styles } from "../theme"
 import { Text, TextProps } from "./Text"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
 import { useAppTheme } from "@/utils/useAppTheme"
 
+const StyledTextInput = styled(TextInput)
+const StyledTouchableOpacity = styled(TouchableOpacity)
+const StyledView = styled(View)
+
 export interface TextFieldAccessoryProps {
-  style: StyleProp<ViewStyle | TextStyle | ImageStyle>
-  status: TextFieldProps["status"]
-  multiline: boolean
-  editable: boolean
+  className?: string
+  status?: TextFieldProps["status"]
+  multiline?: boolean
+  editable?: boolean
 }
 
 export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
@@ -77,35 +72,44 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
   /**
    * Optional input style override.
    */
-  style?: StyleProp<TextStyle>
+  className?: string
   /**
    * Style overrides for the container
    */
-  containerStyle?: StyleProp<ViewStyle>
+  containerClassName?: string
   /**
    * Style overrides for the input wrapper
    */
-  inputWrapperStyle?: StyleProp<ViewStyle>
+  inputWrapperClassName?: string
   /**
    * An optional component to render on the right side of the input.
-   * Example: `RightAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} color={props.editable ? colors.textDim : colors.text} />}`
-   * Note: It is a good idea to memoize this.
+   * Example: `RightAccessory={(props) => <Icon icon="search" {...props} />}`
    */
   RightAccessory?: ComponentType<TextFieldAccessoryProps>
   /**
    * An optional component to render on the left side of the input.
-   * Example: `LeftAccessory={(props) => <Icon icon="ladybug" containerStyle={props.style} color={props.editable ? colors.textDim : colors.text} />}`
-   * Note: It is a good idea to memoize this.
+   * Example: `LeftAccessory={(props) => <Icon icon="search" {...props} />}`
    */
   LeftAccessory?: ComponentType<TextFieldAccessoryProps>
 }
 
-/**
- * A component that allows for the entering and editing of text.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/TextField/}
- * @param {TextFieldProps} props - The props for the `TextField` component.
- * @returns {JSX.Element} The rendered `TextField` component.
- */
+// Base styles
+const CONTAINER_BASE = ""
+const LABEL_BASE = "mb-1"
+const INPUT_WRAPPER_BASE =
+  "flex-row items-start border rounded overflow-hidden bg-neutral-200 dark:bg-neutral-800 border-neutral-400 dark:border-neutral-600"
+const INPUT_BASE =
+  "flex-1 self-stretch font-normal text-base py-0 px-0 my-2 mx-3 text-neutral-900 dark:text-neutral-100"
+const HELPER_BASE = "mt-1"
+const ACCESSORY_BASE = "h-10 justify-center items-center z-[1]"
+
+// Estado error
+const ERROR_INPUT_WRAPPER = "border-error"
+const ERROR_HELPER = "text-error"
+
+// Estado disabled
+const DISABLED_INPUT = "text-neutral-600 dark:text-neutral-400"
+
 export const TextField = forwardRef(function TextField(props: TextFieldProps, ref: Ref<TextInput>) {
   const {
     labelTx,
@@ -122,15 +126,15 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     LeftAccessory,
     HelperTextProps,
     LabelTextProps,
-    style: $inputStyleOverride,
-    containerStyle: $containerStyleOverride,
-    inputWrapperStyle: $inputWrapperStyleOverride,
+    className,
+    containerClassName,
+    inputWrapperClassName,
     ...TextInputProps
   } = props
+
   const input = useRef<TextInput>(null)
 
   const {
-    themed,
     theme: { colors },
   } = useAppTheme()
 
@@ -140,49 +144,47 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     ? translate(placeholderTx, placeholderTxOptions)
     : placeholder
 
-  const $containerStyles = [$containerStyleOverride]
+  const containerClasses = nwMerge(CONTAINER_BASE, containerClassName)
 
-  const $labelStyles = [$labelStyle, LabelTextProps?.style]
+  const labelClasses = nwMerge(LABEL_BASE, LabelTextProps?.className)
 
-  const $inputWrapperStyles = [
-    $styles.row,
-    $inputWrapperStyle,
-    status === "error" && { borderColor: colors.error },
-    TextInputProps.multiline && { minHeight: 112 },
-    LeftAccessory && { paddingStart: 0 },
-    RightAccessory && { paddingEnd: 0 },
-    $inputWrapperStyleOverride,
-  ]
+  const inputWrapperClasses = nwMerge(
+    INPUT_WRAPPER_BASE,
+    status === "error" && ERROR_INPUT_WRAPPER,
+    TextInputProps.multiline && "min-h-[112px]",
+    LeftAccessory && "pl-0",
+    RightAccessory && "pr-0",
+    inputWrapperClassName,
+  )
 
-  const $inputStyles: ThemedStyleArray<TextStyle> = [
-    $inputStyle,
-    disabled && { color: colors.textDim },
-    isRTL && { textAlign: "right" as TextStyle["textAlign"] },
-    TextInputProps.multiline && { height: "auto" },
-    $inputStyleOverride,
-  ]
+  const inputClasses = nwMerge(
+    INPUT_BASE,
+    disabled && DISABLED_INPUT,
+    isRTL && "text-right",
+    TextInputProps.multiline && "h-auto",
+    className,
+  )
 
-  const $helperStyles = [
-    $helperStyle,
-    status === "error" && { color: colors.error },
-    HelperTextProps?.style,
-  ]
+  const helperClasses = nwMerge(
+    HELPER_BASE,
+    status === "error" && ERROR_HELPER,
+    HelperTextProps?.className,
+  )
 
-  /**
-   *
-   */
+  const leftAccessoryClasses = nwMerge(ACCESSORY_BASE, "ml-2")
+  const rightAccessoryClasses = nwMerge(ACCESSORY_BASE, "mr-2")
+
   function focusInput() {
     if (disabled) return
-
     input.current?.focus()
   }
 
   useImperativeHandle(ref, () => input.current as TextInput)
 
   return (
-    <TouchableOpacity
+    <StyledTouchableOpacity
       activeOpacity={1}
-      style={$containerStyles}
+      className={containerClasses}
       onPress={focusInput}
       accessibilityState={{ disabled }}
     >
@@ -193,21 +195,21 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
           tx={labelTx}
           txOptions={labelTxOptions}
           {...LabelTextProps}
-          style={themed($labelStyles)}
+          className={labelClasses}
         />
       )}
 
-      <View style={themed($inputWrapperStyles)}>
+      <StyledView className={inputWrapperClasses}>
         {!!LeftAccessory && (
           <LeftAccessory
-            style={themed($leftAccessoryStyle)}
+            className={leftAccessoryClasses}
             status={status}
             editable={!disabled}
             multiline={TextInputProps.multiline ?? false}
           />
         )}
 
-        <TextInput
+        <StyledTextInput
           ref={input}
           underlineColorAndroid={colors.transparent}
           textAlignVertical="top"
@@ -215,18 +217,18 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
           placeholderTextColor={colors.textDim}
           {...TextInputProps}
           editable={!disabled}
-          style={themed($inputStyles)}
+          className={inputClasses}
         />
 
         {!!RightAccessory && (
           <RightAccessory
-            style={themed($rightAccessoryStyle)}
+            className={rightAccessoryClasses}
             status={status}
             editable={!disabled}
             multiline={TextInputProps.multiline ?? false}
           />
         )}
-      </View>
+      </StyledView>
 
       {!!(helper || helperTx) && (
         <Text
@@ -235,54 +237,9 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
           tx={helperTx}
           txOptions={helperTxOptions}
           {...HelperTextProps}
-          style={themed($helperStyles)}
+          className={helperClasses}
         />
       )}
-    </TouchableOpacity>
+    </StyledTouchableOpacity>
   )
-})
-
-const $labelStyle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.xs,
-})
-
-const $inputWrapperStyle: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  alignItems: "flex-start",
-  borderWidth: 1,
-  borderRadius: 4,
-  backgroundColor: colors.palette.neutral200,
-  borderColor: colors.palette.neutral400,
-  overflow: "hidden",
-})
-
-const $inputStyle: ThemedStyle<ViewStyle> = ({ colors, typography, spacing }) => ({
-  flex: 1,
-  alignSelf: "stretch",
-  fontFamily: typography.primary.normal,
-  color: colors.text,
-  fontSize: 16,
-  height: 24,
-  // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
-  paddingVertical: 0,
-  paddingHorizontal: 0,
-  marginVertical: spacing.xs,
-  marginHorizontal: spacing.sm,
-})
-
-const $helperStyle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginEnd: spacing.xs,
-  height: 40,
-  justifyContent: "center",
-  alignItems: "center",
-})
-
-const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginStart: spacing.xs,
-  height: 40,
-  justifyContent: "center",
-  alignItems: "center",
 })
