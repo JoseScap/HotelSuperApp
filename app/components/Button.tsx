@@ -1,21 +1,18 @@
 import { ComponentType } from "react"
-import {
-  Pressable,
-  PressableProps,
-  PressableStateCallbackType,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from "react-native"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { $styles } from "../theme"
+import { Pressable, PressableProps, PressableStateCallbackType, View } from "react-native"
 import { Text, TextProps } from "./Text"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
 import { useAppTheme } from "@/utils/useAppTheme"
+
+const StyledPressable = styled(Pressable)
+const StyledText = styled(Text)
+const StyledView = styled(View)
 
 type Presets = "default" | "filled" | "reversed"
 
 export interface ButtonAccessoryProps {
-  style: StyleProp<any>
+  className?: string
   pressableState: PressableStateCallbackType
   disabled?: boolean
 }
@@ -37,23 +34,27 @@ export interface ButtonProps extends PressableProps {
   /**
    * An optional style override useful for padding & margin.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
   /**
    * An optional style override for the "pressed" state.
    */
-  pressedStyle?: StyleProp<ViewStyle>
-  /**
-   * An optional style override for the button text.
-   */
-  textStyle?: StyleProp<TextStyle>
-  /**
-   * An optional style override for the button text when in the "pressed" state.
-   */
-  pressedTextStyle?: StyleProp<TextStyle>
+  pressedClassName?: string
   /**
    * An optional style override for the button text when in the "disabled" state.
    */
-  disabledTextStyle?: StyleProp<TextStyle>
+  disabledClassName?: string
+  /**
+   * An optional style override for the button text.
+   */
+  textClassName?: string
+  /**
+   * An optional style override for the button text when in the "pressed" state.
+   */
+  pressedTextClassName?: string
+  /**
+   * An optional style override for the button text when in the "disabled" state.
+   */
+  disabledTextClassName?: string
   /**
    * One of the different types of button presets.
    */
@@ -77,11 +78,63 @@ export interface ButtonProps extends PressableProps {
    * https://reactnative.dev/docs/pressable#disabled
    */
   disabled?: boolean
-  /**
-   * An optional style override for the disabled state
-   */
-  disabledStyle?: StyleProp<ViewStyle>
 }
+
+// Base styles
+const BUTTON_BASE =
+  "min-h-[56px] rounded-[4px] justify-center items-center py-3 px-3 overflow-hidden flex-row"
+const BUTTON_TEXT_BASE =
+  "text-[16px] leading-[20px] font-medium text-center flex-shrink flex-grow-0 z-[2]"
+
+// Preset styles con soporte para dark mode
+const BUTTON_PRESETS = {
+  default: {
+    base: {
+      light: "border border-neutral-400 bg-neutral-100",
+      dark: "border border-neutral-600 bg-neutral-900",
+    },
+    pressed: {
+      light: "bg-neutral-200",
+      dark: "bg-neutral-800",
+    },
+    text: {
+      light: "text-neutral-800",
+      dark: "text-neutral-200",
+    },
+  },
+  filled: {
+    base: {
+      light: "bg-neutral-300",
+      dark: "bg-neutral-700",
+    },
+    pressed: {
+      light: "bg-neutral-400",
+      dark: "bg-neutral-600",
+    },
+    text: {
+      light: "text-neutral-800",
+      dark: "text-neutral-200",
+    },
+  },
+  reversed: {
+    base: {
+      light: "bg-neutral-800",
+      dark: "bg-neutral-200",
+    },
+    pressed: {
+      light: "bg-neutral-700",
+      dark: "bg-neutral-300",
+    },
+    text: {
+      light: "text-neutral-100",
+      dark: "text-neutral-900",
+    },
+  },
+} as const
+
+const ACCESSORY_CLASSES = "z-[1]"
+const LEFT_ACCESSORY_CLASSES = nwMerge(ACCESSORY_CLASSES, "me-2")
+const RIGHT_ACCESSORY_CLASSES = nwMerge(ACCESSORY_CLASSES, "ms-2")
 
 /**
  * A component that allows users to take actions and make choices.
@@ -102,145 +155,75 @@ export function Button(props: ButtonProps) {
     tx,
     text,
     txOptions,
-    style: $viewStyleOverride,
-    pressedStyle: $pressedViewStyleOverride,
-    textStyle: $textStyleOverride,
-    pressedTextStyle: $pressedTextStyleOverride,
-    disabledTextStyle: $disabledTextStyleOverride,
+    className,
+    pressedClassName,
+    disabledClassName,
+    textClassName,
+    pressedTextClassName,
+    disabledTextClassName,
     children,
     RightAccessory,
     LeftAccessory,
     disabled,
-    disabledStyle: $disabledViewStyleOverride,
+    preset = "default",
     ...rest
   } = props
 
-  const { themed } = useAppTheme()
-
-  const preset: Presets = props.preset ?? "default"
-  /**
-   * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-   * @param {boolean} root0.pressed - The pressed state.
-   * @returns {StyleProp<ViewStyle>} The view style based on the pressed state.
-   */
-  function $viewStyle({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> {
-    return [
-      themed($viewPresets[preset]),
-      $viewStyleOverride,
-      !!pressed && themed([$pressedViewPresets[preset], $pressedViewStyleOverride]),
-      !!disabled && $disabledViewStyleOverride,
-    ]
-  }
-  /**
-   * @param {PressableStateCallbackType} root0 - The root object containing the pressed state.
-   * @param {boolean} root0.pressed - The pressed state.
-   * @returns {StyleProp<TextStyle>} The text style based on the pressed state.
-   */
-  function $textStyle({ pressed }: PressableStateCallbackType): StyleProp<TextStyle> {
-    return [
-      themed($textPresets[preset]),
-      $textStyleOverride,
-      !!pressed && themed([$pressedTextPresets[preset], $pressedTextStyleOverride]),
-      !!disabled && $disabledTextStyleOverride,
-    ]
-  }
+  const { themeContext } = useAppTheme()
+  const isDark = themeContext === "dark"
 
   return (
-    <Pressable
-      style={$viewStyle}
+    <StyledPressable
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled }}
-      {...rest}
       disabled={disabled}
+      {...rest}
     >
-      {(state) => (
-        <>
-          {!!LeftAccessory && (
-            <LeftAccessory style={$leftAccessoryStyle} pressableState={state} disabled={disabled} />
-          )}
+      {(state) => {
+        const presetStyles = BUTTON_PRESETS[preset]
+        const buttonClasses = nwMerge(
+          BUTTON_BASE,
+          isDark ? presetStyles.base.dark : presetStyles.base.light,
+          state.pressed && (isDark ? presetStyles.pressed.dark : presetStyles.pressed.light),
+          state.pressed && pressedClassName,
+          disabled && "opacity-50",
+          disabled && disabledClassName,
+          className,
+        )
 
-          <Text tx={tx} text={text} txOptions={txOptions} style={$textStyle(state)}>
-            {children}
-          </Text>
+        const textClasses = nwMerge(
+          BUTTON_TEXT_BASE,
+          isDark ? presetStyles.text.dark : presetStyles.text.light,
+          state.pressed && "opacity-90",
+          state.pressed && pressedTextClassName,
+          disabled && disabledTextClassName,
+          textClassName,
+        )
 
-          {!!RightAccessory && (
-            <RightAccessory
-              style={$rightAccessoryStyle}
-              pressableState={state}
-              disabled={disabled}
-            />
-          )}
-        </>
-      )}
-    </Pressable>
+        return (
+          <StyledView className={buttonClasses}>
+            {!!LeftAccessory && (
+              <LeftAccessory
+                className={LEFT_ACCESSORY_CLASSES}
+                pressableState={state}
+                disabled={disabled}
+              />
+            )}
+
+            <StyledText tx={tx} text={text} txOptions={txOptions} className={textClasses}>
+              {children}
+            </StyledText>
+
+            {!!RightAccessory && (
+              <RightAccessory
+                className={RIGHT_ACCESSORY_CLASSES}
+                pressableState={state}
+                disabled={disabled}
+              />
+            )}
+          </StyledView>
+        )
+      }}
+    </StyledPressable>
   )
-}
-
-const $baseViewStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  minHeight: 56,
-  borderRadius: 4,
-  justifyContent: "center",
-  alignItems: "center",
-  paddingVertical: spacing.sm,
-  paddingHorizontal: spacing.sm,
-  overflow: "hidden",
-})
-
-const $baseTextStyle: ThemedStyle<TextStyle> = ({ typography }) => ({
-  fontSize: 16,
-  lineHeight: 20,
-  fontFamily: typography.primary.medium,
-  textAlign: "center",
-  flexShrink: 1,
-  flexGrow: 0,
-  zIndex: 2,
-})
-
-const $rightAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginStart: spacing.xs,
-  zIndex: 1,
-})
-const $leftAccessoryStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginEnd: spacing.xs,
-  zIndex: 1,
-})
-
-const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
-  default: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({
-      borderWidth: 1,
-      borderColor: colors.palette.neutral400,
-      backgroundColor: colors.palette.neutral100,
-    }),
-  ],
-  filled: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({ backgroundColor: colors.palette.neutral300 }),
-  ],
-  reversed: [
-    $styles.row,
-    $baseViewStyle,
-    ({ colors }) => ({ backgroundColor: colors.palette.neutral800 }),
-  ],
-}
-
-const $textPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [$baseTextStyle],
-  filled: [$baseTextStyle],
-  reversed: [$baseTextStyle, ({ colors }) => ({ color: colors.palette.neutral100 })],
-}
-
-const $pressedViewPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
-  default: ({ colors }) => ({ backgroundColor: colors.palette.neutral200 }),
-  filled: ({ colors }) => ({ backgroundColor: colors.palette.neutral400 }),
-  reversed: ({ colors }) => ({ backgroundColor: colors.palette.neutral700 }),
-}
-
-const $pressedTextPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
-  default: () => ({ opacity: 0.9 }),
-  filled: () => ({ opacity: 0.9 }),
-  reversed: () => ({ opacity: 0.9 }),
 }
