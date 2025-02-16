@@ -90,6 +90,11 @@ const en = {
   },
   profileScreen: {
     title: "Profile",
+    sectionPersonalDataTitle: "Personal Data",
+    sectionPreferencesTitle: "Preferences",
+    darkModeTitle: "Dark Mode",
+    activateDarkMode: "Activate Dark Mode",
+    deactivateDarkMode: "Deactivate Dark Mode",
     displayNameLabel: "Display Name",
     errors: {
       updateFailed: "Failed to update display name. Please try again.",

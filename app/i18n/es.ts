@@ -93,6 +93,11 @@ const es: Translations = {
   },
   profileScreen: {
     title: "Perfil",
+    sectionPersonalDataTitle: "Datos Personales",
+    sectionPreferencesTitle: "Preferencias",
+    darkModeTitle: "Modo Oscuro",
+    activateDarkMode: "Activar Modo Oscuro",
+    deactivateDarkMode: "Desactivar Modo Oscuro",
     displayNameLabel: "Nombre para mostrar",
     errors: {
       updateFailed: "No se pudo actualizar el nombre. Por favor intenta nuevamente.",
