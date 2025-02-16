@@ -61,7 +61,7 @@ const en = {
       passwordInvalid: "Password must contain only letters and numbers",
       loginFailed: "Login failed. Please check your credentials and try again.",
     },
-    or: "Or",
+    or: "Or you can continue with",
   },
   registrationScreen: {
     signUp: "Create Account",
@@ -82,7 +82,7 @@ const en = {
       passwordsDontMatch: "Passwords don't match",
       signUpFailed: "Registration failed. Please try again.",
     },
-    or: "Or",
+    or: "Or you can continue with",
     tapToSignUpWithGoogle: "Continue with Google",
   },
   homeScreen: {

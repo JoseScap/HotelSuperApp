@@ -1,5 +1,5 @@
 import { useState, Fragment } from "react"
-import { Platform, TextStyle, ViewStyle } from "react-native"
+import { Platform, TextStyle, Image, ImageStyle, ViewStyle } from "react-native"
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin"
 
 import { TxKeyPath } from "@/i18n"
@@ -10,6 +10,7 @@ import { supabase } from "@/utils/supabaseClient"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { ThemedStyle } from "@/theme"
 
+const gsi = require("../../assets/images/gsi.png")
 const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
@@ -57,11 +58,12 @@ export function GoogleSignInButton() {
   return (
     <Fragment>
       <Button
-        preset="default"
-        text="Continuar con Google"
+        tx="loginScreen:tapToLogInWithGoogle"
+        style={themed($tapButton)}
+        pressedStyle={themed($pressedStyle)}
+        preset="reversed"
         onPress={handleGoogleSignIn}
-        style={themed($customButton)}
-        textStyle={themed($buttonText)}
+        LeftAccessory={() => <Image source={gsi} style={themed($leftAccessory)} />}
       />
       {googleSignInError && (
         <Text tx={googleSignInError} preset="default" style={themed($errorText)} />
@@ -70,20 +72,22 @@ export function GoogleSignInButton() {
   )
 }
 
-const $customButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  backgroundColor: colors.palette.neutral100,
-  borderWidth: 1,
-  borderColor: colors.palette.neutral400,
-  paddingVertical: spacing.xs,
-})
-
-const $buttonText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  color: colors.text,
-  fontSize: 16,
-  fontFamily: typography.primary.medium,
+const $leftAccessory: ThemedStyle<ImageStyle> = () => ({
+  width: 30,
+  height: 30,
+  marginRight: 12,
 })
 
 const $errorText: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginTop: spacing.sm,
   textAlign: "center",
+  color: "red",
+})
+
+const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginTop: spacing.xs,
+})
+
+const $pressedStyle: ThemedStyle<ViewStyle> = () => ({
+  opacity: 0.88,
 })
