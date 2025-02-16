@@ -3,31 +3,24 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
-    authToken: types.maybe(types.string),
-    authEmail: "",
+    authToken: types.maybeNull(types.string),
+    displayName: types.maybeNull(types.string),
   })
   .views((store) => ({
     get isAuthenticated() {
       return !!store.authToken
     },
-    get validationError() {
-      if (store.authEmail.length === 0) return "can't be blank"
-      if (store.authEmail.length < 6) return "must be at least 6 characters"
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(store.authEmail))
-        return "must be a valid email address"
-      return ""
-    },
   }))
   .actions((store) => ({
-    setAuthToken(value?: string) {
+    setAuthToken(value: string | null) {
       store.authToken = value
     },
-    setAuthEmail(value: string) {
-      store.authEmail = value.replace(/ /g, "")
+    setDisplayName(value: string | null) {
+      store.displayName = value
     },
     logout() {
-      store.authToken = undefined
-      store.authEmail = ""
+      store.authToken = null
+      store.displayName = null
     },
   }))
 

@@ -12,33 +12,39 @@ import {
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { useLoginScreen } from "@/hooks/useLoginScreen"
+import { useRegisterScreen } from "@/hooks/useRegisterScreen"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(props) {
   const {
     // Refs
     emailInput,
     passwordInput,
+    confirmPasswordInput,
 
     // Values
     email,
     password,
-    isAuthPasswordHidden,
+    confirmPassword,
+    isPasswordHidden,
+    isConfirmPasswordHidden,
     isSubmitted,
 
     // Validations
     emailValidation,
     passwordValidation,
-    loginError,
+    confirmPasswordValidation,
+    signUpError,
 
     // Actions
-    setPassword,
     setEmail,
+    setPassword,
+    setConfirmPassword,
     togglePassword,
-    login,
-  } = useLoginScreen()
+    toggleConfirmPassword,
+    register,
+  } = useRegisterScreen(props)
 
   const { themed } = useAppTheme()
 
@@ -48,8 +54,17 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       contentContainerStyle={themed($screenContentContainer)}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+      <Text
+        testID="register-heading"
+        tx="registrationScreen:signUp"
+        preset="heading"
+        style={themed($signUp)}
+      />
+      <Text
+        tx="registrationScreen:enterDetails"
+        preset="subheading"
+        style={themed($enterDetails)}
+      />
 
       <TextField
         ref={emailInput}
@@ -60,8 +75,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
+        labelTx="registrationScreen:emailFieldLabel"
+        placeholderTx="registrationScreen:emailFieldPlaceholder"
         helperTx={isSubmitted ? emailValidation : undefined}
         status={isSubmitted && emailValidation ? "error" : undefined}
         onSubmitEditing={() => passwordInput.current?.focus()}
@@ -75,30 +90,50 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen:passwordFieldLabel"
-        placeholderTx="loginScreen:passwordFieldPlaceholder"
+        secureTextEntry={isPasswordHidden}
+        labelTx="registrationScreen:passwordFieldLabel"
+        placeholderTx="registrationScreen:passwordFieldPlaceholder"
         helperTx={isSubmitted ? passwordValidation : undefined}
         status={isSubmitted && passwordValidation ? "error" : undefined}
-        onSubmitEditing={login}
+        onSubmitEditing={() => confirmPasswordInput.current?.focus()}
         RightAccessory={PasswordRightAccessory({
-          isPasswordHidden: isAuthPasswordHidden,
+          isPasswordHidden: isPasswordHidden,
           onTogglePassword: togglePassword,
         })}
       />
 
-      <Button
-        testID="login-button"
-        tx="loginScreen:tapToLogIn"
-        style={themed($tapButton)}
-        preset="reversed"
-        onPress={login}
+      <TextField
+        ref={confirmPasswordInput}
+        value={confirmPassword ?? ""}
+        onChangeText={setConfirmPassword}
+        containerStyle={themed($textField)}
+        autoCapitalize="none"
+        autoComplete="password"
+        autoCorrect={false}
+        secureTextEntry={isConfirmPasswordHidden}
+        labelTx="registrationScreen:confirmPasswordFieldLabel"
+        placeholderTx="registrationScreen:confirmPasswordFieldPlaceholder"
+        helperTx={isSubmitted ? confirmPasswordValidation : undefined}
+        status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
+        onSubmitEditing={register}
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isConfirmPasswordHidden,
+          onTogglePassword: toggleConfirmPassword,
+        })}
       />
 
-      {loginError && <Text tx={loginError} preset="default" style={themed($errorText)} />}
+      <Button
+        testID="register-button"
+        tx="registrationScreen:tapToSignUp"
+        style={themed($tapButton)}
+        preset="reversed"
+        onPress={register}
+      />
+
+      {signUpError && <Text tx={signUpError} preset="default" style={themed($errorText)} />}
 
       <View style={themed($separator)}>
-        <Text size="sm" weight="bold" tx="loginScreen:or" />
+        <Text size="sm" weight="bold" tx="registrationScreen:or" />
       </View>
 
       <GoogleSignInButton />
@@ -111,7 +146,7 @@ const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.lg,
 })
 
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
+const $signUp: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.sm,
 })
 

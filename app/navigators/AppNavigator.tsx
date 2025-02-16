@@ -10,10 +10,10 @@ import { observer } from "mobx-react-lite"
 import * as Screens from "@/screens"
 import Config from "../config"
 import { useStores } from "../models"
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
-import { ComponentProps } from "react"
+import { ComponentProps, Fragment } from "react"
+import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -29,9 +29,11 @@ import { ComponentProps } from "react"
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
 export type AppStackParamList = {
-  Welcome: undefined
+  Landing: undefined
   Login: undefined
-  Demo: NavigatorScreenParams<DemoTabParamList>
+  Register: undefined
+  RegisterSuccess: undefined
+  BottomNavigator: NavigatorScreenParams<BottomHomeParamList>
   // 🔥 Your screens go here
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -68,22 +70,20 @@ const AppStack = observer(function AppStack() {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"}
+      initialRouteName={isAuthenticated ? "BottomNavigator" : "Landing"}
     >
       {isAuthenticated ? (
-        <>
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-
-          <Stack.Screen name="Demo" component={DemoNavigator} />
-        </>
+        <Fragment>
+          <Stack.Screen name="BottomNavigator" component={BottomHomeNavigator} />
+        </Fragment>
       ) : (
-        <>
+        <Fragment>
+          <Stack.Screen name="Landing" component={Screens.LandingScreen} />
           <Stack.Screen name="Login" component={Screens.LoginScreen} />
-        </>
+          <Stack.Screen name="Register" component={Screens.RegisterScreen} />
+          <Stack.Screen name="RegisterSuccess" component={Screens.RegisterSuccessScreen} />
+        </Fragment>
       )}
-
-      {/** 🔥 Your screens go here */}
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })

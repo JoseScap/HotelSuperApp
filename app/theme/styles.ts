@@ -7,6 +7,10 @@ export const $styles = {
   flex1: { flex: 1 } as ViewStyle,
   flexWrap: { flexWrap: "wrap" } as ViewStyle,
 
+  screen: {
+    paddingHorizontal: spacing.md,
+  } as ViewStyle,
+
   container: {
     paddingTop: spacing.lg + spacing.xl,
     paddingHorizontal: spacing.lg,

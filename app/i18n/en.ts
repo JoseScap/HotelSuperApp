@@ -1,25 +1,12 @@
 import demoEn from "./demo-en"
 
 const en = {
+  // Common and generics
   common: {
     ok: "OK!",
     cancel: "Cancel",
     back: "Back",
     logOut: "Log Out",
-  },
-  welcomeScreen: {
-    postscript:
-      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
-    readyForLaunch: "Your app, almost ready for launch!",
-    exciting: "(ohh, this is exciting!)",
-    letsGo: "Let's go!",
-  },
-  errorScreen: {
-    title: "Something went wrong!",
-    friendlySubtitle:
-      "This is the screen that your users will see in production when an error is thrown. You'll want to customize this message (located in `app/i18n/en.ts`) and probably the layout as well (`app/screens/ErrorScreen`). If you want to remove this entirely, check `app/app.tsx` for the <ErrorBoundary> component.",
-    reset: "RESET APP",
-    traceTitle: "Error from %{name} stack",
   },
   emptyStateComponent: {
     generic: {
@@ -28,27 +15,112 @@ const en = {
       button: "Let's try this again",
     },
   },
+  googleSignInButton: {
+    error: {
+      cancelled: "Canceled",
+      inProgress: "In progress",
+      playServicesNotAvailable: "Play Services not available",
+      signInRequired: "Sign in required",
+      other: "Something went wrong, please try again.",
+    },
+  },
 
-  errors: {
-    invalidEmail: "Invalid email address.",
+  // Screens
+  landingScreen: {
+    title: "Welcome to {{brand}}!",
+    lookingForARoom: "Looking to book a room?",
+    bookNow: "Book now!",
+    haveAnAccount: "Already have an account?",
+    signIn: "Sign in",
+    notHaveAnAccount: "First time here?",
+    signUp: "Create an account",
+  },
+  errorScreen: {
+    title: "Something went wrong!",
+    friendlySubtitle:
+      "This is the screen that your users will see in production when an error is thrown. You'll want to customize this message (located in `app/i18n/en.ts`) and probably the layout as well (`app/screens/ErrorScreen`). If you want to remove this entirely, check `app/app.tsx` for the <ErrorBoundary> component.",
+    reset: "RESET APP",
+    traceTitle: "Error from %{name} stack",
   },
   loginScreen: {
-    logIn: "Log In",
-    enterDetails:
-      "Enter your details below to unlock top secret info. You'll never guess what we've got waiting. Or maybe you will; it's not rocket science here.",
-    emailFieldLabel: "Email",
+    logIn: "Sign In",
+    enterDetails: "Access your account by entering your credentials below.",
+    emailFieldLabel: "Email Address",
     passwordFieldLabel: "Password",
-    emailFieldPlaceholder: "Enter your email address",
-    passwordFieldPlaceholder: "Super secret password here",
-    tapToLogIn: "Tap to log in!",
-    hint: "Hint: you can use any email address and your favorite password :)",
+    emailFieldPlaceholder: "Enter your email",
+    passwordFieldPlaceholder: "Enter your password",
+    tapToLogIn: "Sign In",
+    tapToLogInWithGoogle: "Continue with Google",
+    hint: "Need help? Use your registered email and password.",
+    errors: {
+      emailRequired: "Email is required",
+      emailMinimunCharacters: "must be at least 8 characters",
+      emailInvalid: "must be a valid email address",
+      passwordRequired: "Password is required",
+      passwordTooShort: "Password must be at least 12 characters",
+      passwordInvalid: "Password must contain only letters and numbers",
+      loginFailed: "Login failed. Please check your credentials and try again.",
+    },
+    or: "Or",
   },
+  registrationScreen: {
+    signUp: "Create Account",
+    enterDetails: "Enter your details below to create your account.",
+    emailFieldLabel: "Email Address",
+    passwordFieldLabel: "Password",
+    confirmPasswordFieldLabel: "Confirm Password",
+    emailFieldPlaceholder: "Enter your email",
+    passwordFieldPlaceholder: "Enter your password",
+    confirmPasswordFieldPlaceholder: "Confirm your password",
+    tapToSignUp: "Create Account",
+    errors: {
+      emailRequired: "Email is required",
+      emailInvalid: "Please enter a valid email address",
+      passwordRequired: "Password is required",
+      passwordTooShort: "Password must be at least 12 characters",
+      passwordInvalid: "Password must contain only letters and numbers",
+      passwordsDontMatch: "Passwords don't match",
+      signUpFailed: "Registration failed. Please try again.",
+    },
+    or: "Or",
+    tapToSignUpWithGoogle: "Continue with Google",
+  },
+  homeScreen: {
+    title: "Home",
+  },
+  profileScreen: {
+    title: "Profile",
+    displayNameLabel: "Display Name",
+    errors: {
+      updateFailed: "Failed to update display name. Please try again.",
+    },
+  },
+  activitiesScreen: {
+    title: "Activities",
+    subtitle: "Inside hotel",
+    city: "The city",
+  },
+  registerSuccessScreen: {
+    heading: "Account Created Successfully! ✅",
+    content:
+      "Your account has been created. Please check your email to verify your account before logging in.",
+    button: "Go to Login",
+  },
+
+  // Navigators
   demoNavigator: {
     componentsTab: "Components",
     debugTab: "Debug",
     communityTab: "Community",
     podcastListTab: "Podcast",
   },
+  homeNavigator: {
+    homeTab: "Home",
+    profileTab: "Profile",
+    activitiesTab: "Activities",
+  },
+
+  // To delete
   demoCommunityScreen: {
     title: "Connect with the community",
     tagLine:

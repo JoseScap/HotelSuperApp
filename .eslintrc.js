@@ -53,5 +53,6 @@ module.exports = {
     "no-global-assign": 0,
     "quotes": 0,
     "space-before-function-paren": 0,
+    "react-hooks/exhaustive-deps": "off",
   },
 }

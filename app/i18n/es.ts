@@ -2,25 +2,12 @@ import demoEs from "./demo-es"
 import { Translations } from "./en"
 
 const es: Translations = {
+  // Common and generics
   common: {
     ok: "OK",
     cancel: "Cancelar",
     back: "Volver",
     logOut: "Cerrar sesión",
-  },
-  welcomeScreen: {
-    postscript:
-      "psst — Esto probablemente no es cómo se va a ver tu app. (A menos que tu diseñador te haya enviado estas pantallas, y en ese caso, ¡lánzalas en producción!)",
-    readyForLaunch: "Tu app, casi lista para su lanzamiento",
-    exciting: "(¡ohh, esto es emocionante!)",
-    letsGo: "¡Vamos!",
-  },
-  errorScreen: {
-    title: "¡Algo salió mal!",
-    friendlySubtitle:
-      "Esta es la pantalla que verán tus usuarios en producción cuando haya un error. Vas a querer personalizar este mensaje (que está ubicado en `app/i18n/es.ts`) y probablemente también su diseño (`app/screens/ErrorScreen`). Si quieres eliminarlo completamente, revisa `app/app.tsx` y el componente <ErrorBoundary>.",
-    reset: "REINICIA LA APP",
-    traceTitle: "Error desde %{name}",
   },
   emptyStateComponent: {
     generic: {
@@ -30,27 +17,113 @@ const es: Translations = {
       button: "Intentemos de nuevo",
     },
   },
+  googleSignInButton: {
+    error: {
+      cancelled: "Cancelado",
+      inProgress: "En progreso",
+      playServicesNotAvailable: "Play Services no disponibles",
+      signInRequired: "Requiere inicio de sesión",
+      other: "Ocurrió un error, por favor intenta nuevamente.",
+    },
+  },
 
-  errors: {
-    invalidEmail: "Email inválido.",
+  // Screens
+  landingScreen: {
+    title: "¡Bienvenido a {{brand}}!",
+    lookingForARoom: "¿Querés reservar una habitación?",
+    bookNow: "¡Reservar ahora!",
+    haveAnAccount: "¿Ya tenés una cuenta?",
+    signIn: "Iniciar sesión",
+    notHaveAnAccount: "¿Es tu primera vez aquí?",
+    signUp: "Crear cuenta",
+  },
+  errorScreen: {
+    title: "¡Algo salió mal!",
+    friendlySubtitle:
+      "Esta es la pantalla que verán tus usuarios en producción cuando haya un error. Vas a querer personalizar este mensaje (que está ubicado en `app/i18n/es.ts`) y probablemente también su diseño (`app/screens/ErrorScreen`). Si quieres eliminarlo completamente, revisa `app/app.tsx` y el componente <ErrorBoundary>.",
+    reset: "REINICIA LA APP",
+    traceTitle: "Error desde %{name}",
   },
   loginScreen: {
     logIn: "Iniciar sesión",
-    enterDetails:
-      "Ingresa tus datos a continuación para desbloquear información ultra secreta. Nunca vas a adivinar lo que te espera al otro lado. O quizás si lo harás; la verdad no hay mucha ciencia alrededor.",
-    emailFieldLabel: "Email",
+    enterDetails: "Accede a tu cuenta ingresando tus credenciales.",
+    emailFieldLabel: "Correo electrónico",
     passwordFieldLabel: "Contraseña",
-    emailFieldPlaceholder: "Ingresa tu email",
-    passwordFieldPlaceholder: "Contraseña super secreta aquí",
-    tapToLogIn: "¡Presiona acá para iniciar sesión!",
-    hint: "Consejo: puedes usar cualquier email y tu contraseña preferida :)",
+    emailFieldPlaceholder: "Ingresa tu correo",
+    passwordFieldPlaceholder: "Ingresa tu contraseña",
+    tapToLogIn: "Iniciar sesión",
+    tapToLogInWithGoogle: "Continuar con Google",
+    hint: "¿Necesitas ayuda? Usa tu correo registrado y contraseña.",
+    errors: {
+      emailRequired: "Campo obligatorío.",
+      emailMinimunCharacters: "Debe tener al menos 8 caracteres.",
+      emailInvalid: "Debe ser un email valido.",
+      passwordRequired: "La contraseña es requerida",
+      passwordTooShort: "La contraseña debe tener al menos 12 caracteres",
+      passwordInvalid: "La contraseña solo debe contener letras y números",
+      loginFailed:
+        "Error al iniciar sesión. Por favor verifica tus credenciales e intenta nuevamente.",
+    },
+    or: "O",
   },
+  registrationScreen: {
+    signUp: "Crear cuenta",
+    enterDetails: "Ingresa tus datos para crear tu cuenta.",
+    emailFieldLabel: "Correo electrónico",
+    passwordFieldLabel: "Contraseña",
+    confirmPasswordFieldLabel: "Confirmar contraseña",
+    emailFieldPlaceholder: "Ingresa tu correo",
+    passwordFieldPlaceholder: "Ingresa tu contraseña",
+    confirmPasswordFieldPlaceholder: "Confirma tu contraseña",
+    tapToSignUp: "Crear cuenta",
+    errors: {
+      emailRequired: "El email es requerido",
+      emailInvalid: "Por favor ingrese un email válido",
+      passwordRequired: "La contraseña es requerida",
+      passwordTooShort: "La contraseña debe tener al menos 12 caracteres",
+      passwordInvalid: "La contraseña solo debe contener letras y números",
+      passwordsDontMatch: "Las contraseñas no coinciden",
+      signUpFailed: "El registro falló. Por favor intenta nuevamente.",
+    },
+    or: "O",
+    tapToSignUpWithGoogle: "Continuar con Google",
+  },
+  homeScreen: {
+    title: "Inicio",
+  },
+  profileScreen: {
+    title: "Perfil",
+    displayNameLabel: "Nombre para mostrar",
+    errors: {
+      updateFailed: "No se pudo actualizar el nombre. Por favor intenta nuevamente.",
+    },
+  },
+  activitiesScreen: {
+    title: "Actividades",
+    subtitle: "Dentro del hotel",
+    city: "La ciudad",
+  },
+  registerSuccessScreen: {
+    heading: "¡Cuenta Creada Exitosamente! ✅",
+    content:
+      "Tu cuenta ha sido creada. Por favor revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
+    button: "Ir a Iniciar Sesión",
+  },
+
+  // Navigators
   demoNavigator: {
     componentsTab: "Componentes",
     debugTab: "Debug",
     communityTab: "Comunidad",
     podcastListTab: "Podcasts",
   },
+  homeNavigator: {
+    homeTab: "Inicio",
+    profileTab: "Perfil",
+    activitiesTab: "Actividades",
+  },
+
+  // To delete
   demoCommunityScreen: {
     title: "Conecta con la comunidad",
     tagLine:
