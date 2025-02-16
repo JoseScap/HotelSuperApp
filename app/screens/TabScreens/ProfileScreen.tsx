@@ -1,6 +1,4 @@
 import { FC, Fragment } from "react"
-import { ViewStyle } from "react-native"
-import { Screen, TextField, Icon } from "@/components"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useProfileScreen } from "@/hooks/useProfileScreen"
@@ -8,6 +6,9 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
 import { useBottomProps } from "@/hooks/useBottomProps"
 import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { Checkbox, Icon, Screen, Text, TextField } from "@/components"
+import { TextStyle } from "react-native"
+import { ViewStyle } from "react-native"
 
 export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
@@ -24,7 +25,8 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
 
   const {
     themed,
-    theme: { colors },
+    theme: { colors, isDark },
+    setThemeContextOverride,
   } = useAppTheme()
 
   const bottomProps = useBottomProps()
@@ -44,6 +46,12 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
       contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
       {...bottomProps}
     >
+      <Text
+        preset="subheading"
+        style={themed($sectionSubtitle)}
+        tx="profileScreen:sectionPersonalDataTitle"
+      />
+
       <TextField
         value={displayName}
         onChangeText={changeDisplayName}
@@ -83,10 +91,28 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
           </Fragment>
         )}
       />
+
+      <Text
+        preset="subheading"
+        style={themed($sectionSubtitle)}
+        tx="profileScreen:sectionPreferencesTitle"
+      />
+
+      <Text preset="bold" style={themed($sectionSubtitle)} tx="profileScreen:darkModeTitle" />
+
+      <Checkbox
+        labelTx={isDark ? "profileScreen:deactivateDarkMode" : "profileScreen:activateDarkMode"}
+        value={isDark}
+        onValueChange={() => setThemeContextOverride(isDark ? "light" : "dark")}
+      />
     </Screen>
   )
 }
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
+})
+
+const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  marginBottom: spacing.md,
 })
