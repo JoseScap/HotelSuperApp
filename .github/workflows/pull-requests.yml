@@ -4,10 +4,12 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   validate-android-build:
     name: Validate Android Build
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       EXPO_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_CLIENT_ID }}
