@@ -1,27 +1,27 @@
 import { FC } from "react"
-import { Image, ImageStyle, Platform, View, ViewStyle } from "react-native"
+import { Image, ImageStyle, View, ViewStyle } from "react-native"
 import { Screen } from "@/components/Screen"
 import { $styles, ThemedStyle } from "@/theme"
-import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { useBottomProps } from "@/hooks/useBottomProps"
+import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 
 const logo = require("../../../assets/images/logo.png")
 
-const isAndroid = Platform.OS === "android"
-
-export const HomeScreen: FC<HomeTabScreenProps<"Home">> = function HomeScreen(_props) {
+export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScreen(_props) {
   useHeader({
     leftTx: "homeScreen:title",
   })
   const { themed } = useAppTheme()
+  const bottomProps = useBottomProps()
 
   return (
     <Screen
       preset="scroll"
       safeAreaEdges={["top"]}
       contentContainerStyle={$styles.flex1}
-      {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
+      {...bottomProps}
     >
       <View style={themed($logoContainer)}>
         <Image source={logo} style={$logoImage} />

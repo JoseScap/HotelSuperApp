@@ -2,11 +2,11 @@ import { FC } from "react"
 import { Image, ImageStyle, Platform, TextStyle, View, ViewStyle } from "react-native"
 import { Screen } from "@/components/Screen"
 import { $styles, ThemedStyle } from "@/theme"
-import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { Card, Text } from "@/components"
 import { useAppTheme } from "@/utils/useAppTheme"
-
+import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
+import { useBottomProps } from "@/hooks/useBottomProps"
 const isAndroid = Platform.OS === "android"
 const logo = require("../../../assets/images/logo.png")
 
@@ -36,10 +36,11 @@ const cityActivities = [
   "Tour de bares y pubs",
 ]
 
-export const ActivitiesScreen: FC<HomeTabScreenProps<"Activities">> = function ActivitiesScreen(
+export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> = function ActivitiesScreen(
   _props,
 ) {
   const { themed } = useAppTheme()
+  const bottomProps = useBottomProps()
 
   useHeader({
     leftTx: "activitiesScreen:title",
@@ -50,7 +51,7 @@ export const ActivitiesScreen: FC<HomeTabScreenProps<"Activities">> = function A
       preset="scroll"
       safeAreaEdges={["top"]}
       contentContainerStyle={$styles.screen}
-      {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
+      {...bottomProps}
     >
       <Text tx="activitiesScreen:subtitle" preset="subheading" style={themed($bottomSpace)} />
       {hotelActivities.map((activity, index) => (

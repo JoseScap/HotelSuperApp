@@ -2,7 +2,7 @@ import { FC } from "react"
 import { Platform, TextStyle, ViewStyle } from "react-native"
 import { Screen, TextField, Icon, Text } from "@/components"
 import { $styles } from "@/theme"
-import { HomeTabScreenProps } from "@/navigators/HomeNavigator"
+import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useStores } from "@/models"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
@@ -10,10 +10,11 @@ import { useProfileScreen } from "@/hooks/useProfileScreen"
 import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
 import React from "react"
+import { useBottomProps } from "@/hooks/useBottomProps"
 
 const isAndroid = Platform.OS === "android"
 
-export const ProfileScreen: FC<HomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
+export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
   const {
     displayName,
@@ -31,6 +32,8 @@ export const ProfileScreen: FC<HomeTabScreenProps<"Profile">> = function HomeScr
     theme: { colors },
   } = useAppTheme()
 
+  const bottomProps = useBottomProps()
+
   useHeader(
     {
       leftTx: "profileScreen:title",
@@ -45,7 +48,7 @@ export const ProfileScreen: FC<HomeTabScreenProps<"Profile">> = function HomeScr
       preset="scroll"
       safeAreaEdges={["top"]}
       contentContainerStyle={[$styles.flex1, themed($container)]}
-      {...(isAndroid ? { KeyboardAvoidingViewProps: { behavior: undefined } } : {})}
+      {...bottomProps}
     >
       <TextField
         value={displayName}
