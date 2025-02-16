@@ -13,10 +13,13 @@ import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useRegisterScreen } from "@/hooks/useRegisterScreen"
+import { useHeader } from "@/utils/useHeader"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
 export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(props) {
+  const { navigation } = props
   const {
     // Refs
     emailInput,
@@ -48,12 +51,14 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
 
   const { themed } = useAppTheme()
 
+  useHeader({
+    leftIcon: "caretLeft",
+    rightTx: "registrationScreen:signUp",
+    onLeftPress: () => navigation.goBack(),
+  })
+
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={themed($screenContentContainer)}
-      safeAreaEdges={["top", "bottom"]}
-    >
+    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
       <Text
         testID="register-heading"
         tx="registrationScreen:signUp"
@@ -139,11 +144,6 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
       <GoogleSignInButton />
     </Screen>
   )
-})
-
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xxl,
-  paddingHorizontal: spacing.lg,
 })
 
 const $signUp: ThemedStyle<TextStyle> = ({ spacing }) => ({

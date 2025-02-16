@@ -4,6 +4,7 @@ import { EmptyState, Screen } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 const checkIcon = require("../../assets/icons/check.png")
 
@@ -16,11 +17,7 @@ export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function Re
   const { navigation } = _props
 
   return (
-    <Screen
-      preset="fixed"
-      contentContainerStyle={themed($screenContentContainer)}
-      safeAreaEdges={["top", "bottom"]}
-    >
+    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
       <EmptyState
         headingTx="registerSuccessScreen:heading"
         contentTx="registerSuccessScreen:content"
@@ -32,13 +29,6 @@ export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function Re
     </Screen>
   )
 }
-
-const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flex: 1,
-  justifyContent: "center",
-  paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.xxl,
-})
 
 const $emptyState: ThemedStyle<ViewStyle> = () => ({
   height: "100%",

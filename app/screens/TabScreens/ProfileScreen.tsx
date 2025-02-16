@@ -8,6 +8,7 @@ import { useProfileScreen } from "@/hooks/useProfileScreen"
 import { useAppTheme } from "@/utils/useAppTheme"
 import type { ThemedStyle } from "@/theme"
 import { useBottomProps } from "@/hooks/useBottomProps"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
@@ -41,8 +42,7 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
   return (
     <Screen
       preset="scroll"
-      safeAreaEdges={["top"]}
-      contentContainerStyle={[$styles.flex1, themed($container)]}
+      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
       {...bottomProps}
     >
       <TextField
@@ -87,10 +87,6 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
     </Screen>
   )
 }
-
-const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.lg,
-})
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,

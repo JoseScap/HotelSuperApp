@@ -27,6 +27,7 @@ const en = {
 
   // Screens
   landingScreen: {
+    header: "Welcome",
     title: "Welcome to {{brand}}!",
     lookingForARoom: "Looking to book a room?",
     bookNow: "Book now!",

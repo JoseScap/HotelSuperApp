@@ -29,6 +29,7 @@ const es: Translations = {
 
   // Screens
   landingScreen: {
+    header: "Bienvenido",
     title: "¡Bienvenido a {{brand}}!",
     lookingForARoom: "¿Querés reservar una habitación?",
     bookNow: "¡Reservar ahora!",

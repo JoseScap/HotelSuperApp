@@ -1,26 +1,27 @@
 import { FC } from "react"
 import { Image, ImageStyle, View, ViewStyle } from "react-native"
 import { Screen } from "@/components/Screen"
-import { $styles, ThemedStyle } from "@/theme"
+import { ThemedStyle } from "@/theme"
 import { useHeader } from "@/utils/useHeader"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useBottomProps } from "@/hooks/useBottomProps"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
+import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 const logo = require("../../../assets/images/logo.png")
 
 export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScreen(_props) {
+  const { themed } = useAppTheme()
+  const bottomProps = useBottomProps()
+
   useHeader({
     leftTx: "homeScreen:title",
   })
-  const { themed } = useAppTheme()
-  const bottomProps = useBottomProps()
 
   return (
     <Screen
       preset="scroll"
-      safeAreaEdges={["top"]}
-      contentContainerStyle={$styles.flex1}
+      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
       {...bottomProps}
     >
       <View style={themed($logoContainer)}>
@@ -35,9 +36,8 @@ const $logoImage: ImageStyle = {
   width: 77,
 }
 
-const $logoContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $logoContainer: ThemedStyle<ViewStyle> = () => ({
   alignSelf: "flex-start",
   justifyContent: "center",
   height: 56,
-  paddingHorizontal: spacing.lg,
 })
