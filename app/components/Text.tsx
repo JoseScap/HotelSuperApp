@@ -75,17 +75,7 @@ const $presets = {
  * @returns {JSX.Element} The rendered `Text` component.
  */
 export function Text(props: TextProps) {
-  const {
-    weight,
-    size,
-    tx,
-    txOptions,
-    text,
-    children,
-    className,
-    preset = "default",
-    ...rest
-  } = props
+  const { size, tx, txOptions, text, children, className, preset = "default", ...rest } = props
 
   const i18nText = tx && translate(tx, txOptions)
   const content = i18nText || text || children

@@ -195,9 +195,10 @@ function ScreenWithScrolling(props: ScreenProps) {
         onContentSizeChange(w, h)
         ScrollViewProps?.onContentSizeChange?.(w, h)
       }}
-      style={[ScrollViewProps?.style]}
+      style={ScrollViewProps?.style}
       contentContainerStyle={[
         ScrollViewProps?.contentContainerStyle,
+        // eslint-disable-next-line react-native/no-inline-styles
         {
           justifyContent: "flex-start",
           alignItems: "stretch",
