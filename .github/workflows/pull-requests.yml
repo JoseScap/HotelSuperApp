@@ -19,13 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Run lint check
-        run: npm run lint:check
+        run: yarn lint:check
 
   validate-android-build:
     name: Validate Android Build
@@ -47,13 +47,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "yarn"
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Setup EAS CLI
-        run: npm install -g eas-cli
+        run: yarn global add eas-cli
 
       - name: Create env file
         run: |
@@ -63,7 +63,7 @@ jobs:
           echo "EXPO_PUBLIC_SUPABASE_URL=$EXPO_PUBLIC_SUPABASE_URL" >> .env
 
       - name: Build Android Preview
-        run: npm run build:android:prev
+        run: yarn build:android:prev
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
