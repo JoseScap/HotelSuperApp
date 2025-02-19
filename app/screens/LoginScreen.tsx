@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { Platform, TextStyle, View, ViewStyle } from "react-native"
 import {
   Button,
   Screen,
@@ -44,6 +44,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useLoginScreen()
 
   const { themed } = useAppTheme()
+  const isIos = Platform.OS === "ios"
 
   useHeader({
     leftIcon: "caretLeft",
@@ -106,7 +107,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         <Text size="sm" weight="bold" tx="loginScreen:or" />
       </View>
 
-      <GoogleSignInButton />
+      {!isIos && <GoogleSignInButton />}
     </Screen>
   )
 })

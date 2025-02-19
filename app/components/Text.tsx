@@ -1,12 +1,14 @@
 import { TOptions } from "i18next"
-import { StyleProp, Text as RNText, TextProps as RNTextProps, TextStyle } from "react-native"
+import { Text as RNText, TextProps as RNTextProps } from "react-native"
 import { isRTL, translate, TxKeyPath } from "@/i18n"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
-import { typography } from "@/theme/typography"
 import { ReactNode } from "react"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+import { typography } from "@/theme/typography"
 
-type Sizes = keyof typeof $sizeStyles
+const StyledText = styled(RNText)
+
+type Sizes = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs"
 type Weights = keyof typeof typography.primary
 type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
 
@@ -27,7 +29,7 @@ export interface TextProps extends RNTextProps {
   /**
    * An optional style override useful for padding & margin.
    */
-  style?: StyleProp<TextStyle>
+  className?: string
   /**
    * One of the different types of text presets.
    */
@@ -46,6 +48,25 @@ export interface TextProps extends RNTextProps {
   children?: ReactNode
 }
 
+const $sizeStyles: Record<Sizes, string> = {
+  xxl: "text-[36px] leading-[44px]",
+  xl: "text-[24px] leading-[34px]",
+  lg: "text-[20px] leading-[32px]",
+  md: "text-[18px] leading-[26px]",
+  sm: "text-[16px] leading-[24px]",
+  xs: "text-[14px] leading-[21px]",
+  xxs: "text-[12px] leading-[18px]",
+}
+
+const $presets: Record<Presets, string> = {
+  default: "text-base font-normal text-neutral-800",
+  bold: "text-base font-bold text-neutral-800",
+  heading: "text-[36px] leading-[44px] font-bold text-neutral-800",
+  subheading: "text-[20px] leading-[32px] font-medium text-neutral-800",
+  formLabel: "text-base font-medium text-neutral-800",
+  formHelper: "text-sm font-normal text-neutral-800",
+}
+
 /**
  * For your text displaying needs.
  * This component is a HOC over the built-in React Native one.
@@ -54,60 +75,21 @@ export interface TextProps extends RNTextProps {
  * @returns {JSX.Element} The rendered `Text` component.
  */
 export function Text(props: TextProps) {
-  const { weight, size, tx, txOptions, text, children, style: $styleOverride, ...rest } = props
-  const { themed } = useAppTheme()
+  const { size, tx, txOptions, text, children, className, preset = "default", ...rest } = props
 
   const i18nText = tx && translate(tx, txOptions)
   const content = i18nText || text || children
 
-  const preset: Presets = props.preset ?? "default"
-  const $styles: StyleProp<TextStyle> = [
-    $rtlStyle,
-    themed($presets[preset]),
-    weight && $fontWeightStyles[weight],
+  const classes = nwMerge(
+    $presets[preset],
     size && $sizeStyles[size],
-    $styleOverride,
-  ]
+    isRTL && "writing-rtl",
+    className,
+  )
 
   return (
-    <RNText {...rest} style={$styles}>
+    <StyledText {...rest} className={classes}>
       {content}
-    </RNText>
+    </StyledText>
   )
 }
-
-const $sizeStyles = {
-  xxl: { fontSize: 36, lineHeight: 44 } satisfies TextStyle,
-  xl: { fontSize: 24, lineHeight: 34 } satisfies TextStyle,
-  lg: { fontSize: 20, lineHeight: 32 } satisfies TextStyle,
-  md: { fontSize: 18, lineHeight: 26 } satisfies TextStyle,
-  sm: { fontSize: 16, lineHeight: 24 } satisfies TextStyle,
-  xs: { fontSize: 14, lineHeight: 21 } satisfies TextStyle,
-  xxs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
-}
-
-const $fontWeightStyles = Object.entries(typography.primary).reduce((acc, [weight, fontFamily]) => {
-  return { ...acc, [weight]: { fontFamily } }
-}, {}) as Record<Weights, TextStyle>
-
-const $baseStyle: ThemedStyle<TextStyle> = (theme) => ({
-  ...$sizeStyles.sm,
-  ...$fontWeightStyles.normal,
-  color: theme.colors.text,
-})
-
-const $presets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [$baseStyle],
-  bold: [$baseStyle, { ...$fontWeightStyles.bold }],
-  heading: [
-    $baseStyle,
-    {
-      ...$sizeStyles.xxl,
-      ...$fontWeightStyles.bold,
-    },
-  ],
-  subheading: [$baseStyle, { ...$sizeStyles.lg, ...$fontWeightStyles.medium }],
-  formLabel: [$baseStyle, { ...$fontWeightStyles.medium }],
-  formHelper: [$baseStyle, { ...$sizeStyles.sm, ...$fontWeightStyles.normal }],
-}
-const $rtlStyle: TextStyle = isRTL ? { writingDirection: "rtl" } : {}
