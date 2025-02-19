@@ -8,7 +8,7 @@ import { typography } from "@/theme/typography"
 
 const StyledText = styled(RNText)
 
-type Sizes = keyof typeof $sizeStyles
+type Sizes = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs"
 type Weights = keyof typeof typography.primary
 type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
 
@@ -48,7 +48,7 @@ export interface TextProps extends RNTextProps {
   children?: ReactNode
 }
 
-const $sizeStyles = {
+const $sizeStyles: Record<Sizes, string> = {
   xxl: "text-[36px] leading-[44px]",
   xl: "text-[24px] leading-[34px]",
   lg: "text-[20px] leading-[32px]",
@@ -56,16 +56,16 @@ const $sizeStyles = {
   sm: "text-[16px] leading-[24px]",
   xs: "text-[14px] leading-[21px]",
   xxs: "text-[12px] leading-[18px]",
-} as const
+}
 
-const $presets = {
-  default: "text-base font-normal text-neutral-900 dark:text-neutral-100",
-  bold: "text-base font-bold text-neutral-900 dark:text-neutral-100",
-  heading: "text-[36px] leading-[44px] font-bold text-neutral-900 dark:text-neutral-100",
-  subheading: "text-[20px] leading-[32px] font-medium text-neutral-900 dark:text-neutral-100",
-  formLabel: "text-base font-medium text-neutral-900 dark:text-neutral-100",
-  formHelper: "text-sm font-normal text-neutral-900 dark:text-neutral-100",
-} as const
+const $presets: Record<Presets, string> = {
+  default: "text-base font-normal text-neutral-800",
+  bold: "text-base font-bold text-neutral-800",
+  heading: "text-[36px] leading-[44px] font-bold text-neutral-800",
+  subheading: "text-[20px] leading-[32px] font-medium text-neutral-800",
+  formLabel: "text-base font-medium text-neutral-800",
+  formHelper: "text-sm font-normal text-neutral-800",
+}
 
 /**
  * For your text displaying needs.

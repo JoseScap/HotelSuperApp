@@ -80,6 +80,21 @@ export interface ButtonProps extends PressableProps {
   disabled?: boolean
 }
 
+interface PresetStyle {
+  base: {
+    light: string
+    dark: string
+  }
+  pressed: {
+    light: string
+    dark: string
+  }
+  text: {
+    light: string
+    dark: string
+  }
+}
+
 // Base styles
 const BUTTON_BASE =
   "min-h-[56px] rounded-[4px] justify-center items-center py-3 px-3 overflow-hidden flex-row"
@@ -87,7 +102,7 @@ const BUTTON_TEXT_BASE =
   "text-[16px] leading-[20px] font-medium text-center flex-shrink flex-grow-0 z-[2]"
 
 // Preset styles con soporte para dark mode
-const BUTTON_PRESETS = {
+const BUTTON_PRESETS: Record<Presets, PresetStyle> = {
   default: {
     base: {
       light: "border border-neutral-400 bg-neutral-100",
@@ -130,7 +145,7 @@ const BUTTON_PRESETS = {
       dark: "text-neutral-900",
     },
   },
-} as const
+}
 
 const ACCESSORY_CLASSES = "z-[1]"
 const LEFT_ACCESSORY_CLASSES = nwMerge(ACCESSORY_CLASSES, "me-2")
@@ -171,6 +186,59 @@ export function Button(props: ButtonProps) {
 
   const { themeContext } = useAppTheme()
   const isDark = themeContext === "dark"
+  const presetStyles = BUTTON_PRESETS[preset]
+
+  const getButtonClasses = (state: PressableStateCallbackType) => {
+    return nwMerge(
+      BUTTON_BASE,
+      isDark ? presetStyles.base.dark : presetStyles.base.light,
+      state.pressed && (isDark ? presetStyles.pressed.dark : presetStyles.pressed.light),
+      state.pressed && pressedClassName,
+      disabled && "opacity-50",
+      disabled && disabledClassName,
+      className,
+    )
+  }
+
+  const getTextClasses = (state: PressableStateCallbackType) => {
+    return nwMerge(
+      BUTTON_TEXT_BASE,
+      isDark ? presetStyles.text.dark : presetStyles.text.light,
+      state.pressed && "opacity-90",
+      state.pressed && pressedTextClassName,
+      disabled && disabledTextClassName,
+      textClassName,
+    )
+  }
+
+  const renderContent = (state: PressableStateCallbackType) => {
+    const buttonClasses = getButtonClasses(state)
+    const textClasses = getTextClasses(state)
+
+    return (
+      <StyledView className={buttonClasses}>
+        {!!LeftAccessory && (
+          <LeftAccessory
+            className={LEFT_ACCESSORY_CLASSES}
+            pressableState={state}
+            disabled={disabled}
+          />
+        )}
+
+        <StyledText tx={tx} text={text} txOptions={txOptions} className={textClasses}>
+          {children}
+        </StyledText>
+
+        {!!RightAccessory && (
+          <RightAccessory
+            className={RIGHT_ACCESSORY_CLASSES}
+            pressableState={state}
+            disabled={disabled}
+          />
+        )}
+      </StyledView>
+    )
+  }
 
   return (
     <StyledPressable
@@ -179,51 +247,7 @@ export function Button(props: ButtonProps) {
       disabled={disabled}
       {...rest}
     >
-      {(state) => {
-        const presetStyles = BUTTON_PRESETS[preset]
-        const buttonClasses = nwMerge(
-          BUTTON_BASE,
-          isDark ? presetStyles.base.dark : presetStyles.base.light,
-          state.pressed && (isDark ? presetStyles.pressed.dark : presetStyles.pressed.light),
-          state.pressed && pressedClassName,
-          disabled && "opacity-50",
-          disabled && disabledClassName,
-          className,
-        )
-
-        const textClasses = nwMerge(
-          BUTTON_TEXT_BASE,
-          isDark ? presetStyles.text.dark : presetStyles.text.light,
-          state.pressed && "opacity-90",
-          state.pressed && pressedTextClassName,
-          disabled && disabledTextClassName,
-          textClassName,
-        )
-
-        return (
-          <StyledView className={buttonClasses}>
-            {!!LeftAccessory && (
-              <LeftAccessory
-                className={LEFT_ACCESSORY_CLASSES}
-                pressableState={state}
-                disabled={disabled}
-              />
-            )}
-
-            <StyledText tx={tx} text={text} txOptions={txOptions} className={textClasses}>
-              {children}
-            </StyledText>
-
-            {!!RightAccessory && (
-              <RightAccessory
-                className={RIGHT_ACCESSORY_CLASSES}
-                pressableState={state}
-                disabled={disabled}
-              />
-            )}
-          </StyledView>
-        )
-      }}
+      {renderContent}
     </StyledPressable>
   )
 }
