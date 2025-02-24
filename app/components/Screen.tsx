@@ -12,7 +12,6 @@ import {
 } from "react-native"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
 
@@ -38,10 +37,6 @@ interface BaseScreenProps {
    * Override the default edges for the safe area.
    */
   safeAreaEdges?: ExtendedEdge[]
-  /**
-   * Background color
-   */
-  backgroundColor?: string
   /**
    * Status bar setting. Defaults to dark.
    */
@@ -101,7 +96,7 @@ function isNonScrolling(preset?: ScreenPreset) {
 }
 
 // Base styles
-const SCREEN_BASE = "flex-1 h-full w-full"
+const SCREEN_BASE = "flex-1 h-full w-full bg-background-primary"
 const OUTER_CONTENT = "flex-1 h-full w-full"
 const INNER_CONTENT = "justify-start items-stretch"
 const INNER_CONTENT_FIXED = "justify-end"
@@ -214,29 +209,19 @@ function ScreenWithScrolling(props: ScreenProps) {
 
 export function Screen(props: ScreenProps) {
   const {
-    theme: { colors },
-    themeContext,
-  } = useAppTheme()
-  const {
-    backgroundColor,
     KeyboardAvoidingViewProps,
     keyboardOffset = 0,
     safeAreaEdges,
     StatusBarProps,
     statusBarStyle,
+    className,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
 
   return (
-    <StyledView
-      className={nwMerge(SCREEN_BASE)}
-      style={[{ backgroundColor: backgroundColor || colors.background }, $containerInsets]}
-    >
-      <StatusBar
-        style={statusBarStyle || (themeContext === "dark" ? "light" : "dark")}
-        {...StatusBarProps}
-      />
+    <StyledView className={nwMerge(SCREEN_BASE, className)} style={$containerInsets}>
+      <StatusBar style={statusBarStyle || "dark"} {...StatusBarProps} />
 
       <StyledKeyboardAvoidingView
         className="flex-1"

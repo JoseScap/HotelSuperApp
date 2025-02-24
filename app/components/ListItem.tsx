@@ -8,10 +8,9 @@ import {
   ViewStyle,
 } from "react-native"
 import { $styles } from "../theme"
-import { Icon, IconTypes } from "./Icon"
+import { Icon } from "./Icon"
 import { Text, TextProps } from "./Text"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { IconType } from "react-icons"
 
 export interface ListItemProps extends TouchableOpacityProps {
   /**
@@ -65,7 +64,7 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Icon that should appear on the left.
    */
-  leftIcon?: IconTypes
+  leftIcon?: IconType
   /**
    * An optional tint color for the left icon
    */
@@ -73,7 +72,7 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Icon that should appear on the right.
    */
-  rightIcon?: IconTypes
+  rightIcon?: IconType
   /**
    * An optional tint color for the right icon
    */
@@ -91,7 +90,7 @@ export interface ListItemProps extends TouchableOpacityProps {
 }
 
 interface ListItemActionProps {
-  icon?: IconTypes
+  icon?: IconType
   iconColor?: string
   Component?: ReactElement
   size: number
@@ -109,7 +108,6 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
   ref,
 ) {
   const {
-    bottomSeparator,
     children,
     height = 56,
     LeftComponent,
@@ -121,27 +119,15 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
     style,
     text,
     TextProps,
-    topSeparator,
     tx,
     txOptions,
-    textStyle: $textStyleOverride,
-    containerStyle: $containerStyleOverride,
     ...TouchableOpacityProps
   } = props
-  const { themed } = useAppTheme()
-
-  const $textStyles = [$textStyle, $textStyleOverride, TextProps?.style]
-
-  const $containerStyles = [
-    topSeparator && $separatorTop,
-    bottomSeparator && $separatorBottom,
-    $containerStyleOverride,
-  ]
 
   const $touchableStyles = [$styles.row, $touchableStyle, { minHeight: height }, style]
 
   return (
-    <View ref={ref} style={themed($containerStyles)}>
+    <View ref={ref}>
       <TouchableOpacity {...TouchableOpacityProps} style={$touchableStyles}>
         <ListItemAction
           side="left"
@@ -151,7 +137,7 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
           Component={LeftComponent}
         />
 
-        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions} style={themed($textStyles)}>
+        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions}>
           {children}
         </Text>
 
@@ -172,62 +158,17 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
  * @returns {JSX.Element | null} The rendered `ListItemAction` component.
  */
 function ListItemAction(props: ListItemActionProps) {
-  const { icon, Component, iconColor, size, side } = props
-  const { themed } = useAppTheme()
-
-  const $iconContainerStyles = [$iconContainer]
+  const { icon, Component } = props
 
   if (Component) return Component
 
   if (icon !== undefined) {
-    return (
-      <Icon
-        size={24}
-        icon={icon}
-        color={iconColor}
-        containerStyle={themed([
-          $iconContainerStyles,
-          side === "left" && $iconContainerLeft,
-          side === "right" && $iconContainerRight,
-          { height: size },
-        ])}
-      />
-    )
+    return <Icon size="md" icon={icon} color="primary" />
   }
 
   return null
 }
 
-const $separatorTop: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderTopWidth: 1,
-  borderTopColor: colors.separator,
-})
-
-const $separatorBottom: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderBottomWidth: 1,
-  borderBottomColor: colors.separator,
-})
-
-const $textStyle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xs,
-  alignSelf: "center",
-  flexGrow: 1,
-  flexShrink: 1,
-})
-
 const $touchableStyle: ViewStyle = {
   alignItems: "flex-start",
 }
-
-const $iconContainer: ViewStyle = {
-  justifyContent: "center",
-  alignItems: "center",
-  flexGrow: 0,
-}
-const $iconContainerLeft: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginEnd: spacing.md,
-})
-
-const $iconContainerRight: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginStart: spacing.md,
-})

@@ -1,8 +1,11 @@
 import { useEffect, useRef } from "react"
-import { StyleProp, View, ViewStyle, Animated } from "react-native"
-import { $styles } from "../../theme"
-import { $inputOuterBase, BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { View, ViewStyle, Animated } from "react-native"
+import { BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
+import { styled } from "nativewind"
+import { useAppColors } from "@/hooks/useAppColors"
+
+const StyledView = styled(View)
+const StyledAnimatedView = styled(Animated.View)
 
 export interface RadioToggleProps extends Omit<ToggleProps<RadioInputProps>, "ToggleInput"> {
   /**
@@ -29,12 +32,9 @@ function RadioInput(props: RadioInputProps) {
     disabled,
     outerStyle: $outerStyleOverride,
     innerStyle: $innerStyleOverride,
-    detailStyle: $detailStyleOverride,
   } = props
 
-  const {
-    theme: { colors },
-  } = useAppTheme()
+  const { primary, text, background } = useAppColors()
 
   const opacity = useRef(new Animated.Value(0))
 
@@ -47,58 +47,51 @@ function RadioInput(props: RadioInputProps) {
   }, [on])
 
   const offBackgroundColor = [
-    disabled && colors.palette.neutral400,
-    status === "error" && colors.errorBackground,
-    colors.palette.neutral200,
+    disabled && text.secondary,
+    status === "error" && "#FEE2E2",
+    "#E2E8F0",
   ].filter(Boolean)[0]
 
   const outerBorderColor = [
-    disabled && colors.palette.neutral400,
-    status === "error" && colors.error,
-    !on && colors.palette.neutral800,
-    colors.palette.secondary500,
+    disabled && text.secondary,
+    status === "error" && "#EF4444",
+    !on && text.primary,
+    primary,
   ].filter(Boolean)[0]
 
   const onBackgroundColor = [
-    disabled && colors.transparent,
-    status === "error" && colors.errorBackground,
-    colors.palette.neutral100,
+    disabled && "transparent",
+    status === "error" && "#FEE2E2",
+    background.primary,
   ].filter(Boolean)[0]
 
   const dotBackgroundColor = [
-    disabled && colors.palette.neutral600,
-    status === "error" && colors.error,
-    colors.palette.secondary500,
+    disabled && text.secondary,
+    status === "error" && "#EF4444",
+    primary,
   ].filter(Boolean)[0]
 
   return (
-    <View
+    <StyledView
+      className="h-6 w-6 rounded-full border"
       style={[
-        $inputOuter,
         { backgroundColor: offBackgroundColor, borderColor: outerBorderColor },
         $outerStyleOverride,
       ]}
     >
-      <Animated.View
+      <StyledAnimatedView
+        className="flex h-full w-full items-center justify-center"
         style={[
-          $styles.toggleInner,
           { backgroundColor: onBackgroundColor },
           $innerStyleOverride,
           { opacity: opacity.current },
         ]}
       >
-        <View
-          style={[$radioDetail, { backgroundColor: dotBackgroundColor }, $detailStyleOverride]}
+        <StyledView
+          className="h-3 w-3 rounded-full"
+          style={{ backgroundColor: dotBackgroundColor }}
         />
-      </Animated.View>
-    </View>
+      </StyledAnimatedView>
+    </StyledView>
   )
 }
-
-const $radioDetail: ViewStyle = {
-  width: 12,
-  height: 12,
-  borderRadius: 6,
-}
-
-const $inputOuter: StyleProp<ViewStyle> = [$inputOuterBase, { borderRadius: 12 }]
