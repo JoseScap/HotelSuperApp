@@ -55,9 +55,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "876089fb-6f2e-49ae-8a03-23927a98a51f"
+        "projectId": "7f329b4e-5d38-4c6f-b510-8c86f34bc7eb"
       }
-    }
+    },
+    "owner": "juanpaez00"
   },
   "ignite": {
     "version": "10.1.6"
