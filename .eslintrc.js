@@ -11,8 +11,16 @@ module.exports = {
     "prettier",
   ],
   plugins: ["reactotron", "prettier"],
+  settings: {
+    "import/resolver": {
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
+    },
+  },
   rules: {
     "prettier/prettier": "error",
+    "import/no-unresolved": "off",
     // typescript-eslint
     "@typescript-eslint/array-type": 0,
     "@typescript-eslint/ban-ts-comment": 0,
