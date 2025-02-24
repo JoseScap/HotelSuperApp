@@ -1,13 +1,9 @@
 import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { Image, ImageStyle, View } from "react-native"
 import { Screen } from "@/components/Screen"
-import { ThemedStyle } from "@/theme"
-import { useHeader } from "@/utils/useHeader"
 import { Card, Text } from "@/components"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useBottomProps } from "@/hooks/useBottomProps"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -39,20 +35,11 @@ const cityActivities = [
 
 export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
   function ActivitiesScreen(_props) {
-    const { themed } = useAppTheme()
     const bottomProps = useBottomProps()
 
-    useHeader({
-      leftTx: "activitiesScreen:title",
-    })
-
     return (
-      <Screen
-        preset="scroll"
-        contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-        {...bottomProps}
-      >
-        <Text tx="activitiesScreen:subtitle" preset="subheading" style={themed($bottomSpace)} />
+      <Screen preset="scroll" {...bottomProps}>
+        <Text tx="activitiesScreen:subtitle" preset="subheading" />
         {hotelActivities.map((activity, index) => (
           <Card
             key={`hotel-${index}`}
@@ -62,14 +49,13 @@ export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
               </View>
             }
             ContentComponent={
-              <View style={themed($logoContainer)}>
+              <View>
                 <Image source={logo} style={$logoImage} />
               </View>
             }
-            style={themed($bottomSpace)}
           />
         ))}
-        <Text tx="activitiesScreen:city" preset="subheading" style={themed($bottomSpace)} />
+        <Text tx="activitiesScreen:city" preset="subheading" />
         {cityActivities.map((activity, index) => (
           <Card
             key={`city-${index}`}
@@ -79,29 +65,17 @@ export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
               </View>
             }
             ContentComponent={
-              <View style={themed($logoContainer)}>
+              <View>
                 <Image source={logo} style={$logoImage} />
               </View>
             }
-            style={themed($bottomSpace)}
           />
         ))}
       </Screen>
     )
   }
 
-const $bottomSpace: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
 const $logoImage: ImageStyle = {
   height: 42,
   width: 77,
 }
-
-const $logoContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  alignSelf: "flex-start",
-  justifyContent: "center",
-  height: 56,
-  paddingHorizontal: spacing.lg,
-})
