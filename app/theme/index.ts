@@ -1,19 +1,17 @@
 import type { StyleProp } from "react-native"
-import { colors as colorsLight } from "./colors"
-import { colors as colorsDark } from "./colorsDark"
-import { spacing as spacingLight } from "./spacing"
-import { spacing as spacingDark } from "./spacingDark"
-import { timing } from "./timing"
+import { colors } from "./colors"
+import { spacing } from "./spacing"
 import { typography } from "./typography"
+import { timing } from "./timing"
 
 // This supports "light" and "dark" themes by default. If undefined, it'll use the system theme
 export type ThemeContexts = "light" | "dark" | undefined
 
 // Because we have two themes, we need to define the types for each of them.
 // colorsLight and colorsDark should have the same keys, but different values.
-export type Colors = typeof colorsLight | typeof colorsDark
+export type Colors = typeof colors
 // The spacing type needs to take into account the different spacing values for light and dark themes.
-export type Spacing = typeof spacingLight | typeof spacingDark
+export type Spacing = typeof spacing
 
 // These two are consistent across themes.
 export type Timing = typeof timing
@@ -29,19 +27,21 @@ export interface Theme {
 }
 
 // Here we define our themes.
-export const lightTheme: Theme = {
-  colors: colorsLight,
-  spacing: spacingLight,
-  typography,
-  timing,
-  isDark: false,
-}
-export const darkTheme: Theme = {
-  colors: colorsDark,
-  spacing: spacingDark,
-  typography,
-  timing,
-  isDark: true,
+export const themes: Record<"light" | "dark", Theme> = {
+  light: {
+    colors,
+    spacing,
+    typography,
+    timing,
+    isDark: false,
+  },
+  dark: {
+    colors,
+    spacing,
+    typography,
+    timing,
+    isDark: true,
+  },
 }
 
 /**
@@ -71,10 +71,8 @@ export type ThemedStyleArray<T> = (
 )[]
 
 // Export the theme objects with backwards compatibility for the old theme structure.
-export { colorsLight as colors }
-export { colorsDark }
-export { spacingLight as spacing }
-
-export * from "./styles"
+export * from "./colors"
+export * from "./spacing"
 export * from "./typography"
+export * from "./styles"
 export * from "./timing"

@@ -1,0 +1,62 @@
+{
+  "branding": {
+    "name": "Grand Resort & Spa",
+    "shortName": "Grand Resort",
+    "logo": "/assets/images/logo.png",
+    "colors": {
+      "primary": "#0EA5E9",
+      "secondary": "#F59E0B",
+      "text": {
+        "primary": "#0F172A",
+        "secondary": "#64748B"
+      },
+      "background": {
+        "primary": "#FFFFFF",
+        "secondary": "#F1F5F9"
+      }
+    }
+  },
+  "features": {
+    "activities": {
+      "resort": {
+        "enabled": true,
+        "icon": "resort",
+        "order": 1
+      },
+      "spa": {
+        "enabled": true,
+        "icon": "spa",
+        "order": 2
+      },
+      "gastronomy": {
+        "enabled": true,
+        "icon": "restaurant",
+        "order": 3
+      },
+      "activities": {
+        "enabled": true,
+        "icon": "calendar",
+        "order": 4
+      }
+    },
+    "booking": {
+      "enabled": true,
+      "requireAuth": true
+    },
+    "checkIn": {
+      "enabled": true,
+      "requireAuth": true,
+      "availableFrom": "15:00"
+    }
+  },
+  "contact": {
+    "phone": "+1234567890",
+    "email": "info@grandresort.com",
+    "address": "123 Beach Avenue, Paradise City",
+    "social": {
+      "instagram": "@grandresort",
+      "facebook": "GrandResortOfficial",
+      "twitter": "@grandresort"
+    }
+  }
+} 
