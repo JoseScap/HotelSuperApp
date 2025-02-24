@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Platform, TextStyle, View, ViewStyle } from "react-native"
+import { Platform, View } from "react-native"
 import {
   Button,
   Screen,
@@ -10,11 +10,12 @@ import {
   PasswordRightAccessory,
 } from "../components"
 import { AppStackScreenProps } from "../navigators"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { useRegisterScreen } from "@/hooks/useRegisterScreen"
 import { useHeader } from "@/utils/useHeader"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+import { BsCaretLeft } from "react-icons/bs"
+
+const StyledView = styled(View)
 
 interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
@@ -49,128 +50,105 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
     register,
   } = useRegisterScreen(props)
 
-  const { themed } = useAppTheme()
   const isIos = Platform.OS === "ios"
 
   useHeader({
-    leftIcon: "caretLeft",
+    leftIcon: BsCaretLeft,
     rightTx: "registrationScreen:signUp",
     onLeftPress: () => navigation.goBack(),
   })
 
   return (
-    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
-      <Text
-        testID="register-heading"
-        tx="registrationScreen:signUp"
-        preset="heading"
-        style={themed($signUp)}
-      />
-      <Text
-        tx="registrationScreen:enterDetails"
-        preset="subheading"
-        style={themed($enterDetails)}
-      />
+    <Screen preset="auto" safeAreaEdges={["top"]} className="bg-sky-500">
+      {/* Header colored section */}
+      <StyledView className="bg-sky-500 h-24" />
 
-      <TextField
-        ref={emailInput}
-        value={email ?? ""}
-        onChangeText={setEmail}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="registrationScreen:emailFieldLabel"
-        placeholderTx="registrationScreen:emailFieldPlaceholder"
-        helperTx={isSubmitted ? emailValidation : undefined}
-        status={isSubmitted && emailValidation ? "error" : undefined}
-        onSubmitEditing={() => passwordInput.current?.focus()}
-      />
+      {/* Content section */}
+      <StyledView className="flex-1 bg-white px-4 rounded-t-3xl h-full">
+        <StyledView className="mt-8 mb-2">
+          <Text testID="register-heading" tx="registrationScreen:signUp" preset="heading" />
+        </StyledView>
 
-      <TextField
-        ref={passwordInput}
-        value={password ?? ""}
-        onChangeText={setPassword}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isPasswordHidden}
-        labelTx="registrationScreen:passwordFieldLabel"
-        placeholderTx="registrationScreen:passwordFieldPlaceholder"
-        helperTx={isSubmitted ? passwordValidation : undefined}
-        status={isSubmitted && passwordValidation ? "error" : undefined}
-        onSubmitEditing={() => confirmPasswordInput.current?.focus()}
-        RightAccessory={PasswordRightAccessory({
-          isPasswordHidden: isPasswordHidden,
-          onTogglePassword: togglePassword,
-        })}
-      />
+        <StyledView className="mb-6">
+          <Text tx="registrationScreen:enterDetails" preset="subheading" />
+        </StyledView>
 
-      <TextField
-        ref={confirmPasswordInput}
-        value={confirmPassword ?? ""}
-        onChangeText={setConfirmPassword}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isConfirmPasswordHidden}
-        labelTx="registrationScreen:confirmPasswordFieldLabel"
-        placeholderTx="registrationScreen:confirmPasswordFieldPlaceholder"
-        helperTx={isSubmitted ? confirmPasswordValidation : undefined}
-        status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
-        onSubmitEditing={register}
-        RightAccessory={PasswordRightAccessory({
-          isPasswordHidden: isConfirmPasswordHidden,
-          onTogglePassword: toggleConfirmPassword,
-        })}
-      />
+        <TextField
+          ref={emailInput}
+          value={email ?? ""}
+          onChangeText={setEmail}
+          containerClassName="mb-6"
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
+          labelTx="registrationScreen:emailFieldLabel"
+          placeholderTx="registrationScreen:emailFieldPlaceholder"
+          helperTx={isSubmitted ? emailValidation : undefined}
+          status={isSubmitted && emailValidation ? "error" : undefined}
+          onSubmitEditing={() => passwordInput.current?.focus()}
+        />
 
-      <Button
-        testID="register-button"
-        tx="registrationScreen:tapToSignUp"
-        style={themed($tapButton)}
-        preset="reversed"
-        onPress={register}
-      />
+        <TextField
+          ref={passwordInput}
+          value={password ?? ""}
+          onChangeText={setPassword}
+          containerClassName="mb-6"
+          autoCapitalize="none"
+          autoComplete="password"
+          autoCorrect={false}
+          secureTextEntry={isPasswordHidden}
+          labelTx="registrationScreen:passwordFieldLabel"
+          placeholderTx="registrationScreen:passwordFieldPlaceholder"
+          helperTx={isSubmitted ? passwordValidation : undefined}
+          status={isSubmitted && passwordValidation ? "error" : undefined}
+          onSubmitEditing={() => confirmPasswordInput.current?.focus()}
+          RightAccessory={PasswordRightAccessory({
+            isPasswordHidden: isPasswordHidden,
+            onTogglePassword: togglePassword,
+          })}
+        />
 
-      {signUpError && <Text tx={signUpError} preset="default" style={themed($errorText)} />}
+        <TextField
+          ref={confirmPasswordInput}
+          value={confirmPassword ?? ""}
+          onChangeText={setConfirmPassword}
+          containerClassName="mb-6"
+          autoCapitalize="none"
+          autoComplete="password"
+          autoCorrect={false}
+          secureTextEntry={isConfirmPasswordHidden}
+          labelTx="registrationScreen:confirmPasswordFieldLabel"
+          placeholderTx="registrationScreen:confirmPasswordFieldPlaceholder"
+          helperTx={isSubmitted ? confirmPasswordValidation : undefined}
+          status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
+          onSubmitEditing={register}
+          RightAccessory={PasswordRightAccessory({
+            isPasswordHidden: isConfirmPasswordHidden,
+            onTogglePassword: toggleConfirmPassword,
+          })}
+        />
 
-      <View style={themed($separator)}>
-        <Text size="sm" weight="bold" tx="registrationScreen:or" />
-      </View>
+        <Button
+          testID="register-button"
+          tx="registrationScreen:tapToSignUp"
+          className="mt-2"
+          preset="filled"
+          onPress={register}
+        />
 
-      {!isIos && <GoogleSignInButton />}
+        {signUpError && (
+          <StyledView className="mt-2">
+            <Text tx={signUpError} preset="default" className="text-error text-center" />
+          </StyledView>
+        )}
+
+        <StyledView className="items-center justify-center my-4">
+          <Text size="sm" weight="bold" tx="registrationScreen:or" />
+        </StyledView>
+
+        {!isIos && <GoogleSignInButton />}
+      </StyledView>
     </Screen>
   )
-})
-
-const $signUp: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginVertical: spacing.sm,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.error,
-  marginTop: spacing.xs,
-  textAlign: "center",
 })

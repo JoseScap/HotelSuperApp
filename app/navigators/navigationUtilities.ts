@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { BackHandler, Linking, Platform } from "react-native"
 import {
+  NavigationContainerProps,
   NavigationState,
   PartialState,
   createNavigationContainerRef,
@@ -8,7 +9,7 @@ import {
 import Config from "../config"
 import type { PersistNavigationConfig } from "../config/config.base"
 import { useIsMounted } from "../utils/useIsMounted"
-import type { AppStackParamList, NavigationProps } from "./AppNavigator"
+import type { AppStackParamList } from "./types"
 
 import * as storage from "../utils/storage"
 
@@ -116,7 +117,7 @@ function navigationRestoredDefaultState(persistNavigation: PersistNavigationConf
  */
 export function useNavigationPersistence(storage: Storage, persistenceKey: string) {
   const [initialNavigationState, setInitialNavigationState] =
-    useState<NavigationProps["initialState"]>()
+    useState<NavigationContainerProps["initialState"]>()
   const isMounted = useIsMounted()
 
   const initNavState = navigationRestoredDefaultState(Config.persistNavigation)
@@ -150,7 +151,9 @@ export function useNavigationPersistence(storage: Storage, persistenceKey: strin
 
       // Only restore the state if app has not started from a deep link
       if (!initialUrl) {
-        const state = (await storage.load(persistenceKey)) as NavigationProps["initialState"] | null
+        const state = (await storage.load(persistenceKey)) as
+          | NavigationContainerProps["initialState"]
+          | null
         if (state) setInitialNavigationState(state)
       }
     } finally {

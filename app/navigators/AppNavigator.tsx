@@ -4,16 +4,34 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native"
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
+import React, { type ReactElement } from "react"
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  NavigationState,
+  LinkingOptions,
+  InitialState,
+} from "@react-navigation/native"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
+import { useStores } from "@/models"
 import * as Screens from "@/screens"
-import Config from "../config"
-import { useStores } from "../models"
-import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
-import { ComponentProps, Fragment } from "react"
-import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
+import { AppStackParamList } from "./types"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { View } from "react-native"
+import { styled } from "nativewind"
+import { useAppColors } from "@/hooks/useAppColors"
+import { Icon } from "@/components/Icon"
+import { Text } from "@/components/Text"
+import { UserTabParamList, ReservedUserTabParamList, CheckedInTabParamList } from "./types"
+
+const StyledView = styled(View)
+
+const Stack = createNativeStackNavigator<AppStackParamList>()
+const UserTab = createBottomTabNavigator<UserTabParamList>()
+const ReservedUserTab = createBottomTabNavigator<ReservedUserTabParamList>()
+const CheckedInTab = createBottomTabNavigator<CheckedInTabParamList>()
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -28,79 +46,297 @@ import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
  *   https://reactnavigation.org/docs/typescript#type-checking-the-navigator
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
-export type AppStackParamList = {
-  Landing: undefined
-  Login: undefined
-  Register: undefined
-  RegisterSuccess: undefined
-  BottomNavigator: NavigatorScreenParams<BottomHomeParamList>
-  // 🔥 Your screens go here
-  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
-}
 
-/**
- * This is a list of all the route names that will exit the app if the back button
- * is pressed while in that screen. Only affects Android.
- */
-const exitRoutes = Config.exitRoutes
-
-export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStackScreenProps<
-  AppStackParamList,
-  T
->
-
-// Documentation: https://reactnavigation.org/docs/stack-navigator/
-const Stack = createNativeStackNavigator<AppStackParamList>()
-
-const AppStack = observer(function AppStack() {
+const AppStackNavigator = observer(function AppStackNavigator() {
   const {
-    authenticationStore: { isAuthenticated },
+    authenticationStore: { isAuthenticated, hasReservation, hasCheckedIn },
   } = useStores()
-
-  const {
-    theme: { colors },
-  } = useAppTheme()
 
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        navigationBarColor: colors.background,
+        animation: "slide_from_right",
         contentStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: "white",
         },
       }}
-      initialRouteName={isAuthenticated ? "BottomNavigator" : "Landing"}
+      initialRouteName="Landing"
     >
       {isAuthenticated ? (
-        <Fragment>
-          <Stack.Screen name="BottomNavigator" component={BottomHomeNavigator} />
-        </Fragment>
+        <>
+          {hasCheckedIn ? (
+            <Stack.Screen name="CheckedInTabs" component={CheckedInTabNavigator} />
+          ) : hasReservation ? (
+            <Stack.Screen name="ReservedUserTabs" component={ReservedUserTabNavigator} />
+          ) : (
+            <Stack.Screen name="UserTabs" component={UserTabNavigator} />
+          )}
+          <Stack.Screen name="ActivityDetail" component={Screens.ActivityDetailScreen} />
+          <Stack.Screen name="PaymentDetail" component={Screens.PaymentDetailScreen} />
+          <Stack.Screen name="ReservationDetail" component={Screens.ReservationDetailScreen} />
+        </>
       ) : (
-        <Fragment>
+        <>
           <Stack.Screen name="Landing" component={Screens.LandingScreen} />
           <Stack.Screen name="Login" component={Screens.LoginScreen} />
           <Stack.Screen name="Register" component={Screens.RegisterScreen} />
           <Stack.Screen name="RegisterSuccess" component={Screens.RegisterSuccessScreen} />
-        </Fragment>
+        </>
       )}
     </Stack.Navigator>
   )
 })
 
-export interface NavigationProps extends Partial<ComponentProps<typeof NavigationContainer>> {}
-
-export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
-  const { themeScheme, navigationTheme, setThemeContextOverride, ThemeProvider } =
-    useThemeProvider()
-
-  useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
+function UserTabNavigator(): ReactElement {
+  const { primary } = useAppColors()
 
   return (
-    <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
-        <AppStack />
-      </NavigationContainer>
-    </ThemeProvider>
+    <UserTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: primary,
+          borderTopWidth: 0,
+        },
+      }}
+    >
+      <UserTab.Screen
+        name="Explore"
+        component={Screens.ExploreScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsViewList"
+                size="md"
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:homeTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <UserTab.Screen
+        name="Booking"
+        component={Screens.BookingScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsMenuApp"
+                size="md"
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:activitiesTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <UserTab.Screen
+        name="Profile"
+        component={Screens.ProfileScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsAirplaneEngines"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:profileTab" />
+            </StyledView>
+          ),
+        }}
+      />
+    </UserTab.Navigator>
   )
-})
+}
+
+function ReservedUserTabNavigator(): ReactElement {
+  const { primary } = useAppColors()
+
+  return (
+    <ReservedUserTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: primary,
+          borderTopWidth: 0,
+        },
+      }}
+    >
+      <ReservedUserTab.Screen
+        name="Explore"
+        component={Screens.ExploreScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsViewList"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:homeTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <ReservedUserTab.Screen
+        name="Booking"
+        component={Screens.BookingScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsMenuApp"
+                size="md"
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:activitiesTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <ReservedUserTab.Screen
+        name="Reservations"
+        component={Screens.ReservationsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsChevronCompactDown"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:reservations" />
+            </StyledView>
+          ),
+        }}
+      />
+      <ReservedUserTab.Screen
+        name="Profile"
+        component={Screens.ProfileScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsAirplaneEngines"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:profileTab" />
+            </StyledView>
+          ),
+        }}
+      />
+    </ReservedUserTab.Navigator>
+  )
+}
+
+function CheckedInTabNavigator(): ReactElement {
+  const { primary } = useAppColors()
+
+  return (
+    <CheckedInTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: primary,
+          borderTopWidth: 0,
+        },
+      }}
+    >
+      <CheckedInTab.Screen
+        name="Explore"
+        component={Screens.ExploreScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsViewList"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:homeTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <CheckedInTab.Screen
+        name="Payments"
+        component={Screens.PaymentsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsViewList"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:activitiesTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <CheckedInTab.Screen
+        name="Booking"
+        component={Screens.BookingScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsMenuApp"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:activitiesTab" />
+            </StyledView>
+          ),
+        }}
+      />
+      <CheckedInTab.Screen
+        name="Profile"
+        component={Screens.ProfileScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <StyledView className="items-center">
+              <Icon
+                icon="BsAirplaneEngines"
+                size={24}
+                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
+              />
+              <Text className="text-white text-xs mt-1" tx="homeNavigator:profileTab" />
+            </StyledView>
+          ),
+        }}
+      />
+    </CheckedInTab.Navigator>
+  )
+}
+
+export interface NavigatorProps {
+  linking: LinkingOptions<AppStackParamList>
+  initialState?: InitialState
+  onStateChange?: (state: NavigationState | undefined) => void
+}
+
+export function AppNavigator({ linking, initialState, onStateChange }: NavigatorProps) {
+  return (
+    <NavigationContainer
+      linking={linking}
+      initialState={initialState}
+      onStateChange={onStateChange}
+      theme={{
+        dark: false,
+        colors: {
+          ...DefaultTheme.colors,
+          primary: "white",
+          background: "white",
+        },
+      }}
+    >
+      <AppStackNavigator />
+    </NavigationContainer>
+  )
+}

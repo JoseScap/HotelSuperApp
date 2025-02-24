@@ -1,20 +1,19 @@
 import { useState, Fragment } from "react"
-import { Platform, TextStyle, Image, ImageStyle, ViewStyle } from "react-native"
-import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin"
-
+import { Platform, Image } from "react-native"
+import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { TxKeyPath } from "@/i18n"
 import { useStores } from "@/models"
 import { Text } from "./Text"
 import { Button } from "./Button"
 import { supabase } from "@/utils/supabaseClient"
-import { useAppTheme } from "@/utils/useAppTheme"
-import { ThemedStyle } from "@/theme"
+import { styled } from "nativewind"
+
+const StyledImage = styled(Image)
 
 const gsi = require("../../assets/images/gsi.png")
 const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
-  const { themed } = useAppTheme()
   const [googleSignInError, setGoogleSignInError] = useState<TxKeyPath | undefined>()
   const {
     authenticationStore: { setAuthToken, setDisplayName },
@@ -38,15 +37,25 @@ export function GoogleSignInButton() {
       } else {
         throw new Error("no ID token present!")
       }
-    } catch (error: any) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        setGoogleSignInError("googleSignInButton:error.cancelled")
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        setGoogleSignInError("googleSignInButton:error.inProgress")
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        setGoogleSignInError("googleSignInButton:error.playServicesNotAvailable")
-      } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        setGoogleSignInError("googleSignInButton:error.signInRequired")
+    } catch (error: unknown) {
+      if (typeof error === "object" && error && "code" in error && typeof error.code === "number") {
+        const errorCode = error.code
+        switch (errorCode) {
+          case 12501: // statusCodes.SIGN_IN_CANCELLED
+            setGoogleSignInError("googleSignInButton:error.cancelled")
+            break
+          case 12502: // statusCodes.IN_PROGRESS
+            setGoogleSignInError("googleSignInButton:error.inProgress")
+            break
+          case 12500: // statusCodes.PLAY_SERVICES_NOT_AVAILABLE
+            setGoogleSignInError("googleSignInButton:error.playServicesNotAvailable")
+            break
+          case 12503: // statusCodes.SIGN_IN_REQUIRED
+            setGoogleSignInError("googleSignInButton:error.signInRequired")
+            break
+          default:
+            setGoogleSignInError("googleSignInButton:error.other")
+        }
       } else {
         setGoogleSignInError("googleSignInButton:error.other")
       }
@@ -59,35 +68,14 @@ export function GoogleSignInButton() {
     <Fragment>
       <Button
         tx="loginScreen:tapToLogInWithGoogle"
-        style={themed($tapButton)}
-        pressedStyle={themed($pressedStyle)}
+        className="mt-1"
         preset="reversed"
         onPress={handleGoogleSignIn}
-        LeftAccessory={() => <Image source={gsi} style={themed($leftAccessory)} />}
+        LeftAccessory={() => <StyledImage source={gsi} className="w-[30px] h-[30px] mr-3" />}
       />
       {googleSignInError && (
-        <Text tx={googleSignInError} preset="default" style={themed($errorText)} />
+        <Text tx={googleSignInError} preset="default" className="mt-2 text-center text-red-500" />
       )}
     </Fragment>
   )
 }
-
-const $leftAccessory: ThemedStyle<ImageStyle> = () => ({
-  width: 30,
-  height: 30,
-  marginRight: 12,
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.sm,
-  textAlign: "center",
-  color: "red",
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $pressedStyle: ThemedStyle<ViewStyle> = () => ({
-  opacity: 0.88,
-})

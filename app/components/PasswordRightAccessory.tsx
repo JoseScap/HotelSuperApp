@@ -1,7 +1,7 @@
 import { ComponentType, useMemo } from "react"
 import { TextFieldAccessoryProps } from "./TextField"
 import { Icon } from "./Icon"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { useAppColors } from "@/hooks/useAppColors"
 
 interface Props {
   isPasswordHidden: boolean
@@ -12,23 +12,20 @@ export function PasswordRightAccessory({
   isPasswordHidden,
   onTogglePassword,
 }: Props): ComponentType<TextFieldAccessoryProps> {
-  const {
-    theme: { colors },
-  } = useAppTheme()
+  const { text } = useAppColors()
 
   return useMemo(
     () =>
-      function PasswordRightAccessoryComponent(props: TextFieldAccessoryProps) {
+      function PasswordRightAccessoryComponent() {
         return (
           <Icon
-            icon={isPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
+            icon={isPasswordHidden ? "BsEye" : "BsEyeSlash"}
+            color={text.primary}
+            size="md"
             onPress={onTogglePassword}
           />
         )
       },
-    [isPasswordHidden, colors.palette.neutral800],
+    [isPasswordHidden, text.primary],
   )
 }

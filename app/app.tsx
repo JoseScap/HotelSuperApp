@@ -32,6 +32,10 @@ import { customFontsToLoad } from "./theme"
 import Config from "./config"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { loadDateFnsLocale } from "./utils/formatDate"
+import { ThemeProvider } from "@/components/ThemeProvider"
+import { RootStoreProvider } from "./models/RootStoreContext"
+import { LinkingOptions } from "@react-navigation/native"
+import { AppStackParamList } from "./navigators/types"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -39,21 +43,22 @@ export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 const prefix = Linking.createURL("/")
 const config = {
   screens: {
-    Login: {
-      path: "",
-    },
-    Welcome: "welcome",
-    Demo: {
-      screens: {
-        DemoShowroom: {
-          path: "showroom/:queryIndex?/:itemIndex?",
-        },
-        DemoDebug: "debug",
-        DemoPodcastList: "podcast",
-        DemoCommunity: "community",
-      },
-    },
+    Landing: "",
+    Login: "login",
+    Register: "register",
+    RegisterSuccess: "register-success",
+    UserTabs: "user",
+    ReservedUserTabs: "reserved",
+    CheckedInTabs: "checked-in",
+    ActivityDetail: "activity/:id",
+    PaymentDetail: "payment/:id",
+    ReservationDetail: "reservation/:id",
   },
+}
+
+const linking: LinkingOptions<AppStackParamList> = {
+  prefixes: [prefix] as string[],
+  config,
 }
 
 /**
@@ -77,11 +82,8 @@ export function App() {
       .then(() => loadDateFnsLocale())
   }, [])
 
-  const { rehydrated } = useInitialRootStore(() => {
+  const { rootStore, rehydrated } = useInitialRootStore(() => {
     // This runs after the root store has been initialized and rehydrated.
-
-    // If your initialization scripts run very fast, it's good to show the splash screen for just a bit longer to prevent flicker.
-    // Slightly delaying splash screen hiding for better UX; can be customized or removed as needed,
     setTimeout(SplashScreen.hideAsync, 500)
   })
 
@@ -100,23 +102,22 @@ export function App() {
     return null
   }
 
-  const linking = {
-    prefixes: [prefix],
-    config,
-  }
-
   // otherwise, we're ready to render the app
   return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <ErrorBoundary catchErrors={Config.catchErrors}>
-        <KeyboardProvider>
-          <AppNavigator
-            linking={linking}
-            initialState={initialNavigationState}
-            onStateChange={onNavigationStateChange}
-          />
-        </KeyboardProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <RootStoreProvider value={rootStore}>
+      <ThemeProvider>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          <ErrorBoundary catchErrors={Config.catchErrors}>
+            <KeyboardProvider>
+              <AppNavigator
+                linking={linking}
+                initialState={initialNavigationState}
+                onStateChange={onNavigationStateChange}
+              />
+            </KeyboardProvider>
+          </ErrorBoundary>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </RootStoreProvider>
   )
 }
