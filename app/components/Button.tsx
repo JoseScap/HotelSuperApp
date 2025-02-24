@@ -3,7 +3,6 @@ import { Pressable, PressableProps, PressableStateCallbackType, View } from "rea
 import { Text, TextProps } from "./Text"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
-import { useAppTheme } from "@/utils/useAppTheme"
 
 const StyledPressable = styled(Pressable)
 const StyledText = styled(Text)
@@ -80,70 +79,28 @@ export interface ButtonProps extends PressableProps {
   disabled?: boolean
 }
 
-interface PresetStyle {
-  base: {
-    light: string
-    dark: string
-  }
-  pressed: {
-    light: string
-    dark: string
-  }
-  text: {
-    light: string
-    dark: string
-  }
-}
-
 // Base styles
 const BUTTON_BASE =
   "min-h-[56px] rounded-[4px] justify-center items-center py-3 px-3 overflow-hidden flex-row"
 const BUTTON_TEXT_BASE =
   "text-[16px] leading-[20px] font-medium text-center flex-shrink flex-grow-0 z-[2]"
 
-// Preset styles con soporte para dark mode
-const BUTTON_PRESETS: Record<Presets, PresetStyle> = {
+// Preset styles using hotelConfig colors through Tailwind classes
+const BUTTON_PRESETS: Record<Presets, { base: string; pressed: string; text: string }> = {
   default: {
-    base: {
-      light: "border border-neutral-400 bg-neutral-100",
-      dark: "border border-neutral-600 bg-neutral-900",
-    },
-    pressed: {
-      light: "bg-neutral-200",
-      dark: "bg-neutral-800",
-    },
-    text: {
-      light: "text-neutral-800",
-      dark: "text-neutral-200",
-    },
+    base: "border border-secondary bg-background-secondary",
+    pressed: "bg-background-primary",
+    text: "text-text-primary",
   },
   filled: {
-    base: {
-      light: "bg-neutral-300",
-      dark: "bg-neutral-700",
-    },
-    pressed: {
-      light: "bg-neutral-400",
-      dark: "bg-neutral-600",
-    },
-    text: {
-      light: "text-neutral-800",
-      dark: "text-neutral-200",
-    },
+    base: "bg-primary",
+    pressed: "bg-secondary",
+    text: "text-background-primary",
   },
   reversed: {
-    base: {
-      light: "bg-neutral-800",
-      dark: "bg-neutral-200",
-    },
-    pressed: {
-      light: "bg-neutral-700",
-      dark: "bg-neutral-300",
-    },
-    text: {
-      light: "text-neutral-100",
-      dark: "text-neutral-900",
-    },
+    base: "bg-secondary",
+    pressed: "bg-primary",
+    text: "text-background-primary",
   },
 }
 
@@ -184,15 +141,13 @@ export function Button(props: ButtonProps) {
     ...rest
   } = props
 
-  const { themeContext } = useAppTheme()
-  const isDark = themeContext === "dark"
   const presetStyles = BUTTON_PRESETS[preset]
 
   const getButtonClasses = (state: PressableStateCallbackType) => {
     return nwMerge(
       BUTTON_BASE,
-      isDark ? presetStyles.base.dark : presetStyles.base.light,
-      state.pressed && (isDark ? presetStyles.pressed.dark : presetStyles.pressed.light),
+      presetStyles.base,
+      state.pressed && presetStyles.pressed,
       state.pressed && pressedClassName,
       disabled && "opacity-50",
       disabled && disabledClassName,
@@ -203,7 +158,7 @@ export function Button(props: ButtonProps) {
   const getTextClasses = (state: PressableStateCallbackType) => {
     return nwMerge(
       BUTTON_TEXT_BASE,
-      isDark ? presetStyles.text.dark : presetStyles.text.light,
+      presetStyles.text,
       state.pressed && "opacity-90",
       state.pressed && pressedTextClassName,
       disabled && disabledTextClassName,

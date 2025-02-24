@@ -1,14 +1,17 @@
 import { useEffect, useRef } from "react"
-import { StyleProp, View, ViewStyle, Animated } from "react-native"
-import { $styles } from "../../theme"
-import { $inputOuterBase, BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { View, Animated } from "react-native"
+import { BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+
+const StyledView = styled(View)
+const StyledAnimatedView = styled(Animated.View)
 
 export interface RadioToggleProps extends Omit<ToggleProps<RadioInputProps>, "ToggleInput"> {
   /**
-   * Optional style prop that affects the dot View.
+   * Optional class name for the radio dot
    */
-  inputDetailStyle?: ViewStyle
+  inputDetailClassName?: string
 }
 
 interface RadioInputProps extends BaseToggleInputProps<RadioToggleProps> {}
@@ -23,18 +26,7 @@ export function Radio(props: RadioToggleProps) {
 }
 
 function RadioInput(props: RadioInputProps) {
-  const {
-    on,
-    status,
-    disabled,
-    outerStyle: $outerStyleOverride,
-    innerStyle: $innerStyleOverride,
-    detailStyle: $detailStyleOverride,
-  } = props
-
-  const {
-    theme: { colors },
-  } = useAppTheme()
+  const { on, status, disabled, outerClassName, innerClassName, detailClassName } = props
 
   const opacity = useRef(new Animated.Value(0))
 
@@ -46,59 +38,36 @@ function RadioInput(props: RadioInputProps) {
     }).start()
   }, [on])
 
-  const offBackgroundColor = [
-    disabled && colors.palette.neutral400,
-    status === "error" && colors.errorBackground,
-    colors.palette.neutral200,
-  ].filter(Boolean)[0]
+  const outerClasses = nwMerge(
+    "h-[32px] w-[32px] rounded-full border-2 justify-center items-center",
+    disabled && "bg-neutral-400 border-neutral-400",
+    status === "error" && "bg-red-100 border-red-500",
+    !disabled && !status && !on && "border-neutral-800 bg-neutral-200",
+    !disabled && !status && on && "border-secondary bg-neutral-200",
+    outerClassName,
+  )
 
-  const outerBorderColor = [
-    disabled && colors.palette.neutral400,
-    status === "error" && colors.error,
-    !on && colors.palette.neutral800,
-    colors.palette.secondary500,
-  ].filter(Boolean)[0]
+  const innerClasses = nwMerge(
+    "absolute inset-0 justify-center items-center",
+    disabled && "bg-transparent",
+    status === "error" && "bg-red-100",
+    !disabled && !status && "bg-background-primary",
+    innerClassName,
+  )
 
-  const onBackgroundColor = [
-    disabled && colors.transparent,
-    status === "error" && colors.errorBackground,
-    colors.palette.neutral100,
-  ].filter(Boolean)[0]
-
-  const dotBackgroundColor = [
-    disabled && colors.palette.neutral600,
-    status === "error" && colors.error,
-    colors.palette.secondary500,
-  ].filter(Boolean)[0]
+  const dotClasses = nwMerge(
+    "w-3 h-3 rounded-full",
+    disabled && "bg-neutral-600",
+    status === "error" && "bg-red-500",
+    !disabled && !status && "bg-secondary",
+    detailClassName,
+  )
 
   return (
-    <View
-      style={[
-        $inputOuter,
-        { backgroundColor: offBackgroundColor, borderColor: outerBorderColor },
-        $outerStyleOverride,
-      ]}
-    >
-      <Animated.View
-        style={[
-          $styles.toggleInner,
-          { backgroundColor: onBackgroundColor },
-          $innerStyleOverride,
-          { opacity: opacity.current },
-        ]}
-      >
-        <View
-          style={[$radioDetail, { backgroundColor: dotBackgroundColor }, $detailStyleOverride]}
-        />
-      </Animated.View>
-    </View>
+    <StyledView className={outerClasses}>
+      <StyledAnimatedView style={{ opacity: opacity.current }} className={innerClasses}>
+        <StyledView className={dotClasses} />
+      </StyledAnimatedView>
+    </StyledView>
   )
 }
-
-const $radioDetail: ViewStyle = {
-  width: 12,
-  height: 12,
-  borderRadius: 6,
-}
-
-const $inputOuter: StyleProp<ViewStyle> = [$inputOuterBase, { borderRadius: 12 }]

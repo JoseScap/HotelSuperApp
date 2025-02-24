@@ -19,18 +19,4 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    function ({ addBase }) {
-      addBase({
-        ":root": {
-          "--color-primary": defaultConfig.branding.colors.primary,
-          "--color-secondary": defaultConfig.branding.colors.secondary,
-          "--color-text-primary": defaultConfig.branding.colors.text.primary,
-          "--color-text-secondary": defaultConfig.branding.colors.text.secondary,
-          "--color-background-primary": defaultConfig.branding.colors.background.primary,
-          "--color-background-secondary": defaultConfig.branding.colors.background.secondary,
-        },
-      })
-    },
-  ],
 }

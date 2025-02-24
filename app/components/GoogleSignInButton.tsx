@@ -1,20 +1,19 @@
 import { useState, Fragment } from "react"
-import { Platform, TextStyle, Image, ImageStyle, ViewStyle } from "react-native"
+import { Platform, Image } from "react-native"
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin"
-
 import { TxKeyPath } from "@/i18n"
 import { useStores } from "@/models"
 import { Text } from "./Text"
 import { Button } from "./Button"
 import { supabase } from "@/utils/supabaseClient"
-import { useAppTheme } from "@/utils/useAppTheme"
-import { ThemedStyle } from "@/theme"
+import { styled } from "nativewind"
+
+const StyledImage = styled(Image)
 
 const gsi = require("../../assets/images/gsi.png")
 const isIos = Platform.OS === "ios"
 
 export function GoogleSignInButton() {
-  const { themed } = useAppTheme()
   const [googleSignInError, setGoogleSignInError] = useState<TxKeyPath | undefined>()
   const {
     authenticationStore: { setAuthToken, setDisplayName },
@@ -59,35 +58,17 @@ export function GoogleSignInButton() {
     <Fragment>
       <Button
         tx="loginScreen:tapToLogInWithGoogle"
-        style={themed($tapButton)}
-        pressedStyle={themed($pressedStyle)}
+        className="mt-2"
+        pressedClassName="opacity-90"
         preset="reversed"
         onPress={handleGoogleSignIn}
-        LeftAccessory={() => <Image source={gsi} style={themed($leftAccessory)} />}
+        LeftAccessory={() => (
+          <StyledImage source={gsi} className="w-[30px] h-[30px] mr-3" resizeMode="contain" />
+        )}
       />
       {googleSignInError && (
-        <Text tx={googleSignInError} preset="default" style={themed($errorText)} />
+        <Text tx={googleSignInError} preset="default" className="mt-2 text-center text-red-500" />
       )}
     </Fragment>
   )
 }
-
-const $leftAccessory: ThemedStyle<ImageStyle> = () => ({
-  width: 30,
-  height: 30,
-  marginRight: 12,
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.sm,
-  textAlign: "center",
-  color: "red",
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $pressedStyle: ThemedStyle<ViewStyle> = () => ({
-  opacity: 0.88,
-})

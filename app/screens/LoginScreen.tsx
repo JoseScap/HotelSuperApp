@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Platform, TextStyle, View, ViewStyle } from "react-native"
+import { Platform, View } from "react-native"
 import {
   Button,
   Screen,
@@ -10,11 +10,11 @@ import {
   PasswordRightAccessory,
 } from "../components"
 import { AppStackScreenProps } from "../navigators"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
 import { useHeader } from "@/utils/useHeader"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -43,7 +43,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     login,
   } = useLoginScreen()
 
-  const { themed } = useAppTheme()
   const isIos = Platform.OS === "ios"
 
   useHeader({
@@ -53,15 +52,15 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   })
 
   return (
-    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+    <Screen preset="auto" contentClassName="px-4 py-6">
+      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" className="mb-2" />
+      <Text tx="loginScreen:enterDetails" preset="subheading" className="mb-6" />
 
       <TextField
         ref={emailInput}
         value={email ?? ""}
         onChangeText={setEmail}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         autoCapitalize="none"
         autoComplete="email"
         autoCorrect={false}
@@ -77,7 +76,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         ref={passwordInput}
         value={password ?? ""}
         onChangeText={setPassword}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
@@ -96,46 +95,20 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       <Button
         testID="login-button"
         tx="loginScreen:tapToLogIn"
-        style={themed($tapButton)}
+        className="mt-2"
         preset="reversed"
         onPress={login}
       />
 
-      {loginError && <Text tx={loginError} preset="default" style={themed($errorText)} />}
+      {loginError && (
+        <Text tx={loginError} preset="default" className="mt-2 text-red-500 text-center" />
+      )}
 
-      <View style={themed($separator)}>
+      <StyledView className="my-2 items-center justify-center">
         <Text size="sm" weight="bold" tx="loginScreen:or" />
-      </View>
+      </StyledView>
 
       {!isIos && <GoogleSignInButton />}
     </Screen>
   )
-})
-
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginVertical: spacing.sm,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.error,
-  marginTop: spacing.xs,
-  textAlign: "center",
 })

@@ -4,13 +4,38 @@ import { isRTL, translate, TxKeyPath } from "@/i18n"
 import { ReactNode } from "react"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
-import { typography } from "@/theme/typography"
 
 const StyledText = styled(RNText)
 
 type Sizes = "xxl" | "xl" | "lg" | "md" | "sm" | "xs" | "xxs"
-type Weights = keyof typeof typography.primary
-type Presets = "default" | "bold" | "heading" | "subheading" | "formLabel" | "formHelper"
+type Weights = "light" | "normal" | "medium" | "semibold" | "bold"
+
+const SIZES: Record<Sizes, string> = {
+  xxl: "text-4xl",
+  xl: "text-3xl",
+  lg: "text-2xl",
+  md: "text-base",
+  sm: "text-sm",
+  xs: "text-xs",
+  xxs: "text-[10px]",
+}
+
+const WEIGHTS: Record<Weights, string> = {
+  light: "font-light",
+  normal: "font-normal",
+  medium: "font-medium",
+  semibold: "font-semibold",
+  bold: "font-bold",
+}
+
+const PRESETS = {
+  default: "",
+  bold: WEIGHTS.bold,
+  heading: `${SIZES.xxl} ${WEIGHTS.bold}`,
+  subheading: `${SIZES.lg} ${WEIGHTS.medium}`,
+  formLabel: `${SIZES.sm} ${WEIGHTS.medium}`,
+  formHelper: SIZES.sm,
+}
 
 export interface TextProps extends RNTextProps {
   /**
@@ -31,40 +56,21 @@ export interface TextProps extends RNTextProps {
    */
   className?: string
   /**
-   * One of the different types of text presets.
-   */
-  preset?: Presets
-  /**
-   * Text weight modifier.
-   */
-  weight?: Weights
-  /**
-   * Text size modifier.
-   */
-  size?: Sizes
-  /**
    * Children components.
    */
   children?: ReactNode
-}
-
-const $sizeStyles: Record<Sizes, string> = {
-  xxl: "text-[36px] leading-[44px]",
-  xl: "text-[24px] leading-[34px]",
-  lg: "text-[20px] leading-[32px]",
-  md: "text-[18px] leading-[26px]",
-  sm: "text-[16px] leading-[24px]",
-  xs: "text-[14px] leading-[21px]",
-  xxs: "text-[12px] leading-[18px]",
-}
-
-const $presets: Record<Presets, string> = {
-  default: "text-base font-normal text-neutral-800",
-  bold: "text-base font-bold text-neutral-800",
-  heading: "text-[36px] leading-[44px] font-bold text-neutral-800",
-  subheading: "text-[20px] leading-[32px] font-medium text-neutral-800",
-  formLabel: "text-base font-medium text-neutral-800",
-  formHelper: "text-sm font-normal text-neutral-800",
+  /**
+   * The size of the text.
+   */
+  size?: Sizes
+  /**
+   * The weight of the text.
+   */
+  weight?: Weights
+  /**
+   * One of the different types of text presets.
+   */
+  preset?: keyof typeof PRESETS
 }
 
 /**
@@ -75,15 +81,27 @@ const $presets: Record<Presets, string> = {
  * @returns {JSX.Element} The rendered `Text` component.
  */
 export function Text(props: TextProps) {
-  const { size, tx, txOptions, text, children, className, preset = "default", ...rest } = props
+  const {
+    weight,
+    size,
+    tx,
+    txOptions,
+    text,
+    children,
+    className,
+    preset = "default",
+    ...rest
+  } = props
 
   const i18nText = tx && translate(tx, txOptions)
   const content = i18nText || text || children
 
   const classes = nwMerge(
-    $presets[preset],
-    size && $sizeStyles[size],
-    isRTL && "writing-rtl",
+    "text-text-primary",
+    PRESETS[preset],
+    weight && WEIGHTS[weight],
+    size && SIZES[size],
+    isRTL && "text-right",
     className,
   )
 

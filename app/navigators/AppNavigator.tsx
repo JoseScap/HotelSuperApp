@@ -11,7 +11,6 @@ import * as Screens from "@/screens"
 import Config from "../config"
 import { useStores } from "../models"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 import { ComponentProps, Fragment } from "react"
 import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
 
@@ -57,17 +56,13 @@ const AppStack = observer(function AppStack() {
     authenticationStore: { isAuthenticated },
   } = useStores()
 
-  const {
-    theme: { colors },
-  } = useAppTheme()
-
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        navigationBarColor: colors.background,
+        navigationBarColor: "#FFFFFF",
         contentStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: "#FFFFFF",
         },
       }}
       initialRouteName={isAuthenticated ? "BottomNavigator" : "Landing"}
@@ -91,16 +86,11 @@ const AppStack = observer(function AppStack() {
 export interface NavigationProps extends Partial<ComponentProps<typeof NavigationContainer>> {}
 
 export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
-  const { themeScheme, navigationTheme, setThemeContextOverride, ThemeProvider } =
-    useThemeProvider()
-
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
   return (
-    <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <NavigationContainer ref={navigationRef} theme={navigationTheme} {...props}>
-        <AppStack />
-      </NavigationContainer>
-    </ThemeProvider>
+    <NavigationContainer ref={navigationRef} {...props}>
+      <AppStack />
+    </NavigationContainer>
   )
 })

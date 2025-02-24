@@ -2,13 +2,9 @@ import { FC, Fragment } from "react"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useHeader } from "@/utils/useHeader"
 import { useProfileScreen } from "@/hooks/useProfileScreen"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
 import { useBottomProps } from "@/hooks/useBottomProps"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
 import { Checkbox, Icon, Screen, Text, TextField } from "@/components"
-import { TextStyle } from "react-native"
-import { ViewStyle } from "react-native"
+import { useColorScheme } from "nativewind"
 
 export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
   const { navigation } = _props
@@ -23,12 +19,8 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
     handleLogout,
   } = useProfileScreen()
 
-  const {
-    themed,
-    theme: { colors, isDark },
-    setThemeContextOverride,
-  } = useAppTheme()
-
+  const { colorScheme, setColorScheme } = useColorScheme()
+  const isDark = colorScheme === "dark"
   const bottomProps = useBottomProps()
 
   useHeader(
@@ -41,78 +33,45 @@ export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function H
   )
 
   return (
-    <Screen
-      preset="scroll"
-      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-      {...bottomProps}
-    >
-      <Text
-        preset="subheading"
-        style={themed($sectionSubtitle)}
-        tx="profileScreen:sectionPersonalDataTitle"
-      />
+    <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+      <Text preset="subheading" className="mb-4" tx="profileScreen:sectionPersonalDataTitle" />
 
       <TextField
         value={displayName}
         onChangeText={changeDisplayName}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         labelTx="profileScreen:displayNameLabel"
         editable={isEditing}
         status={error ? "error" : undefined}
         helperTx={error}
-        RightAccessory={(props) => (
+        RightAccessory={() => (
           <Fragment>
             {isEditing ? (
               <Fragment>
                 <Icon
                   icon="check"
-                  color={colors.palette.neutral800}
-                  containerStyle={props.style}
+                  className="text-neutral-800"
                   size={20}
                   onPress={() => saveDisplayName(displayName)}
                 />
-                <Icon
-                  icon="x"
-                  color={colors.palette.neutral800}
-                  containerStyle={props.style}
-                  size={20}
-                  onPress={cancelEditing}
-                />
+                <Icon icon="x" className="text-neutral-800" size={20} onPress={cancelEditing} />
               </Fragment>
             ) : (
-              <Icon
-                icon="pin"
-                color={colors.palette.neutral800}
-                containerStyle={props.style}
-                size={20}
-                onPress={startEditing}
-              />
+              <Icon icon="pin" className="text-neutral-800" size={20} onPress={startEditing} />
             )}
           </Fragment>
         )}
       />
 
-      <Text
-        preset="subheading"
-        style={themed($sectionSubtitle)}
-        tx="profileScreen:sectionPreferencesTitle"
-      />
+      <Text preset="subheading" className="mb-4" tx="profileScreen:sectionPreferencesTitle" />
 
-      <Text preset="bold" style={themed($sectionSubtitle)} tx="profileScreen:darkModeTitle" />
+      <Text preset="bold" className="mb-4" tx="profileScreen:darkModeTitle" />
 
       <Checkbox
         labelTx={isDark ? "profileScreen:deactivateDarkMode" : "profileScreen:activateDarkMode"}
         value={isDark}
-        onValueChange={() => setThemeContextOverride(isDark ? "light" : "dark")}
+        onValueChange={() => setColorScheme(isDark ? "light" : "dark")}
       />
     </Screen>
   )
 }
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
-})

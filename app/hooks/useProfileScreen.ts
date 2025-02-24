@@ -26,7 +26,7 @@ export function useProfileScreen(): UseProfileScreenReturn {
   } = useStores()
 
   function startEditing() {
-    setOriginalName(authDisplayName)
+    setOriginalName(authDisplayName || "")
     setIsEditing(true)
   }
 
@@ -68,7 +68,7 @@ export function useProfileScreen(): UseProfileScreenReturn {
   }
 
   useEffect(() => {
-    setDisplayName(authDisplayName)
+    setDisplayName(authDisplayName || "")
   }, [authDisplayName])
 
   return {

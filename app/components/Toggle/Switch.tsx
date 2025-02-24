@@ -1,21 +1,14 @@
-import { useEffect, useMemo, useRef, useCallback } from "react"
-import {
-  Animated,
-  Image,
-  ImageStyle,
-  Platform,
-  StyleProp,
-  TextStyle,
-  View,
-  ViewStyle,
-} from "react-native"
-
-import { $styles } from "@/theme"
+import { useEffect, useRef, useCallback } from "react"
+import { Animated, Image, Platform, View } from "react-native"
 import { iconRegistry } from "@/components/Icon"
 import { isRTL } from "@/i18n"
-import { $inputOuterBase, BaseToggleInputProps, Toggle, ToggleProps } from "./Toggle"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
+import { BaseToggleInputProps, Toggle, ToggleProps } from "./Toggle"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+
+const StyledView = styled(View)
+const StyledImage = styled(Image)
+const StyledAnimatedView = styled(Animated.View)
 
 export interface SwitchToggleProps extends Omit<ToggleProps<SwitchInputProps>, "ToggleInput"> {
   /**
@@ -23,10 +16,9 @@ export interface SwitchToggleProps extends Omit<ToggleProps<SwitchInputProps>, "
    */
   accessibilityMode?: "text" | "icon"
   /**
-   * Optional style prop that affects the knob View.
-   * Note: `width` and `height` rules should be points (numbers), not percentages.
+   * Optional class name for the switch knob
    */
-  inputDetailStyle?: Omit<ViewStyle, "width" | "height"> & { width?: number; height?: number }
+  inputDetailClassName?: string
 }
 
 interface SwitchInputProps extends BaseToggleInputProps<SwitchToggleProps> {
@@ -50,28 +42,16 @@ export function Switch(props: SwitchToggleProps) {
 }
 
 function SwitchInput(props: SwitchInputProps) {
-  const {
-    on,
-    status,
-    disabled,
-    outerStyle: $outerStyleOverride,
-    innerStyle: $innerStyleOverride,
-    detailStyle: $detailStyleOverride,
-  } = props
+  const { on, status, disabled, outerClassName, innerClassName, detailClassName } = props
 
-  const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
-
-  const animate = useRef(new Animated.Value(on ? 1 : 0)) // Initial value is set based on isActive
+  const animate = useRef(new Animated.Value(on ? 1 : 0))
   const opacity = useRef(new Animated.Value(0))
 
   useEffect(() => {
     Animated.timing(animate.current, {
       toValue: on ? 1 : 0,
       duration: 300,
-      useNativeDriver: true, // Enable native driver for smoother animations
+      useNativeDriver: true,
     }).start()
   }, [on])
 
@@ -83,190 +63,112 @@ function SwitchInput(props: SwitchInputProps) {
     }).start()
   }, [on])
 
-  const knobSizeFallback = 2
-
-  const knobWidth = [$detailStyleOverride?.width, $switchDetail?.width, knobSizeFallback].find(
-    (v) => typeof v === "number",
-  )
-
-  const knobHeight = [$detailStyleOverride?.height, $switchDetail?.height, knobSizeFallback].find(
-    (v) => typeof v === "number",
-  )
-
-  const offBackgroundColor = [
-    disabled && colors.palette.neutral400,
-    status === "error" && colors.errorBackground,
-    colors.palette.neutral300,
-  ].filter(Boolean)[0]
-
-  const onBackgroundColor = [
-    disabled && colors.transparent,
-    status === "error" && colors.errorBackground,
-    colors.palette.secondary500,
-  ].filter(Boolean)[0]
-
-  const knobBackgroundColor = (function () {
-    if (on) {
-      return [
-        $detailStyleOverride?.backgroundColor,
-        status === "error" && colors.error,
-        disabled && colors.palette.neutral600,
-        colors.palette.neutral100,
-      ].filter(Boolean)[0]
-    } else {
-      return [
-        $innerStyleOverride?.backgroundColor,
-        disabled && colors.palette.neutral600,
-        status === "error" && colors.error,
-        colors.palette.neutral200,
-      ].filter(Boolean)[0]
-    }
-  })()
-
   const rtlAdjustment = isRTL ? -1 : 1
-  const $themedSwitchInner = useMemo(() => themed([$styles.toggleInner, $switchInner]), [themed])
-
-  const offsetLeft = ($innerStyleOverride?.paddingStart ||
-    $innerStyleOverride?.paddingLeft ||
-    $themedSwitchInner?.paddingStart ||
-    $themedSwitchInner?.paddingLeft ||
-    0) as number
-
-  const offsetRight = ($innerStyleOverride?.paddingEnd ||
-    $innerStyleOverride?.paddingRight ||
-    $themedSwitchInner?.paddingEnd ||
-    $themedSwitchInner?.paddingRight ||
-    0) as number
+  const knobWidth = 24 // Fixed width for the knob
+  const paddingHorizontal = 4 // Fixed padding for the switch
 
   const outputRange =
     Platform.OS === "web"
       ? isRTL
-        ? [+(knobWidth || 0) + offsetRight, offsetLeft]
-        : [offsetLeft, +(knobWidth || 0) + offsetRight]
-      : [rtlAdjustment * offsetLeft, rtlAdjustment * (+(knobWidth || 0) + offsetRight)]
+        ? [knobWidth + paddingHorizontal, paddingHorizontal]
+        : [paddingHorizontal, knobWidth + paddingHorizontal]
+      : [rtlAdjustment * paddingHorizontal, rtlAdjustment * (knobWidth + paddingHorizontal)]
 
   const $animatedSwitchKnob = animate.current.interpolate({
     inputRange: [0, 1],
     outputRange,
   })
 
+  const outerClasses = nwMerge(
+    "h-8 w-14 rounded-full",
+    disabled && "bg-neutral-400",
+    status === "error" && "bg-red-100",
+    !disabled && !status && "bg-neutral-300",
+    outerClassName,
+  )
+
+  const innerClasses = nwMerge(
+    "absolute inset-0 rounded-full",
+    disabled && "bg-transparent",
+    status === "error" && "bg-red-100",
+    !disabled && !status && "bg-secondary",
+    innerClassName,
+  )
+
+  const knobClasses = nwMerge(
+    "absolute w-6 h-6 rounded-full left-0",
+    on
+      ? nwMerge(
+          status === "error" && "bg-red-500",
+          disabled && "bg-neutral-600",
+          !disabled && !status && "bg-background-primary",
+        )
+      : nwMerge(
+          disabled && "bg-neutral-600",
+          status === "error" && "bg-red-500",
+          !disabled && !status && "bg-neutral-200",
+        ),
+    detailClassName,
+  )
+
   return (
-    <View style={[$inputOuter, { backgroundColor: offBackgroundColor }, $outerStyleOverride]}>
-      <Animated.View
-        style={[
-          $themedSwitchInner,
-          { backgroundColor: onBackgroundColor },
-          $innerStyleOverride,
-          { opacity: opacity.current },
-        ]}
-      />
+    <StyledView className={outerClasses}>
+      <StyledAnimatedView style={{ opacity: opacity.current }} className={innerClasses} />
 
       <SwitchAccessibilityLabel {...props} role="on" />
       <SwitchAccessibilityLabel {...props} role="off" />
 
-      <Animated.View
-        style={[
-          $switchDetail,
-          $detailStyleOverride,
-          { transform: [{ translateX: $animatedSwitchKnob }] },
-          { width: knobWidth, height: knobHeight },
-          { backgroundColor: knobBackgroundColor },
-        ]}
+      <StyledAnimatedView
+        style={{ transform: [{ translateX: $animatedSwitchKnob }] }}
+        className={knobClasses}
       />
-    </View>
+    </StyledView>
   )
 }
 
-/**
- * @param {ToggleInputProps & { role: "on" | "off" }} props - The props for the `SwitchAccessibilityLabel` component.
- * @returns {JSX.Element} The rendered `SwitchAccessibilityLabel` component.
- */
 function SwitchAccessibilityLabel(props: SwitchInputProps & { role: "on" | "off" }) {
-  const { on, disabled, status, accessibilityMode, role, innerStyle, detailStyle } = props
-
-  const {
-    theme: { colors },
-  } = useAppTheme()
+  const { on, disabled, status, accessibilityMode, role } = props
 
   if (!accessibilityMode) return null
 
   const shouldLabelBeVisible = (on && role === "on") || (!on && role === "off")
 
-  const $switchAccessibilityStyle: StyleProp<ViewStyle> = [
-    $switchAccessibility,
-    role === "off" && { end: "5%" },
-    role === "on" && { left: "5%" },
-  ]
+  const containerClasses = nwMerge(
+    "absolute",
+    role === "off" && "right-[5%]",
+    role === "on" && "left-[5%]",
+  )
 
-  const color = (function () {
-    if (disabled) return colors.palette.neutral600
-    if (status === "error") return colors.error
-    if (!on) return innerStyle?.backgroundColor || colors.palette.secondary500
-    return detailStyle?.backgroundColor || colors.palette.neutral100
-  })()
+  const indicatorClasses = nwMerge(
+    role === "on" && "w-3 h-0.5",
+    role === "off" && "w-2 h-2 rounded-full border",
+    disabled && "border-neutral-600 bg-neutral-600",
+    status === "error" && "border-red-500 bg-red-500",
+    !disabled && !status && !on && "border-secondary bg-secondary",
+    !disabled && !status && on && "border-background-primary bg-background-primary",
+  )
+
+  const iconClasses = nwMerge(
+    "w-4 h-4",
+    disabled && "tint-neutral-600",
+    status === "error" && "tint-red-500",
+    !disabled && !status && !on && "tint-secondary",
+    !disabled && !status && on && "tint-background-primary",
+  )
 
   return (
-    <View style={$switchAccessibilityStyle}>
+    <StyledView className={containerClasses}>
       {accessibilityMode === "text" && shouldLabelBeVisible && (
-        <View
-          style={[
-            role === "on" && $switchAccessibilityLine,
-            role === "on" && { backgroundColor: color },
-            role === "off" && $switchAccessibilityCircle,
-            role === "off" && { borderColor: color },
-          ]}
-        />
+        <StyledView className={indicatorClasses} />
       )}
 
       {accessibilityMode === "icon" && shouldLabelBeVisible && (
-        <Image
-          style={[$switchAccessibilityIcon, { tintColor: color }]}
+        <StyledImage
+          className={iconClasses}
           source={role === "off" ? iconRegistry.hidden : iconRegistry.view}
+          resizeMode="contain"
         />
       )}
-    </View>
+    </StyledView>
   )
-}
-
-const $inputOuter: StyleProp<ViewStyle> = [
-  $inputOuterBase,
-  { height: 32, width: 56, borderRadius: 16, borderWidth: 0 },
-]
-
-const $switchInner: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderColor: colors.transparent,
-  position: "absolute",
-  paddingStart: 4,
-  paddingEnd: 4,
-})
-
-const $switchDetail: SwitchToggleProps["inputDetailStyle"] = {
-  borderRadius: 12,
-  position: "absolute",
-  width: 24,
-  height: 24,
-}
-
-const $switchAccessibility: TextStyle = {
-  width: "40%",
-  justifyContent: "center",
-  alignItems: "center",
-}
-
-const $switchAccessibilityIcon: ImageStyle = {
-  width: 14,
-  height: 14,
-  resizeMode: "contain",
-}
-
-const $switchAccessibilityLine: ViewStyle = {
-  width: 2,
-  height: 12,
-}
-
-const $switchAccessibilityCircle: ViewStyle = {
-  borderWidth: 2,
-  width: 12,
-  height: 12,
-  borderRadius: 6,
 }

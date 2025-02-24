@@ -12,12 +12,12 @@ import {
 } from "react-native"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
 
 const StyledView = styled(View)
 const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView)
+const StyledKeyboardAwareScrollView = styled(KeyboardAwareScrollView)
 
 export const DEFAULT_BOTTOM_OFFSET = 50
 
@@ -39,9 +39,9 @@ interface BaseScreenProps {
    */
   safeAreaEdges?: ExtendedEdge[]
   /**
-   * Background color
+   * Background color class from Tailwind (e.g. "bg-background-primary")
    */
-  backgroundColor?: string
+  backgroundClassName?: string
   /**
    * Status bar setting. Defaults to dark.
    */
@@ -100,12 +100,6 @@ function isNonScrolling(preset?: ScreenPreset) {
   return !preset || preset === "fixed"
 }
 
-// Base styles
-const SCREEN_BASE = "flex-1 h-full w-full"
-const OUTER_CONTENT = "flex-1 h-full w-full"
-const INNER_CONTENT = "justify-start items-stretch"
-const INNER_CONTENT_FIXED = "justify-end"
-
 function useAutoPreset(props: AutoScreenProps) {
   const { preset, scrollEnabledToggleThreshold } = props
   const { percent = 0.92, point = 0 } = scrollEnabledToggleThreshold || {}
@@ -152,11 +146,11 @@ function useAutoPreset(props: AutoScreenProps) {
 function ScreenWithoutScrolling(props: ScreenProps) {
   const { className, contentClassName, children, preset } = props
   return (
-    <StyledView className={nwMerge(OUTER_CONTENT, className)}>
+    <StyledView className={nwMerge("flex-1 h-full w-full", className)}>
       <StyledView
         className={nwMerge(
-          INNER_CONTENT,
-          preset === "fixed" && INNER_CONTENT_FIXED,
+          "justify-start items-stretch",
+          preset === "fixed" && "justify-end",
           contentClassName,
         )}
       >
@@ -183,7 +177,7 @@ function ScreenWithScrolling(props: ScreenProps) {
   useScrollToTop(ref)
 
   return (
-    <KeyboardAwareScrollView
+    <StyledKeyboardAwareScrollView
       bottomOffset={keyboardBottomOffset}
       {...{ keyboardShouldPersistTaps, scrollEnabled, ref }}
       {...ScrollViewProps}
@@ -196,47 +190,36 @@ function ScreenWithScrolling(props: ScreenProps) {
         ScrollViewProps?.onContentSizeChange?.(w, h)
       }}
       style={ScrollViewProps?.style}
-      contentContainerStyle={[
-        ScrollViewProps?.contentContainerStyle,
-        // eslint-disable-next-line react-native/no-inline-styles
-        {
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-        },
-      ]}
+      className="justify-start items-stretch"
+      contentContainerStyle={ScrollViewProps?.contentContainerStyle}
     >
-      <StyledView className={nwMerge(OUTER_CONTENT, className)}>
-        <StyledView className={nwMerge(INNER_CONTENT, contentClassName)}>{children}</StyledView>
+      <StyledView className={nwMerge("flex-1 h-full w-full", className)}>
+        <StyledView className={nwMerge("justify-start items-stretch", contentClassName)}>
+          {children}
+        </StyledView>
       </StyledView>
-    </KeyboardAwareScrollView>
+    </StyledKeyboardAwareScrollView>
   )
 }
 
 export function Screen(props: ScreenProps) {
   const {
-    theme: { colors },
-    themeContext,
-  } = useAppTheme()
-  const {
-    backgroundColor,
+    backgroundClassName = "bg-background-primary",
     KeyboardAvoidingViewProps,
     keyboardOffset = 0,
     safeAreaEdges,
     StatusBarProps,
-    statusBarStyle,
+    statusBarStyle = "dark",
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
 
   return (
     <StyledView
-      className={nwMerge(SCREEN_BASE)}
-      style={[{ backgroundColor: backgroundColor || colors.background }, $containerInsets]}
+      className={nwMerge("flex-1 h-full w-full", backgroundClassName)}
+      style={$containerInsets}
     >
-      <StatusBar
-        style={statusBarStyle || (themeContext === "dark" ? "light" : "dark")}
-        {...StatusBarProps}
-      />
+      <StatusBar style={statusBarStyle} {...StatusBarProps} />
 
       <StyledKeyboardAvoidingView
         className="flex-1"

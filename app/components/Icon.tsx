@@ -1,19 +1,15 @@
 import { ComponentType } from "react"
-import {
-  Image,
-  ImageStyle,
-  StyleProp,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewProps,
-  ViewStyle,
-} from "react-native"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { Image, TouchableOpacity, TouchableOpacityProps, View, ViewProps } from "react-native"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+
+const StyledImage = styled(Image)
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
 
 export type IconTypes = keyof typeof iconRegistry
 
-interface IconProps extends TouchableOpacityProps {
+interface IconProps extends Omit<TouchableOpacityProps, "style"> {
   /**
    * The name of the icon
    */
@@ -30,19 +26,14 @@ interface IconProps extends TouchableOpacityProps {
   size?: number
 
   /**
-   * Style overrides for the icon image
+   * Style overrides for the icon
    */
-  style?: StyleProp<ImageStyle>
+  className?: string
 
   /**
    * Style overrides for the icon container
    */
-  containerStyle?: StyleProp<ViewStyle>
-
-  /**
-   * An optional function to be called when the icon is pressed
-   */
-  onPress?: TouchableOpacityProps["onPress"]
+  containerClassName?: string
 }
 
 /**
@@ -53,36 +44,29 @@ interface IconProps extends TouchableOpacityProps {
  * @returns {JSX.Element} The rendered `Icon` component.
  */
 export function Icon(props: IconProps) {
-  const {
-    icon,
-    color,
-    size,
-    style: $imageStyleOverride,
-    containerStyle: $containerStyleOverride,
-    ...WrapperProps
-  } = props
+  const { icon, color, size, className, containerClassName, ...WrapperProps } = props
 
   const isPressable = !!WrapperProps.onPress
-  const Wrapper = (WrapperProps?.onPress ? TouchableOpacity : View) as ComponentType<
-    TouchableOpacityProps | ViewProps
+  const Wrapper = (WrapperProps?.onPress ? StyledTouchableOpacity : StyledView) as ComponentType<
+    { className?: string } & (TouchableOpacityProps | ViewProps)
   >
 
-  const { theme } = useAppTheme()
-
-  const $imageStyle: StyleProp<ImageStyle> = [
-    $imageStyleBase,
-    { tintColor: color ?? theme.colors.text },
-    size !== undefined && { width: size, height: size },
-    $imageStyleOverride,
-  ]
+  const imageClasses = nwMerge("object-contain", className)
 
   return (
     <Wrapper
       accessibilityRole={isPressable ? "imagebutton" : undefined}
       {...WrapperProps}
-      style={$containerStyleOverride}
+      className={containerClassName}
     >
-      <Image style={$imageStyle} source={iconRegistry[icon]} />
+      <StyledImage
+        className={imageClasses}
+        style={[
+          color ? { tintColor: color } : undefined,
+          size ? { width: size, height: size } : undefined,
+        ].filter(Boolean)}
+        source={iconRegistry[icon]}
+      />
     </Wrapper>
   )
 }
@@ -110,8 +94,4 @@ export const iconRegistry = {
   slack: require("../../assets/icons/demo/slack.png"),
   view: require("../../assets/icons/view.png"),
   x: require("../../assets/icons/x.png"),
-}
-
-const $imageStyleBase: ImageStyle = {
-  resizeMode: "contain",
 }
