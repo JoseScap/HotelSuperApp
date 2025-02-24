@@ -1,8 +1,36 @@
+const defaultConfig = require("./app/config/hotelConfig.json")
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: defaultConfig.branding.colors.primary,
+        secondary: defaultConfig.branding.colors.secondary,
+        text: {
+          primary: defaultConfig.branding.colors.text.primary,
+          secondary: defaultConfig.branding.colors.text.secondary,
+        },
+        background: {
+          primary: defaultConfig.branding.colors.background.primary,
+          secondary: defaultConfig.branding.colors.background.secondary,
+        },
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    function ({ addBase }) {
+      addBase({
+        ":root": {
+          "--color-primary": defaultConfig.branding.colors.primary,
+          "--color-secondary": defaultConfig.branding.colors.secondary,
+          "--color-text-primary": defaultConfig.branding.colors.text.primary,
+          "--color-text-secondary": defaultConfig.branding.colors.text.secondary,
+          "--color-background-primary": defaultConfig.branding.colors.background.primary,
+          "--color-background-secondary": defaultConfig.branding.colors.background.secondary,
+        },
+      })
+    },
+  ],
 }

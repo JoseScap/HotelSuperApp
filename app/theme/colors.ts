@@ -1,3 +1,5 @@
+import defaultConfig from "@/config/hotelConfig.json"
+
 const palette = {
   neutral100: "#FFFFFF",
   neutral200: "#F4F2F1",
@@ -83,3 +85,39 @@ export const colors = {
    */
   errorBackground: palette.angry100,
 } as const
+
+export function getAppColors() {
+  try {
+    const storedConfig = localStorage.getItem("@hotel_config")
+    const config = storedConfig ? JSON.parse(storedConfig) : defaultConfig
+    const { colors } = config.branding
+
+    return {
+      primary: colors.primary,
+      secondary: colors.secondary,
+      text: {
+        primary: colors.text.primary,
+        secondary: colors.text.secondary,
+      },
+      background: {
+        primary: colors.background.primary,
+        secondary: colors.background.secondary,
+      },
+    }
+  } catch (error) {
+    console.error("Error getting app colors:", error)
+    const { colors } = defaultConfig.branding
+    return {
+      primary: colors.primary,
+      secondary: colors.secondary,
+      text: {
+        primary: colors.text.primary,
+        secondary: colors.text.secondary,
+      },
+      background: {
+        primary: colors.background.primary,
+        secondary: colors.background.secondary,
+      },
+    }
+  }
+}
