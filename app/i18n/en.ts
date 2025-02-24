@@ -1,12 +1,27 @@
-import demoEn from "./demo-en"
-
 const en = {
   // Common and generics
   common: {
-    ok: "OK!",
+    ok: "OK",
     cancel: "Cancel",
     back: "Back",
     logOut: "Log Out",
+    duration: "Duration: ",
+    schedule: "Schedule: ",
+    bookNow: "Book Now",
+    currency: "$",
+  },
+  error: {
+    generic: "An error occurred",
+    network: "Network error",
+    validation: "Validation error",
+    unauthorized: "Unauthorized",
+    notFound: "Not found",
+    invalidEmail: "Invalid email",
+    invalidPassword: "Invalid password",
+    invalidCredentials: "Invalid credentials",
+    required: "This field is required",
+    minLength: "Minimum length not met",
+    maxLength: "Maximum length exceeded",
   },
   emptyStateComponent: {
     generic: {
@@ -82,17 +97,24 @@ const en = {
       passwordInvalid: "Password must contain only letters and numbers",
       passwordsDontMatch: "Passwords don't match",
       signUpFailed: "Registration failed. Please try again.",
+      confirmPasswordRequired: "Please confirm your password",
     },
     or: "Or you can continue with",
     tapToSignUpWithGoogle: "Continue with Google",
   },
   homeScreen: {
     title: "Home",
+    welcome: "Welcome",
+    searchPlaceholder: "Search...",
+    activities: "Activities",
+    popularDestinations: "Popular Destinations",
+    recommendations: "Recommendations",
   },
   profileScreen: {
     title: "Profile",
     sectionPersonalDataTitle: "Personal Data",
     sectionPreferencesTitle: "Preferences",
+    sectionActionsTitle: "Actions",
     darkModeTitle: "Dark Mode",
     activateDarkMode: "Activate Dark Mode",
     deactivateDarkMode: "Deactivate Dark Mode",
@@ -112,14 +134,16 @@ const en = {
       "Your account has been created. Please check your email to verify your account before logging in.",
     button: "Go to Login",
   },
+  exploreScreen: {
+    title: "Explore",
+    subtitle: "Discover our facilities and services",
+    searchPlaceholder: "Search activities, services...",
+    activities: "Activities",
+    popularDestinations: "Popular Destinations",
+    recommendations: "Recommendations",
+  },
 
   // Navigators
-  demoNavigator: {
-    componentsTab: "Components",
-    debugTab: "Debug",
-    communityTab: "Community",
-    podcastListTab: "Podcast",
-  },
   homeNavigator: {
     homeTab: "Home",
     profileTab: "Profile",
@@ -199,9 +223,81 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
+  bookingScreen: {
+    title: "Book a Room",
+    subtitle: "Select dates and number of guests",
+    selectDates: "Select dates",
+    numberOfGuests: "Number of guests",
+    bookingSummary: "Booking Summary",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    guests: "Guests",
+    notSelected: "Not selected",
+    continueBooking: "Continue with Booking",
+  },
+  checkInScreen: {
+    title: "Online Check-in",
+    subtitle: "Complete the form to speed up your check-in process",
+    reservationCode: "Reservation Code",
+    lastName: "Last Name",
+    email: "Email",
+    estimatedArrival: "Estimated Arrival Time",
+    importantInfo: "Important Information",
+    importantInfoDetails: [
+      "Check-in is available from 3:00 PM",
+      "Valid ID is required",
+      "Credit card is required for security deposit",
+    ],
+    completeCheckIn: "Complete Check-in",
+  },
+  activityDetailScreen: {
+    topBarTitle: "Activity Details",
+    resort: {
+      title: "Resort & Spa",
+      description: "Enjoy a unique experience in our luxury facilities",
+    },
+    spa: {
+      title: "Spa & Wellness",
+      description: "An oasis of relaxation and wellness",
+    },
+    gastronomy: {
+      title: "Gastronomy",
+      description: "Explore our culinary offerings",
+    },
+    activities: {
+      title: "Activities",
+      description: "Plan your day with our activities",
+    },
+    timeLabel: "Duration",
+    scheduleLabel: "Schedule",
+    price: "Price: {{currency}}{{value}}",
+    bookActivity: "Book {{activity}}",
+  },
+}
 
-  ...demoEn,
+export type Translations = {
+  common: typeof en.common
+  error: typeof en.error
+  emptyStateComponent: typeof en.emptyStateComponent
+  googleSignInButton: typeof en.googleSignInButton
+  landingScreen: typeof en.landingScreen
+  errorScreen: typeof en.errorScreen
+  loginScreen: typeof en.loginScreen
+  registrationScreen: typeof en.registrationScreen
+  homeScreen: typeof en.homeScreen
+  profileScreen: typeof en.profileScreen
+  activitiesScreen: typeof en.activitiesScreen
+  registerSuccessScreen: typeof en.registerSuccessScreen
+  exploreScreen: typeof en.exploreScreen
+  bookingScreen: typeof en.bookingScreen
+  checkInScreen: typeof en.checkInScreen
+  activityDetailScreen: typeof en.activityDetailScreen
+  homeNavigator: typeof en.homeNavigator
+  // Demo screens son opcionales
+  demoCommunityScreen?: typeof en.demoCommunityScreen
+  demoShowroomScreen?: typeof en.demoShowroomScreen
+  demoDebugScreen?: typeof en.demoDebugScreen
+  demoPodcastListScreen?: typeof en.demoPodcastListScreen
 }
 
 export default en
-export type Translations = typeof en

@@ -10,15 +10,15 @@ import {
   WelcomeScreen
 } from "@/screens"
 
-export type <%= props.pascalCaseName %>NavigatorParamList = {
-  Demo: undefined
+export type <%= props.pascalCaseName %>ParamList = {
+  Welcome: undefined
 }
 
-const Stack = createNativeStackNavigator<<%= props.pascalCaseName %>NavigatorParamList>()
+const Stack = createNativeStackNavigator<<%= props.pascalCaseName %>ParamList>()
 export const <%= props.pascalCaseName %>Navigator = () => {
   return (
     <Stack.Navigator screenOptions={{ cardStyle: { backgroundColor: "transparent" }, headerShown: false, }}>
-      <Stack.Screen name="Demo" component={WelcomeScreen} />
+      <Stack.Screen name="Welcome" component={WelcomeScreen} />
     </Stack.Navigator>
   )
 }
