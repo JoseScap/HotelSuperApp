@@ -1,118 +1,136 @@
-import { FC, Fragment } from "react"
-import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
-import { useHeader } from "@/utils/useHeader"
-import { useProfileScreen } from "@/hooks/useProfileScreen"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
-import { useBottomProps } from "@/hooks/useBottomProps"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
-import { Checkbox, Icon, Screen, Text, TextField } from "@/components"
-import { TextStyle } from "react-native"
-import { ViewStyle } from "react-native"
+import { View } from "react-native"
+import { Screen } from "@/components/Screen"
+import { Text } from "@/components/Text"
+import { styled } from "nativewind"
+import { Icon } from "@/components/Icon"
+import { Button } from "@/components/Button"
+import { useStores } from "@/models"
+import { observer } from "mobx-react-lite"
+import { useHotelConfig } from "@/hooks/useHotelConfig"
+import { Switch } from "react-native"
+import { TxKeyPath } from "@/i18n"
 
-export const ProfileScreen: FC<BottomHomeTabScreenProps<"Profile">> = function HomeScreen(_props) {
-  const { navigation } = _props
+const StyledView = styled(View)
+
+export const ProfileScreen = observer(function ProfileScreen() {
   const {
-    displayName,
-    isEditing,
-    error,
-    startEditing,
-    cancelEditing,
-    saveDisplayName,
-    changeDisplayName,
-    handleLogout,
-  } = useProfileScreen()
-
-  const {
-    themed,
-    theme: { colors, isDark },
-    setThemeContextOverride,
-  } = useAppTheme()
-
-  const bottomProps = useBottomProps()
-
-  useHeader(
-    {
-      leftTx: "profileScreen:title",
-      rightTx: "common:logOut",
-      onRightPress: () => handleLogout(() => navigation.navigate("Landing")),
+    authenticationStore: {
+      isAuthenticated,
+      hasReservation,
+      hasCheckedIn,
+      toggleHasReservation,
+      toggleHasCheckedIn,
+      logout,
     },
-    [handleLogout],
-  )
+  } = useStores()
+  const { name: hotelName } = useHotelConfig()
 
   return (
-    <Screen
-      preset="scroll"
-      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-      {...bottomProps}
-    >
-      <Text
-        preset="subheading"
-        style={themed($sectionSubtitle)}
-        tx="profileScreen:sectionPersonalDataTitle"
-      />
+    <Screen preset="scroll" safeAreaEdges={["top"]} className="bg-background-primary">
+      {/* Header */}
+      <StyledView className="bg-primary px-4 py-6">
+        <Text preset="heading" className="text-2xl text-white mb-2">
+          {hotelName}
+        </Text>
+        <Text preset="formHelper" className="text-white/90">
+          Mi Perfil
+        </Text>
+      </StyledView>
 
-      <TextField
-        value={displayName}
-        onChangeText={changeDisplayName}
-        containerStyle={themed($textField)}
-        labelTx="profileScreen:displayNameLabel"
-        editable={isEditing}
-        status={error ? "error" : undefined}
-        helperTx={error}
-        RightAccessory={(props) => (
-          <Fragment>
-            {isEditing ? (
-              <Fragment>
-                <Icon
-                  icon="check"
-                  color={colors.palette.neutral800}
-                  containerStyle={props.style}
-                  size={20}
-                  onPress={() => saveDisplayName(displayName)}
-                />
-                <Icon
-                  icon="x"
-                  color={colors.palette.neutral800}
-                  containerStyle={props.style}
-                  size={20}
-                  onPress={cancelEditing}
-                />
-              </Fragment>
-            ) : (
-              <Icon
-                icon="pin"
-                color={colors.palette.neutral800}
-                containerStyle={props.style}
-                size={20}
-                onPress={startEditing}
-              />
+      <StyledView className="p-4">
+        {/* Sección de Datos Personales */}
+        <StyledView className="mb-8">
+          <Text preset="subheading" tx="profileScreen:sectionPersonalDataTitle" className="mb-4" />
+
+          {/* Avatar y Nombre */}
+          <StyledView className="flex-row items-center mb-6">
+            <StyledView className="w-16 h-16 rounded-full bg-primary/10 items-center justify-center mr-4">
+              <Icon icon="BsMenuApp" size={32} color="#0EA5E9" />
+            </StyledView>
+            <StyledView>
+              <Text preset="formLabel" className="text-text-primary text-lg mb-1">
+                {isAuthenticated ? "Usuario verificado" : "Sin verificar"}
+              </Text>
+              <Text preset="formHelper" className="text-text-secondary">
+                {isAuthenticated ? "Cuenta activa" : "Por favor, inicia sesión"}
+              </Text>
+            </StyledView>
+          </StyledView>
+
+          {/* Estado de la cuenta */}
+          <StyledView className="bg-background-secondary rounded-lg p-4 mb-4">
+            <Text preset="formLabel" className="text-text-primary mb-2">
+              Estado de la cuenta
+            </Text>
+            <Text preset="formHelper" className="text-text-secondary">
+              {isAuthenticated
+                ? "Tu cuenta está activa y verificada"
+                : "Por favor, inicia sesión para acceder a todas las funciones"}
+            </Text>
+          </StyledView>
+        </StyledView>
+
+        {/* Sección de Estado (Solo visible cuando está autenticado) */}
+        {isAuthenticated && (
+          <StyledView className="mb-8">
+            <Text preset="subheading" className="mb-4 text-text-primary">
+              Estado de Reserva
+            </Text>
+
+            {/* Toggle de Reserva */}
+            <StyledView className="bg-background-secondary rounded-lg p-4 mb-4">
+              <StyledView className="flex-row items-center justify-between">
+                <StyledView>
+                  <Text preset="formLabel" className="text-text-primary mb-1">
+                    Tiene Reserva
+                  </Text>
+                  <Text preset="formHelper" className="text-text-secondary">
+                    {hasReservation ? "Reserva activa" : "Sin reserva"}
+                  </Text>
+                </StyledView>
+                <Switch value={hasReservation} onValueChange={toggleHasReservation} />
+              </StyledView>
+            </StyledView>
+
+            {/* Toggle de Check-in (Solo visible si tiene reserva) */}
+            {hasReservation && (
+              <StyledView className="bg-background-secondary rounded-lg p-4">
+                <StyledView className="flex-row items-center justify-between">
+                  <StyledView>
+                    <Text preset="formLabel" className="text-text-primary mb-1">
+                      Check-in Realizado
+                    </Text>
+                    <Text preset="formHelper" className="text-text-secondary">
+                      {hasCheckedIn ? "Check-in completado" : "Pendiente de check-in"}
+                    </Text>
+                  </StyledView>
+                  <Switch value={hasCheckedIn} onValueChange={toggleHasCheckedIn} />
+                </StyledView>
+              </StyledView>
             )}
-          </Fragment>
+          </StyledView>
         )}
-      />
 
-      <Text
-        preset="subheading"
-        style={themed($sectionSubtitle)}
-        tx="profileScreen:sectionPreferencesTitle"
-      />
+        {/* Sección de Acciones */}
+        <StyledView className="mb-8">
+          <Text
+            preset="subheading"
+            tx={"profileScreen:sectionActionsTitle" as TxKeyPath}
+            className="mb-4"
+          />
 
-      <Text preset="bold" style={themed($sectionSubtitle)} tx="profileScreen:darkModeTitle" />
-
-      <Checkbox
-        labelTx={isDark ? "profileScreen:deactivateDarkMode" : "profileScreen:activateDarkMode"}
-        value={isDark}
-        onValueChange={() => setThemeContextOverride(isDark ? "light" : "dark")}
-      />
+          <Button
+            tx="common:logOut"
+            preset="default"
+            className="border-primary"
+            textClassName="text-primary"
+            onPress={logout}
+            LeftAccessory={() => (
+              <Icon icon="BsCaretLeft" size={20} color="#0EA5E9" className="mr-2" />
+            )}
+          />
+        </StyledView>
+      </StyledView>
     </Screen>
   )
-}
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
 })

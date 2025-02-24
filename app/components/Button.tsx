@@ -3,7 +3,6 @@ import { Pressable, PressableProps, PressableStateCallbackType, View } from "rea
 import { Text, TextProps } from "./Text"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
-import { useAppTheme } from "@/utils/useAppTheme"
 
 const StyledPressable = styled(Pressable)
 const StyledText = styled(Text)
@@ -184,15 +183,13 @@ export function Button(props: ButtonProps) {
     ...rest
   } = props
 
-  const { themeContext } = useAppTheme()
-  const isDark = themeContext === "dark"
   const presetStyles = BUTTON_PRESETS[preset]
 
   const getButtonClasses = (state: PressableStateCallbackType) => {
     return nwMerge(
       BUTTON_BASE,
-      isDark ? presetStyles.base.dark : presetStyles.base.light,
-      state.pressed && (isDark ? presetStyles.pressed.dark : presetStyles.pressed.light),
+      presetStyles.base.light,
+      state.pressed && presetStyles.pressed.light,
       state.pressed && pressedClassName,
       disabled && "opacity-50",
       disabled && disabledClassName,
@@ -203,7 +200,7 @@ export function Button(props: ButtonProps) {
   const getTextClasses = (state: PressableStateCallbackType) => {
     return nwMerge(
       BUTTON_TEXT_BASE,
-      isDark ? presetStyles.text.dark : presetStyles.text.light,
+      presetStyles.text.light,
       state.pressed && "opacity-90",
       state.pressed && pressedTextClassName,
       disabled && disabledTextClassName,
