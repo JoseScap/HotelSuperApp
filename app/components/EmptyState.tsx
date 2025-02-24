@@ -1,12 +1,14 @@
-import { Image, ImageProps, ImageStyle, StyleProp, TextStyle, View, ViewStyle } from "react-native"
-
+import { Image, ImageProps, View } from "react-native"
 import { Button, ButtonProps } from "./Button"
 import { Text, TextProps } from "./Text"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
 import { translate } from "@/i18n/translate"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
 
 const sadFace = require("../../assets/images/sad-face.png")
+
+const StyledView = styled(View)
+const StyledImage = styled(Image)
 
 interface EmptyStateProps {
   /**
@@ -16,7 +18,7 @@ interface EmptyStateProps {
   /**
    * Style override for the container.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
   /**
    * An Image source to be displayed above the heading.
    */
@@ -24,7 +26,7 @@ interface EmptyStateProps {
   /**
    * Style overrides for image.
    */
-  imageStyle?: StyleProp<ImageStyle>
+  imageClassName?: string
   /**
    * Pass any additional props directly to the Image component.
    */
@@ -45,7 +47,7 @@ interface EmptyStateProps {
   /**
    * Style overrides for heading text.
    */
-  headingStyle?: StyleProp<TextStyle>
+  headingClassName?: string
   /**
    * Pass any additional props directly to the heading Text component.
    */
@@ -66,7 +68,7 @@ interface EmptyStateProps {
   /**
    * Style overrides for content text.
    */
-  contentStyle?: StyleProp<TextStyle>
+  contentClassName?: string
   /**
    * Pass any additional props directly to the content Text component.
    */
@@ -87,11 +89,11 @@ interface EmptyStateProps {
   /**
    * Style overrides for button.
    */
-  buttonStyle?: ButtonProps["style"]
+  buttonClassName?: string
   /**
    * Style overrides for button text.
    */
-  buttonTextStyle?: ButtonProps["textStyle"]
+  buttonTextClassName?: string
   /**
    * Called when the button is pressed.
    */
@@ -116,12 +118,6 @@ interface EmptyStatePresetItem {
  * @returns {JSX.Element} The rendered `EmptyState` component.
  */
 export function EmptyState(props: EmptyStateProps) {
-  const {
-    theme,
-    themed,
-    theme: { spacing },
-  } = useAppTheme()
-
   const EmptyStatePresets = {
     generic: {
       imageSource: sadFace,
@@ -145,12 +141,12 @@ export function EmptyState(props: EmptyStateProps) {
     headingTx,
     headingTxOptions,
     imageSource = preset.imageSource,
-    style: $containerStyleOverride,
-    buttonStyle: $buttonStyleOverride,
-    buttonTextStyle: $buttonTextStyleOverride,
-    contentStyle: $contentStyleOverride,
-    headingStyle: $headingStyleOverride,
-    imageStyle: $imageStyleOverride,
+    className,
+    contentClassName,
+    headingClassName,
+    imageClassName,
+    buttonClassName,
+    buttonTextClassName,
     ButtonProps,
     ContentTextProps,
     HeadingTextProps,
@@ -162,41 +158,17 @@ export function EmptyState(props: EmptyStateProps) {
   const isContentPresent = !!(content || contentTx)
   const isButtonPresent = !!(button || buttonTx)
 
-  const $containerStyles = [$containerStyleOverride]
-  const $imageStyles = [
-    $image,
-    (isHeadingPresent || isContentPresent || isButtonPresent) && { marginBottom: spacing.xxxs },
-    $imageStyleOverride,
-    ImageProps?.style,
-  ]
-  const $headingStyles = [
-    themed($heading),
-    isImagePresent && { marginTop: spacing.xxxs },
-    (isContentPresent || isButtonPresent) && { marginBottom: spacing.xxxs },
-    $headingStyleOverride,
-    HeadingTextProps?.style,
-  ]
-  const $contentStyles = [
-    themed($content),
-    (isImagePresent || isHeadingPresent) && { marginTop: spacing.xxxs },
-    isButtonPresent && { marginBottom: spacing.xxxs },
-    $contentStyleOverride,
-    ContentTextProps?.style,
-  ]
-  const $buttonStyles = [
-    (isImagePresent || isHeadingPresent || isContentPresent) && { marginTop: spacing.xl },
-    $buttonStyleOverride,
-    ButtonProps?.style,
-  ]
-
   return (
-    <View style={$containerStyles}>
+    <StyledView className={nwMerge("items-center justify-center p-4", className)}>
       {isImagePresent && (
-        <Image
+        <StyledImage
           source={imageSource}
           {...ImageProps}
-          style={$imageStyles}
-          tintColor={theme.isDark ? theme.colors.palette.neutral900 : undefined}
+          className={nwMerge(
+            "self-center",
+            (isHeadingPresent || isContentPresent || isButtonPresent) && "mb-2",
+            imageClassName,
+          )}
         />
       )}
 
@@ -207,7 +179,12 @@ export function EmptyState(props: EmptyStateProps) {
           tx={headingTx}
           txOptions={headingTxOptions}
           {...HeadingTextProps}
-          style={$headingStyles}
+          className={nwMerge(
+            "text-center px-8",
+            isImagePresent && "mt-2",
+            (isContentPresent || isButtonPresent) && "mb-2",
+            headingClassName,
+          )}
         />
       )}
 
@@ -217,7 +194,12 @@ export function EmptyState(props: EmptyStateProps) {
           tx={contentTx}
           txOptions={contentTxOptions}
           {...ContentTextProps}
-          style={$contentStyles}
+          className={nwMerge(
+            "text-center px-8",
+            (isImagePresent || isHeadingPresent) && "mt-2",
+            isButtonPresent && "mb-2",
+            contentClassName,
+          )}
         />
       )}
 
@@ -227,21 +209,11 @@ export function EmptyState(props: EmptyStateProps) {
           text={button}
           tx={buttonTx}
           txOptions={buttonTxOptions}
-          textStyle={$buttonTextStyleOverride}
+          className={nwMerge("mt-4", buttonClassName)}
+          textClassName={buttonTextClassName}
           {...ButtonProps}
-          style={$buttonStyles}
         />
       )}
-    </View>
+    </StyledView>
   )
 }
-
-const $image: ImageStyle = { alignSelf: "center" }
-const $heading: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  textAlign: "center",
-  paddingHorizontal: spacing.lg,
-})
-const $content: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  textAlign: "center",
-  paddingHorizontal: spacing.lg,
-})

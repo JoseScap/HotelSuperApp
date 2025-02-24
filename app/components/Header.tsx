@@ -1,19 +1,16 @@
 import { ReactElement } from "react"
-import {
-  StyleProp,
-  TextStyle,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
-} from "react-native"
+import { TouchableOpacity, TouchableOpacityProps, View } from "react-native"
 import { isRTL, translate } from "@/i18n"
-import { $styles } from "../theme"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import { Icon, IconTypes } from "./Icon"
+import { Icon } from "./Icon"
 import { Text, TextProps } from "./Text"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
+import { useAppColors } from "@/hooks/useAppColors"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+import { IconName } from "@/utils/iconMapping"
+
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
 
 export interface HeaderProps {
   /**
@@ -25,19 +22,19 @@ export interface HeaderProps {
   /**
    * Optional title style override.
    */
-  titleStyle?: StyleProp<TextStyle>
+  titleClassName?: string
   /**
    * Optional outer title container style override.
    */
-  titleContainerStyle?: StyleProp<ViewStyle>
+  titleContainerClassName?: string
   /**
    * Optional inner header wrapper style override.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
   /**
    * Optional outer header container style override.
    */
-  containerStyle?: StyleProp<ViewStyle>
+  containerClassName?: string
   /**
    * Background color
    */
@@ -59,7 +56,7 @@ export interface HeaderProps {
    * Icon that should appear on the left.
    * Can be used with `onLeftPress`.
    */
-  leftIcon?: IconTypes
+  leftIcon?: IconName
   /**
    * An optional tint color for the left icon
    */
@@ -87,12 +84,12 @@ export interface HeaderProps {
   /**
    * What happens when you press the left icon or text action.
    */
-  onLeftPress?: TouchableOpacityProps["onPress"]
+  onLeftPress?: () => void
   /**
    * Icon that should appear on the right.
    * Can be used with `onRightPress`.
    */
-  rightIcon?: IconTypes
+  rightIcon?: IconName
   /**
    * An optional tint color for the right icon
    */
@@ -120,7 +117,7 @@ export interface HeaderProps {
   /**
    * What happens when you press the right icon or text action.
    */
-  onRightPress?: TouchableOpacityProps["onPress"]
+  onRightPress?: () => void
   /**
    * Override the default edges for the safe area.
    */
@@ -129,7 +126,7 @@ export interface HeaderProps {
 
 interface HeaderActionProps {
   backgroundColor?: string
-  icon?: IconTypes
+  icon?: IconName
   iconColor?: string
   text?: TextProps["text"]
   tx?: TextProps["tx"]
@@ -146,12 +143,9 @@ interface HeaderActionProps {
  * @returns {JSX.Element} The rendered `Header` component.
  */
 export function Header(props: HeaderProps) {
+  const { primary } = useAppColors()
   const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
-  const {
-    backgroundColor = colors.background,
+    backgroundColor = primary,
     LeftActionComponent,
     leftIcon,
     leftIconColor,
@@ -171,10 +165,10 @@ export function Header(props: HeaderProps) {
     titleMode = "center",
     titleTx,
     titleTxOptions,
-    titleContainerStyle: $titleContainerStyleOverride,
-    style: $styleOverride,
-    titleStyle: $titleStyleOverride,
-    containerStyle: $containerStyleOverride,
+    titleContainerClassName,
+    className,
+    titleClassName,
+    containerClassName,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
@@ -182,8 +176,11 @@ export function Header(props: HeaderProps) {
   const titleContent = titleTx ? translate(titleTx, titleTxOptions) : title
 
   return (
-    <View style={[$container, $containerInsets, { backgroundColor }, $containerStyleOverride]}>
-      <View style={[$styles.row, $wrapper, $styleOverride]}>
+    <StyledView
+      className={nwMerge("w-full", containerClassName)}
+      style={[$containerInsets, { backgroundColor }]}
+    >
+      <StyledView className={nwMerge("flex-row items-center h-14 px-4", className)}>
         <HeaderAction
           tx={leftTx}
           text={leftText}
@@ -196,21 +193,20 @@ export function Header(props: HeaderProps) {
         />
 
         {!!titleContent && (
-          <View
-            style={[
-              titleMode === "center" && themed($titleWrapperCenter),
-              titleMode === "flex" && $titleWrapperFlex,
-              $titleContainerStyleOverride,
-            ]}
+          <StyledView
+            className={nwMerge(
+              titleMode === "flex" ? "flex-1 justify-center" : "absolute inset-x-0",
+              titleContainerClassName,
+            )}
             pointerEvents="none"
           >
             <Text
               weight="medium"
               size="md"
               text={titleContent}
-              style={[$title, $titleStyleOverride]}
+              className={nwMerge("text-center text-white", isRTL && "writing-rtl", titleClassName)}
             />
-          </View>
+          </StyledView>
         )}
 
         <HeaderAction
@@ -223,8 +219,8 @@ export function Header(props: HeaderProps) {
           backgroundColor={backgroundColor}
           ActionComponent={RightActionComponent}
         />
-      </View>
-    </View>
+      </StyledView>
+    </StyledView>
   )
 }
 
@@ -233,8 +229,7 @@ export function Header(props: HeaderProps) {
  * @returns {JSX.Element} The rendered `HeaderAction` component.
  */
 function HeaderAction(props: HeaderActionProps) {
-  const { backgroundColor, icon, text, tx, txOptions, onPress, ActionComponent, iconColor } = props
-  const { themed } = useAppTheme()
+  const { icon, text, tx, txOptions, onPress, ActionComponent, iconColor } = props
 
   const content = tx ? translate(tx, txOptions) : text
 
@@ -242,84 +237,19 @@ function HeaderAction(props: HeaderActionProps) {
 
   if (content) {
     return (
-      <TouchableOpacity
-        style={themed([$actionTextContainer, { backgroundColor }])}
+      <StyledTouchableOpacity
         onPress={onPress}
         disabled={!onPress}
-        activeOpacity={0.8}
+        className="active:opacity-80 min-w-[48px]"
       >
-        <Text weight="medium" size="md" text={content} style={themed($actionText)} />
-      </TouchableOpacity>
+        <Text weight="medium" size="md" text={content} className="text-white" />
+      </StyledTouchableOpacity>
     )
   }
 
   if (icon) {
-    return (
-      <Icon
-        size={24}
-        icon={icon}
-        color={iconColor}
-        onPress={onPress}
-        containerStyle={themed([$actionIconContainer, { backgroundColor }])}
-        style={isRTL ? { transform: [{ rotate: "180deg" }] } : {}}
-      />
-    )
+    return <Icon icon={icon} size={24} color={iconColor || "white"} />
   }
 
-  return <View style={[$actionFillerContainer, { backgroundColor }]} />
-}
-
-const $wrapper: ViewStyle = {
-  height: 56,
-  alignItems: "center",
-  justifyContent: "space-between",
-}
-
-const $container: ViewStyle = {
-  width: "100%",
-}
-
-const $title: TextStyle = {
-  textAlign: "center",
-}
-
-const $actionTextContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexGrow: 0,
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-  paddingHorizontal: spacing.md,
-  zIndex: 2,
-})
-
-const $actionText: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.tint,
-})
-
-const $actionIconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexGrow: 0,
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-  paddingHorizontal: spacing.md,
-  zIndex: 2,
-})
-
-const $actionFillerContainer: ViewStyle = {
-  width: 16,
-}
-
-const $titleWrapperCenter: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100%",
-  width: "100%",
-  position: "absolute",
-  paddingHorizontal: spacing.xxl,
-  zIndex: 1,
-})
-
-const $titleWrapperFlex: ViewStyle = {
-  justifyContent: "center",
-  flexGrow: 1,
+  return <StyledView className="min-w-[48px]" />
 }
