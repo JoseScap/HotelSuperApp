@@ -9,6 +9,7 @@ import {
   ScrollView,
   ScrollViewProps,
   View,
+  ViewStyle,
 } from "react-native"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
@@ -20,6 +21,12 @@ const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView)
 const StyledKeyboardAwareScrollView = styled(KeyboardAwareScrollView)
 
 export const DEFAULT_BOTTOM_OFFSET = 50
+
+const $contentContainerStyle: ViewStyle = {
+  flexGrow: 1,
+  width: "100%",
+  height: "100%",
+}
 
 interface BaseScreenProps {
   /**
@@ -147,13 +154,7 @@ function ScreenWithoutScrolling(props: ScreenProps) {
   const { className, contentClassName, children, preset } = props
   return (
     <StyledView className={nwMerge("flex-1 h-full w-full", className)}>
-      <StyledView
-        className={nwMerge(
-          "justify-start items-stretch",
-          preset === "fixed" && "justify-end",
-          contentClassName,
-        )}
-      >
+      <StyledView className={nwMerge(preset === "fixed" && "justify-end", contentClassName)}>
         {children}
       </StyledView>
     </StyledView>
@@ -189,15 +190,10 @@ function ScreenWithScrolling(props: ScreenProps) {
         onContentSizeChange(w, h)
         ScrollViewProps?.onContentSizeChange?.(w, h)
       }}
-      style={ScrollViewProps?.style}
-      className="justify-start items-stretch"
-      contentContainerStyle={ScrollViewProps?.contentContainerStyle}
+      className="flex-1"
+      contentContainerStyle={$contentContainerStyle}
     >
-      <StyledView className={nwMerge("flex-1 h-full w-full", className)}>
-        <StyledView className={nwMerge("justify-start items-stretch", contentClassName)}>
-          {children}
-        </StyledView>
-      </StyledView>
+      <StyledView className={nwMerge(contentClassName, className)}>{children}</StyledView>
     </StyledKeyboardAwareScrollView>
   )
 }
