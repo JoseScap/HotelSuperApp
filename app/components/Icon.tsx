@@ -1,117 +1,121 @@
-import { ComponentType } from "react"
-import {
-  Image,
-  ImageStyle,
-  StyleProp,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewProps,
-  ViewStyle,
-} from "react-native"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { TouchableOpacity, TouchableOpacityProps, View } from "react-native"
+import { styled } from "nativewind"
+import { useAppColors } from "@/hooks/useAppColors"
+import { iconMapping, IconName } from "@/utils/iconMapping"
 
-export type IconTypes = keyof typeof iconRegistry
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
+
+type IconSize = "sm" | "md" | "lg" | "xl" | number
+type IconColor = "primary" | "secondary" | "danger" | string
 
 interface IconProps extends TouchableOpacityProps {
   /**
-   * The name of the icon
+   * The name of the icon from our icon mapping
    */
-  icon: IconTypes
+  icon: IconName
 
   /**
-   * An optional tint color for the icon
+   * The size of the icon
+   * sm: 16px
+   * md: 24px
+   * lg: 32px
+   * xl: 48px
+   * or a custom number value
    */
-  color?: string
+  size?: IconSize
 
   /**
-   * An optional size for the icon. If not provided, the icon will be sized to the icon's resolution.
+   * The color variant of the icon
+   * primary: theme primary color
+   * secondary: theme secondary color
+   * danger: red color for error states
+   * or a custom color string
    */
-  size?: number
+  color?: IconColor
 
   /**
-   * Style overrides for the icon image
+   * Optional style overrides for the icon container
    */
-  style?: StyleProp<ImageStyle>
+  className?: string
 
   /**
-   * Style overrides for the icon container
+   * Whether the icon should be wrapped in a TouchableOpacity
    */
-  containerStyle?: StyleProp<ViewStyle>
+  touchable?: boolean
+}
 
-  /**
-   * An optional function to be called when the icon is pressed
-   */
-  onPress?: TouchableOpacityProps["onPress"]
+const sizeMap: Record<Exclude<IconSize, number>, number> = {
+  sm: 16,
+  md: 24,
+  lg: 32,
+  xl: 48,
 }
 
 /**
- * A component to render a registered icon.
- * It is wrapped in a <TouchableOpacity /> if `onPress` is provided, otherwise a <View />.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/Icon/}
- * @param {IconProps} props - The props for the `Icon` component.
- * @returns {JSX.Element} The rendered `Icon` component.
+ * A standardized icon component that wraps react-icons components
+ * with consistent styling and behavior.
+ *
+ * @param props - The props for the Icon component
+ * @returns A rendered icon with standardized styling
+ *
+ * @example
+ * ```tsx
+ * import { FaHeart } from "react-icons/fa"
+ *
+ * // Basic usage
+ * <Icon icon={FaHeart} size="md" color="primary" />
+ *
+ * // As a button
+ * <Icon
+ *   icon={FaHeart}
+ *   size="lg"
+ *   color="secondary"
+ *   touchable
+ *   onPress={() => console.log("Pressed!")}
+ * />
+ * ```
  */
-export function Icon(props: IconProps) {
-  const {
-    icon,
-    color,
-    size,
-    style: $imageStyleOverride,
-    containerStyle: $containerStyleOverride,
-    ...WrapperProps
-  } = props
+export function Icon({
+  icon,
+  size = "md",
+  color = "primary",
+  className,
+  touchable = false,
+  ...touchableProps
+}: IconProps) {
+  const { primary, secondary } = useAppColors()
 
-  const isPressable = !!WrapperProps.onPress
-  const Wrapper = (WrapperProps?.onPress ? TouchableOpacity : View) as ComponentType<
-    TouchableOpacityProps | ViewProps
-  >
+  const iconSize = typeof size === "string" ? sizeMap[size] : size
 
-  const { theme } = useAppTheme()
+  const iconColor = (() => {
+    switch (color) {
+      case "primary":
+        return primary
+      case "secondary":
+        return secondary
+      case "danger":
+        return "#EF4444" // Tailwind's red-500
+      default:
+        return color
+    }
+  })()
 
-  const $imageStyle: StyleProp<ImageStyle> = [
-    $imageStyleBase,
-    { tintColor: color ?? theme.colors.text },
-    size !== undefined && { width: size, height: size },
-    $imageStyleOverride,
-  ]
+  const { family: IconComponent, name } = iconMapping[icon]
 
-  return (
-    <Wrapper
-      accessibilityRole={isPressable ? "imagebutton" : undefined}
-      {...WrapperProps}
-      style={$containerStyleOverride}
-    >
-      <Image style={$imageStyle} source={iconRegistry[icon]} />
-    </Wrapper>
+  const content = (
+    <StyledView className={className}>
+      <IconComponent name={name} size={iconSize} color={iconColor} />
+    </StyledView>
   )
-}
 
-export const iconRegistry = {
-  back: require("../../assets/icons/back.png"),
-  bell: require("../../assets/icons/bell.png"),
-  caretLeft: require("../../assets/icons/caretLeft.png"),
-  caretRight: require("../../assets/icons/caretRight.png"),
-  check: require("../../assets/icons/check.png"),
-  clap: require("../../assets/icons/demo/clap.png"),
-  community: require("../../assets/icons/demo/community.png"),
-  components: require("../../assets/icons/demo/components.png"),
-  debug: require("../../assets/icons/demo/debug.png"),
-  github: require("../../assets/icons/demo/github.png"),
-  heart: require("../../assets/icons/demo/heart.png"),
-  hidden: require("../../assets/icons/hidden.png"),
-  ladybug: require("../../assets/icons/ladybug.png"),
-  lock: require("../../assets/icons/lock.png"),
-  menu: require("../../assets/icons/menu.png"),
-  more: require("../../assets/icons/more.png"),
-  pin: require("../../assets/icons/demo/pin.png"),
-  podcast: require("../../assets/icons/demo/podcast.png"),
-  settings: require("../../assets/icons/settings.png"),
-  slack: require("../../assets/icons/demo/slack.png"),
-  view: require("../../assets/icons/view.png"),
-  x: require("../../assets/icons/x.png"),
-}
+  if (touchable) {
+    return (
+      <StyledTouchableOpacity activeOpacity={0.7} {...touchableProps}>
+        {content}
+      </StyledTouchableOpacity>
+    )
+  }
 
-const $imageStyleBase: ImageStyle = {
-  resizeMode: "contain",
+  return content
 }

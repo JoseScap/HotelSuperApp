@@ -1,21 +1,20 @@
-import { ComponentType, FC, useMemo } from "react"
+import { FC } from "react"
 import {
   GestureResponderEvent,
   ImageStyle,
-  StyleProp,
   SwitchProps,
   TextInputProps,
-  TextStyle,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
-  ViewProps,
   ViewStyle,
 } from "react-native"
-import { $styles } from "../../theme"
 import { Text, TextProps } from "../Text"
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
 
 export interface ToggleProps<T> extends Omit<TouchableOpacityProps, "style"> {
   /**
@@ -37,11 +36,11 @@ export interface ToggleProps<T> extends Omit<TouchableOpacityProps, "style"> {
   /**
    * Style overrides for the container
    */
-  containerStyle?: StyleProp<ViewStyle>
+  className?: string
   /**
    * Style overrides for the input wrapper
    */
-  inputWrapperStyle?: StyleProp<ViewStyle>
+  inputWrapperClassName?: string
   /**
    * Optional input wrapper style override.
    * This gives the inputs their size, shape, "off" background-color, and outer border.
@@ -78,7 +77,7 @@ export interface ToggleProps<T> extends Omit<TouchableOpacityProps, "style"> {
   /**
    * Style overrides for label text.
    */
-  labelStyle?: StyleProp<TextStyle>
+  labelClassName?: string
   /**
    * Pass any additional props directly to the label Text component.
    */
@@ -133,52 +132,24 @@ export function Toggle<T>(props: ToggleProps<T>) {
     helperTx,
     helperTxOptions,
     HelperTextProps,
-    containerStyle: $containerStyleOverride,
-    inputWrapperStyle: $inputWrapperStyleOverride,
+    className,
+    inputWrapperClassName,
     ToggleInput,
     accessibilityRole,
     ...WrapperProps
   } = props
 
-  const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
-
   const disabled = editable === false || status === "disabled" || props.disabled
 
-  const Wrapper = useMemo(
-    () => (disabled ? View : TouchableOpacity) as ComponentType<TouchableOpacityProps | ViewProps>,
-    [disabled],
-  )
-
-  const $containerStyles = [$containerStyleOverride]
-  const $inputWrapperStyles = [$styles.row, $inputWrapper, $inputWrapperStyleOverride]
-  const $helperStyles = themed([
-    $helper,
-    status === "error" && { color: colors.error },
-    HelperTextProps?.style,
-  ])
-
-  /**
-   * @param {GestureResponderEvent} e - The event object.
-   */
   function handlePress(e: GestureResponderEvent) {
     if (disabled) return
     onValueChange?.(!value)
     onPress?.(e)
   }
 
-  return (
-    <Wrapper
-      activeOpacity={1}
-      accessibilityRole={accessibilityRole}
-      accessibilityState={{ checked: value, disabled }}
-      {...WrapperProps}
-      style={$containerStyles}
-      onPress={handlePress}
-    >
-      <View style={$inputWrapperStyles}>
+  const content = (
+    <>
+      <StyledView className={nwMerge("flex-row items-center", inputWrapperClassName)}>
         {labelPosition === "left" && <FieldLabel<T> {...props} labelPosition={labelPosition} />}
 
         <ToggleInput
@@ -191,7 +162,7 @@ export function Toggle<T>(props: ToggleProps<T>) {
         />
 
         {labelPosition === "right" && <FieldLabel<T> {...props} labelPosition={labelPosition} />}
-      </View>
+      </StyledView>
 
       {!!(helper || helperTx) && (
         <Text
@@ -200,10 +171,40 @@ export function Toggle<T>(props: ToggleProps<T>) {
           tx={helperTx}
           txOptions={helperTxOptions}
           {...HelperTextProps}
-          style={$helperStyles}
+          className={nwMerge(
+            "mt-1",
+            status === "error" ? "text-error" : "text-text-dim",
+            HelperTextProps?.className,
+          )}
         />
       )}
-    </Wrapper>
+    </>
+  )
+
+  if (disabled) {
+    return (
+      <StyledView
+        accessibilityRole={accessibilityRole}
+        accessibilityState={{ checked: value, disabled }}
+        {...WrapperProps}
+        className={className}
+      >
+        {content}
+      </StyledView>
+    )
+  }
+
+  return (
+    <StyledTouchableOpacity
+      activeOpacity={1}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={{ checked: value, disabled }}
+      {...WrapperProps}
+      className={className}
+      onPress={handlePress}
+    >
+      {content}
+    </StyledTouchableOpacity>
   )
 }
 
@@ -212,31 +213,10 @@ export function Toggle<T>(props: ToggleProps<T>) {
  * @returns {JSX.Element} The rendered `FieldLabel` component.
  */
 function FieldLabel<T>(props: ToggleProps<T>) {
-  const {
-    status,
-    label,
-    labelTx,
-    labelTxOptions,
-    LabelTextProps,
-    labelPosition,
-    labelStyle: $labelStyleOverride,
-  } = props
-
-  const {
-    theme: { colors },
-    themed,
-  } = useAppTheme()
+  const { status, label, labelTx, labelTxOptions, LabelTextProps, labelPosition, labelClassName } =
+    props
 
   if (!label && !labelTx && !LabelTextProps?.children) return null
-
-  const $labelStyle = themed([
-    $label,
-    status === "error" && { color: colors.error },
-    labelPosition === "right" && $labelRight,
-    labelPosition === "left" && $labelLeft,
-    $labelStyleOverride,
-    LabelTextProps?.style,
-  ])
 
   return (
     <Text
@@ -245,39 +225,12 @@ function FieldLabel<T>(props: ToggleProps<T>) {
       tx={labelTx}
       txOptions={labelTxOptions}
       {...LabelTextProps}
-      style={$labelStyle}
+      className={nwMerge(
+        labelPosition === "right" ? "ml-2" : "mr-2",
+        status === "error" ? "text-error" : "text-text",
+        labelClassName,
+        LabelTextProps?.className,
+      )}
     />
   )
 }
-
-const $inputWrapper: ViewStyle = {
-  alignItems: "center",
-}
-
-export const $inputOuterBase: ViewStyle = {
-  height: 24,
-  width: 24,
-  borderWidth: 2,
-  alignItems: "center",
-  overflow: "hidden",
-  flexGrow: 0,
-  flexShrink: 0,
-  justifyContent: "space-between",
-  flexDirection: "row",
-}
-
-const $helper: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $label: TextStyle = {
-  flex: 1,
-}
-
-const $labelRight: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginStart: spacing.md,
-})
-
-const $labelLeft: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginEnd: spacing.md,
-})
