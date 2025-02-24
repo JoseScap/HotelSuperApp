@@ -1,20 +1,14 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Platform, TextStyle, View, ViewStyle } from "react-native"
-import {
-  Button,
-  Screen,
-  Text,
-  TextField,
-  GoogleSignInButton,
-  PasswordRightAccessory,
-} from "../components"
-import { AppStackScreenProps } from "../navigators"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { View } from "react-native"
+import { Button, Screen, Text, TextField, PasswordRightAccessory } from "../components"
+import { AppStackScreenProps } from "@/navigators/types"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
 import { useHeader } from "@/utils/useHeader"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+import { BsCaretLeft } from "react-icons/bs"
+
+const StyledView = styled(View)
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -43,99 +37,81 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     login,
   } = useLoginScreen()
 
-  const { themed } = useAppTheme()
-  const isIos = Platform.OS === "ios"
-
   useHeader({
-    leftIcon: "caretLeft",
+    leftIcon: BsCaretLeft,
     rightTx: "loginScreen:logIn",
     onLeftPress: () => navigation.goBack(),
   })
 
   return (
-    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      <Text tx="loginScreen:enterDetails" preset="subheading" style={themed($enterDetails)} />
+    <Screen preset="auto" safeAreaEdges={["top"]} className="bg-sky-500">
+      {/* Header colored section */}
+      <StyledView className="bg-sky-500 h-24" />
 
-      <TextField
-        ref={emailInput}
-        value={email ?? ""}
-        onChangeText={setEmail}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
-        helperTx={isSubmitted ? emailValidation : undefined}
-        status={isSubmitted && emailValidation ? "error" : undefined}
-        onSubmitEditing={() => passwordInput.current?.focus()}
-      />
+      {/* Content section */}
+      <StyledView className="flex bg-white h-full px-4 rounded-t-3xl">
+        <StyledView className="mt-8 mb-2">
+          <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" />
+        </StyledView>
 
-      <TextField
-        ref={passwordInput}
-        value={password ?? ""}
-        onChangeText={setPassword}
-        containerStyle={themed($textField)}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen:passwordFieldLabel"
-        placeholderTx="loginScreen:passwordFieldPlaceholder"
-        helperTx={isSubmitted ? passwordValidation : undefined}
-        status={isSubmitted && passwordValidation ? "error" : undefined}
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory({
-          isPasswordHidden: isAuthPasswordHidden,
-          onTogglePassword: togglePassword,
-        })}
-      />
+        <StyledView className="mb-6">
+          <Text tx="loginScreen:enterDetails" preset="subheading" />
+        </StyledView>
 
-      <Button
-        testID="login-button"
-        tx="loginScreen:tapToLogIn"
-        style={themed($tapButton)}
-        preset="reversed"
-        onPress={login}
-      />
+        <TextField
+          ref={emailInput}
+          value={email ?? ""}
+          onChangeText={setEmail}
+          containerClassName="mb-6"
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect={false}
+          keyboardType="email-address"
+          labelTx="loginScreen:emailFieldLabel"
+          placeholderTx="loginScreen:emailFieldPlaceholder"
+          helperTx={isSubmitted ? emailValidation : undefined}
+          status={isSubmitted && emailValidation ? "error" : undefined}
+          onSubmitEditing={() => passwordInput.current?.focus()}
+        />
 
-      {loginError && <Text tx={loginError} preset="default" style={themed($errorText)} />}
+        <TextField
+          ref={passwordInput}
+          value={password ?? ""}
+          onChangeText={setPassword}
+          containerClassName="mb-6"
+          autoCapitalize="none"
+          autoComplete="password"
+          autoCorrect={false}
+          secureTextEntry={isAuthPasswordHidden}
+          labelTx="loginScreen:passwordFieldLabel"
+          placeholderTx="loginScreen:passwordFieldPlaceholder"
+          helperTx={isSubmitted ? passwordValidation : undefined}
+          status={isSubmitted && passwordValidation ? "error" : undefined}
+          onSubmitEditing={login}
+          RightAccessory={PasswordRightAccessory({
+            isPasswordHidden: isAuthPasswordHidden,
+            onTogglePassword: togglePassword,
+          })}
+        />
 
-      <View style={themed($separator)}>
-        <Text size="sm" weight="bold" tx="loginScreen:or" />
-      </View>
+        <Button
+          testID="login-button"
+          tx="loginScreen:tapToLogIn"
+          className="mt-2"
+          preset="filled"
+          onPress={login}
+        />
 
-      {!isIos && <GoogleSignInButton />}
+        {loginError && (
+          <StyledView className="mt-2">
+            <Text tx={loginError} preset="default" className="text-error text-center" />
+          </StyledView>
+        )}
+
+        <StyledView className="items-center justify-center my-4">
+          <Text size="sm" weight="bold" tx="loginScreen:or" />
+        </StyledView>
+      </StyledView>
     </Screen>
   )
-})
-
-const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginVertical: spacing.sm,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.error,
-  marginTop: spacing.xs,
-  textAlign: "center",
 })

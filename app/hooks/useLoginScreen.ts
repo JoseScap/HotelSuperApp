@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
 import { supabase } from "@/utils/supabaseClient"
@@ -42,15 +42,13 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
   const emailValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!email) return "loginScreen:errors.emailRequired"
-    if (email.length < 8) return "loginScreen:errors.emailMinimunCharacters"
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "loginScreen:errors.emailInvalid"
     return undefined
   }, [email])
 
   const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!password) return "loginScreen:errors.passwordRequired"
-    if (password.length < 12) return "loginScreen:errors.passwordTooShort"
-    if (!/^[a-zA-Z0-9]+$/.test(password)) return "loginScreen:errors.passwordInvalid"
+    if (password.length < 6) return "loginScreen:errors.passwordTooShort"
     return undefined
   }, [password])
 
@@ -60,30 +58,31 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
     if (!password || !email || emailValidation || passwordValidation) return undefined
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      })
 
-    if (error) {
+      if (error) {
+        setLoginError("loginScreen:errors.loginFailed")
+        return undefined
+      }
+
+      setIsSubmitted(false)
+      setPassword(null)
+      setEmail(null)
+      setAuthToken(data.session?.access_token || "")
+      setDisplayName(data.user?.user_metadata?.display_name || "")
+    } catch (error) {
+      console.error("Login error:", error)
       setLoginError("loginScreen:errors.loginFailed")
-      return undefined
     }
-
-    setIsSubmitted(false)
-    setPassword(null)
-    setEmail(null)
-    setAuthToken(data.session?.access_token || "")
-    setDisplayName(data.user?.user_metadata?.display_name || "")
   }
 
   function togglePassword() {
     setIsAuthPasswordHidden(!isAuthPasswordHidden)
   }
-
-  useEffect(() => {
-    setEmail("test@tuzgle.com")
-  }, [])
 
   return {
     // Refs

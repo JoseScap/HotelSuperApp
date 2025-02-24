@@ -1,21 +1,13 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
-import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import type { ThemedStyle } from "@/theme"
-import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { AppStackParamList, AppStackScreenProps, BottomHomeParamList } from "./types"
 import { translate } from "@/i18n"
 import { Icon } from "@/components"
 import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
 import { ProfileScreen } from "@/screens/TabScreens/ProfileScreen"
 import { ActivitiesScreen } from "@/screens/TabScreens/ActivitiesScreen"
-
-export type BottomHomeParamList = {
-  Home: undefined
-  Profile: undefined
-  Activities: undefined
-}
+import { useAppColors } from "@/hooks/useAppColors"
 
 /**
  * Helper for automatically generating navigation prop types for each route.
@@ -30,29 +22,36 @@ export type BottomHomeTabScreenProps<T extends keyof BottomHomeParamList> = Comp
 const Tab = createBottomTabNavigator<BottomHomeParamList>()
 
 /**
- * This is the main navigator for the demo screens with a bottom tab bar.
+ * This is the main navigator for the app screens with a bottom tab bar.
  * Each tab is a stack navigator with its own set of screens.
  *
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
- * @returns {JSX.Element} The rendered `DemoNavigator`.
+ * @returns {JSX.Element} The rendered `BottomHomeNavigator`.
  */
 export function BottomHomeNavigator() {
   const { bottom } = useSafeAreaInsets()
-  const {
-    themed,
-    theme: { colors },
-  } = useAppTheme()
+  const { primary, text } = useAppColors()
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: themed([$tabBar, { height: bottom + 70 }]),
-        tabBarActiveTintColor: colors.text,
-        tabBarInactiveTintColor: colors.text,
-        tabBarLabelStyle: themed($tabBarLabel),
-        tabBarItemStyle: themed($tabBarItem),
+        tabBarStyle: {
+          backgroundColor: "white",
+          borderTopColor: "transparent",
+          height: bottom + 70,
+        },
+        tabBarActiveTintColor: text.primary,
+        tabBarInactiveTintColor: text.secondary,
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontFamily: "Helvetica",
+          lineHeight: 16,
+        },
+        tabBarItemStyle: {
+          paddingTop: 16,
+        },
       }}
     >
       <Tab.Screen
@@ -61,7 +60,11 @@ export function BottomHomeNavigator() {
         options={{
           tabBarLabel: translate("homeNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon
+              icon="BsChevronCompactDown"
+              color={focused ? primary : text.secondary}
+              size={30}
+            />
           ),
         }}
       />
@@ -71,7 +74,7 @@ export function BottomHomeNavigator() {
         options={{
           tabBarLabel: translate("homeNavigator:activitiesTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="clap" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="BsCalendarPlus" color={focused ? primary : text.secondary} size={30} />
           ),
         }}
       />
@@ -81,25 +84,10 @@ export function BottomHomeNavigator() {
         options={{
           tabBarLabel: translate("homeNavigator:profileTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="heart" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="BsHeart" color={focused ? primary : text.secondary} size={30} />
           ),
         }}
       />
     </Tab.Navigator>
   )
 }
-const $tabBar: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.background,
-  borderTopColor: colors.transparent,
-})
-
-const $tabBarItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingTop: spacing.md,
-})
-
-const $tabBarLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  fontSize: 12,
-  fontFamily: typography.primary.medium,
-  lineHeight: 16,
-  color: colors.text,
-})

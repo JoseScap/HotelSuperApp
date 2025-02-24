@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { supabase } from "@/utils/supabaseClient"
-import { AppStackScreenProps } from "@/navigators"
+import { AppStackScreenProps } from "@/navigators/types"
 import { TxKeyPath } from "@/i18n"
 
 interface UseRegisterScreenParams {
@@ -63,8 +63,7 @@ export function useRegisterScreen({
 
   const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!password) return "registrationScreen:errors.passwordRequired"
-    if (password.length < 8) return "registrationScreen:errors.passwordTooShort"
-    if (!/^[a-zA-Z0-9]+$/.test(password)) return "registrationScreen:errors.passwordInvalid"
+    if (password.length < 6) return "registrationScreen:errors.passwordTooShort"
     return undefined
   }, [password])
 
@@ -75,31 +74,44 @@ export function useRegisterScreen({
   }, [password, confirmPassword])
 
   async function register() {
-    setIsSubmitted(true)
-    setSignUpError(undefined)
+    try {
+      setIsSubmitted(true)
+      setSignUpError(undefined)
 
-    if (
-      !email ||
-      !password ||
-      !confirmPassword ||
-      emailValidation ||
-      passwordValidation ||
-      confirmPasswordValidation
-    )
-      return undefined
+      if (
+        !email ||
+        !password ||
+        !confirmPassword ||
+        emailValidation ||
+        passwordValidation ||
+        confirmPasswordValidation
+      ) {
+        return undefined
+      }
 
-    const { error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    })
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+      })
 
-    if (error) {
+      if (error) {
+        console.error("Registration error:", error.message)
+        setSignUpError("registrationScreen:errors.signUpFailed")
+        return
+      }
+
+      if (!data.user) {
+        console.error("No user data received")
+        setSignUpError("registrationScreen:errors.signUpFailed")
+        return
+      }
+
+      setIsSubmitted(false)
+      navigation.navigate("RegisterSuccess")
+    } catch (error) {
+      console.error("Registration error:", error)
       setSignUpError("registrationScreen:errors.signUpFailed")
-      return
     }
-
-    setIsSubmitted(false)
-    navigation.navigate("RegisterSuccess")
   }
 
   function togglePassword() {
