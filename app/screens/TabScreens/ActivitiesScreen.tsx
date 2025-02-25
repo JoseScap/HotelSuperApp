@@ -1,9 +1,14 @@
 import { FC } from "react"
-import { Image, ImageStyle, View } from "react-native"
+import { Image, View } from "react-native"
 import { Screen } from "@/components/Screen"
+import { useHeader } from "@/utils/useHeader"
 import { Card, Text } from "@/components"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useBottomProps } from "@/hooks/useBottomProps"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
+const StyledImage = styled(Image)
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -38,44 +43,41 @@ export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
     const bottomProps = useBottomProps()
 
     return (
-      <Screen preset="scroll" {...bottomProps}>
-        <Text tx="activitiesScreen:subtitle" preset="subheading" />
+      <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+        <Text tx="activitiesScreen:subtitle" preset="subheading" className="mb-2" />
         {hotelActivities.map((activity, index) => (
           <Card
             key={`hotel-${index}`}
             HeadingComponent={
-              <View>
+              <StyledView>
                 <Text>{activity}</Text>
-              </View>
+              </StyledView>
             }
             ContentComponent={
-              <View>
-                <Image source={logo} style={$logoImage} />
-              </View>
+              <StyledView className="h-14 self-start justify-center px-6">
+                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+              </StyledView>
             }
+            className="mb-2"
           />
         ))}
-        <Text tx="activitiesScreen:city" preset="subheading" />
+        <Text tx="activitiesScreen:city" preset="subheading" className="mb-2" />
         {cityActivities.map((activity, index) => (
           <Card
             key={`city-${index}`}
             HeadingComponent={
-              <View>
+              <StyledView>
                 <Text>{activity}</Text>
-              </View>
+              </StyledView>
             }
             ContentComponent={
-              <View>
-                <Image source={logo} style={$logoImage} />
-              </View>
+              <StyledView className="h-14 self-start justify-center px-6">
+                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+              </StyledView>
             }
+            className="mb-2"
           />
         ))}
       </Screen>
     )
   }
-
-const $logoImage: ImageStyle = {
-  height: 42,
-  width: 77,
-}

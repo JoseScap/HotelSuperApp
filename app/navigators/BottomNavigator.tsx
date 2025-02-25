@@ -1,7 +1,7 @@
 import { BottomTabScreenProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { AppStackParamList, AppStackScreenProps, BottomHomeParamList } from "./types"
+import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { translate } from "@/i18n"
 import { Icon } from "@/components"
 import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
@@ -30,7 +30,6 @@ const Tab = createBottomTabNavigator<BottomHomeParamList>()
  */
 export function BottomHomeNavigator() {
   const { bottom } = useSafeAreaInsets()
-  const { primary, text } = useAppColors()
 
   return (
     <Tab.Navigator
@@ -38,16 +37,16 @@ export function BottomHomeNavigator() {
         headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: {
-          backgroundColor: "white",
+          backgroundColor: "#FFFFFF",
           borderTopColor: "transparent",
           height: bottom + 70,
         },
-        tabBarActiveTintColor: text.primary,
-        tabBarInactiveTintColor: text.secondary,
+        tabBarActiveTintColor: "#000000",
+        tabBarInactiveTintColor: "#6B7280",
         tabBarLabelStyle: {
+          fontFamily: "Montserrat-Regular",
           fontSize: 12,
-          fontFamily: "Helvetica",
-          lineHeight: 16,
+          paddingBottom: 8,
         },
         tabBarItemStyle: {
           paddingTop: 16,
@@ -61,8 +60,8 @@ export function BottomHomeNavigator() {
           tabBarLabel: translate("homeNavigator:homeTab"),
           tabBarIcon: ({ focused }) => (
             <Icon
-              icon="BsChevronCompactDown"
-              color={focused ? primary : text.secondary}
+              icon="components"
+              className={focused ? "text-primary" : "text-neutral-500"}
               size={30}
             />
           ),
@@ -74,7 +73,7 @@ export function BottomHomeNavigator() {
         options={{
           tabBarLabel: translate("homeNavigator:activitiesTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="BsCalendarPlus" color={focused ? primary : text.secondary} size={30} />
+            <Icon icon="clap" className={focused ? "text-primary" : "text-neutral-500"} size={30} />
           ),
         }}
       />
@@ -84,7 +83,11 @@ export function BottomHomeNavigator() {
         options={{
           tabBarLabel: translate("homeNavigator:profileTab"),
           tabBarIcon: ({ focused }) => (
-            <Icon icon="BsHeart" color={focused ? primary : text.secondary} size={30} />
+            <Icon
+              icon="heart"
+              className={focused ? "text-primary" : "text-neutral-500"}
+              size={30}
+            />
           ),
         }}
       />

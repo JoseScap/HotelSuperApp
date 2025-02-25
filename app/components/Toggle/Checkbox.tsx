@@ -1,26 +1,28 @@
-import { useEffect, useRef } from "react"
-import { Animated, View, ViewStyle } from "react-native"
+import { useEffect, useRef, useCallback } from "react"
+import { Image, Animated, View } from "react-native"
+import { iconRegistry, IconTypes } from "../Icon"
+import { BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
 import { styled } from "nativewind"
-import { useAppColors } from "@/hooks/useAppColors"
-import { Icon } from "@/components/Icon"
-import { BaseToggleInputProps, Toggle, ToggleProps } from "./Toggle"
+import { nwMerge } from "@/utils/nwMerge"
 
 const StyledView = styled(View)
+const StyledImage = styled(Image)
 const StyledAnimatedView = styled(Animated.View)
 
 export interface CheckboxToggleProps extends Omit<ToggleProps<CheckboxInputProps>, "ToggleInput"> {
   /**
-   * Optional style prop that affects the outer View.
-   * Note: `width` and `height` rules should be points (numbers), not percentages.
+   * Checkbox-only prop that changes the icon used for the "on" state.
    */
-  inputOuterStyle?: ViewStyle
+  icon?: IconTypes
   /**
-   * Optional style prop that affects the inner View.
+   * Optional class name for the checkbox detail (icon)
    */
-  inputInnerStyle?: ViewStyle
+  inputDetailClassName?: string
 }
 
-interface CheckboxInputProps extends BaseToggleInputProps<CheckboxToggleProps> {}
+interface CheckboxInputProps extends BaseToggleInputProps<CheckboxToggleProps> {
+  icon?: CheckboxToggleProps["icon"]
+}
 
 /**
  * @param {CheckboxToggleProps} props - The props for the `Checkbox` component.
@@ -36,11 +38,11 @@ function CheckboxInput(props: CheckboxInputProps) {
     on,
     status,
     disabled,
-    outerStyle: $outerStyleOverride,
-    innerStyle: $innerStyleOverride,
+    icon = "check",
+    outerClassName,
+    innerClassName,
+    detailClassName,
   } = props
-
-  const { primary, text, background } = useAppColors()
 
   const opacity = useRef(new Animated.Value(0))
 
@@ -52,48 +54,39 @@ function CheckboxInput(props: CheckboxInputProps) {
     }).start()
   }, [on])
 
-  const offBackgroundColor = [
-    disabled && text.secondary,
-    status === "error" && "#FEE2E2",
-    "#E2E8F0",
-  ].filter(Boolean)[0]
+  const outerClasses = nwMerge(
+    "h-[32px] w-[32px] rounded border-2 justify-center items-center",
+    disabled && "bg-neutral-400 border-neutral-400",
+    status === "error" && "bg-red-100 border-red-500",
+    !disabled && !status && !on && "border-neutral-800 bg-neutral-200",
+    !disabled && !status && on && "border-secondary bg-neutral-200",
+    outerClassName,
+  )
 
-  const outerBorderColor = [
-    disabled && text.secondary,
-    status === "error" && "#EF4444",
-    !on && text.primary,
-    primary,
-  ].filter(Boolean)[0]
+  const innerClasses = nwMerge(
+    "absolute inset-0 justify-center items-center",
+    disabled && "bg-transparent",
+    status === "error" && "bg-red-100",
+    !disabled && !status && "bg-secondary",
+    innerClassName,
+  )
 
-  const onBackgroundColor = [
-    disabled && "transparent",
-    status === "error" && "#FEE2E2",
-    primary,
-  ].filter(Boolean)[0]
-
-  const iconColor = [
-    disabled && text.secondary,
-    status === "error" && "#EF4444",
-    background.primary,
-  ].filter(Boolean)[0]
+  const iconClasses = nwMerge(
+    "w-5 h-5",
+    disabled && "tint-neutral-600",
+    status === "error" && "tint-red-500",
+    !disabled && !status && "tint-background-primary",
+    detailClassName,
+  )
 
   return (
-    <StyledView
-      className="h-6 w-6 rounded border"
-      style={[
-        { backgroundColor: offBackgroundColor, borderColor: outerBorderColor },
-        $outerStyleOverride,
-      ]}
-    >
-      <StyledAnimatedView
-        className="flex h-full w-full items-center justify-center"
-        style={[
-          { backgroundColor: onBackgroundColor },
-          $innerStyleOverride,
-          { opacity: opacity.current },
-        ]}
-      >
-        <Icon icon="BsCheckLg" size="sm" color={iconColor} />
+    <StyledView className={outerClasses}>
+      <StyledAnimatedView style={{ opacity: opacity.current }} className={innerClasses}>
+        <StyledImage
+          source={icon ? iconRegistry[icon] : iconRegistry.check}
+          className={iconClasses}
+          resizeMode="contain"
+        />
       </StyledAnimatedView>
     </StyledView>
   )

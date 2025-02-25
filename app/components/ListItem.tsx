@@ -1,18 +1,14 @@
 import { forwardRef, ReactElement } from "react"
-import {
-  StyleProp,
-  TextStyle,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
-} from "react-native"
-import { $styles } from "../theme"
-import { Icon } from "./Icon"
+import { TouchableOpacity, TouchableOpacityProps, View } from "react-native"
+import { Icon, IconTypes } from "./Icon"
 import { Text, TextProps } from "./Text"
-import { IconType } from "react-icons"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
 
-export interface ListItemProps extends TouchableOpacityProps {
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
+
+export interface ListItemProps extends Omit<TouchableOpacityProps, "style"> {
   /**
    * How tall the list item should be.
    * Default: 56
@@ -48,7 +44,7 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Optional text style override.
    */
-  textStyle?: StyleProp<TextStyle>
+  textClassName?: string
   /**
    * Pass any additional props directly to the Text component.
    */
@@ -56,11 +52,11 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Optional View container style override.
    */
-  containerStyle?: StyleProp<ViewStyle>
+  containerClassName?: string
   /**
    * Optional TouchableOpacity style override.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
   /**
    * Icon that should appear on the left.
    */
@@ -116,19 +112,33 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
     RightComponent,
     rightIcon,
     rightIconColor,
-    style,
+    className,
     text,
     TextProps,
     tx,
     txOptions,
+    textClassName,
+    containerClassName,
     ...TouchableOpacityProps
   } = props
 
-  const $touchableStyles = [$styles.row, $touchableStyle, { minHeight: height }, style]
+  const containerClasses = nwMerge(
+    topSeparator && "border-t border-secondary",
+    bottomSeparator && "border-b border-secondary",
+    containerClassName,
+  )
+
+  const touchableClasses = nwMerge("flex-row items-start", `min-h-[${height}px]`, className)
+
+  const textClasses = nwMerge(
+    "py-2 self-center flex-1 shrink text-text-primary",
+    textClassName,
+    TextProps?.className,
+  )
 
   return (
-    <View ref={ref}>
-      <TouchableOpacity {...TouchableOpacityProps} style={$touchableStyles}>
+    <StyledView ref={ref} className={containerClasses}>
+      <StyledTouchableOpacity {...TouchableOpacityProps} className={touchableClasses}>
         <ListItemAction
           side="left"
           size={height}
@@ -137,7 +147,7 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
           Component={LeftComponent}
         />
 
-        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions}>
+        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions} className={textClasses}>
           {children}
         </Text>
 
@@ -148,8 +158,8 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
           iconColor={rightIconColor}
           Component={RightComponent}
         />
-      </TouchableOpacity>
-    </View>
+      </StyledTouchableOpacity>
+    </StyledView>
   )
 })
 
@@ -158,17 +168,22 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
  * @returns {JSX.Element | null} The rendered `ListItemAction` component.
  */
 function ListItemAction(props: ListItemActionProps) {
-  const { icon, Component } = props
+  const { icon, Component, iconColor, size, side } = props
+
+  const iconContainerClasses = nwMerge(
+    "justify-center items-center flex-grow-0",
+    side === "left" && "mr-4",
+    side === "right" && "ml-4",
+    `h-[${size}px]`,
+  )
 
   if (Component) return Component
 
   if (icon !== undefined) {
-    return <Icon size="md" icon={icon} color="primary" />
+    return (
+      <Icon size={24} icon={icon} color={iconColor} containerClassName={iconContainerClasses} />
+    )
   }
 
   return null
-}
-
-const $touchableStyle: ViewStyle = {
-  alignItems: "flex-start",
 }

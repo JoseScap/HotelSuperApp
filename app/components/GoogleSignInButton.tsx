@@ -1,6 +1,6 @@
 import { useState, Fragment } from "react"
 import { Platform, Image } from "react-native"
-import { GoogleSignin } from "@react-native-google-signin/google-signin"
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin"
 import { TxKeyPath } from "@/i18n"
 import { useStores } from "@/models"
 import { Text } from "./Text"
@@ -68,10 +68,13 @@ export function GoogleSignInButton() {
     <Fragment>
       <Button
         tx="loginScreen:tapToLogInWithGoogle"
-        className="mt-1"
+        className="mt-2"
+        pressedClassName="opacity-90"
         preset="reversed"
         onPress={handleGoogleSignIn}
-        LeftAccessory={() => <StyledImage source={gsi} className="w-[30px] h-[30px] mr-3" />}
+        LeftAccessory={() => (
+          <StyledImage source={gsi} className="w-[30px] h-[30px] mr-3" resizeMode="contain" />
+        )}
       />
       {googleSignInError && (
         <Text tx={googleSignInError} preset="default" className="mt-2 text-center text-red-500" />

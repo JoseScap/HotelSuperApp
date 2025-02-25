@@ -12,12 +12,13 @@ export const RegisterSuccessScreen: FC<RegisterSuccessScreenProps> = function Re
   const { navigation } = _props
 
   return (
-    <Screen preset="auto">
+    <Screen preset="auto" contentClassName="px-4 py-6">
       <EmptyState
         headingTx="registerSuccessScreen:heading"
         contentTx="registerSuccessScreen:content"
         buttonTx="registerSuccessScreen:button"
         buttonOnPress={() => navigation.navigate("Login")}
+        className="h-full"
         imageSource={checkIcon}
       />
     </Screen>
