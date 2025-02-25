@@ -1,19 +1,14 @@
 import { forwardRef, ReactElement } from "react"
-import {
-  StyleProp,
-  TextStyle,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
-} from "react-native"
-import { $styles } from "../theme"
+import { TouchableOpacity, TouchableOpacityProps, View } from "react-native"
 import { Icon, IconTypes } from "./Icon"
 import { Text, TextProps } from "./Text"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
 
-export interface ListItemProps extends TouchableOpacityProps {
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
+
+export interface ListItemProps extends Omit<TouchableOpacityProps, "style"> {
   /**
    * How tall the list item should be.
    * Default: 56
@@ -49,7 +44,7 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Optional text style override.
    */
-  textStyle?: StyleProp<TextStyle>
+  textClassName?: string
   /**
    * Pass any additional props directly to the Text component.
    */
@@ -57,11 +52,11 @@ export interface ListItemProps extends TouchableOpacityProps {
   /**
    * Optional View container style override.
    */
-  containerStyle?: StyleProp<ViewStyle>
+  containerClassName?: string
   /**
    * Optional TouchableOpacity style override.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
   /**
    * Icon that should appear on the left.
    */
@@ -118,31 +113,34 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
     RightComponent,
     rightIcon,
     rightIconColor,
-    style,
+    className,
     text,
     TextProps,
     topSeparator,
     tx,
     txOptions,
-    textStyle: $textStyleOverride,
-    containerStyle: $containerStyleOverride,
+    textClassName,
+    containerClassName,
     ...TouchableOpacityProps
   } = props
-  const { themed } = useAppTheme()
 
-  const $textStyles = [$textStyle, $textStyleOverride, TextProps?.style]
+  const containerClasses = nwMerge(
+    topSeparator && "border-t border-secondary",
+    bottomSeparator && "border-b border-secondary",
+    containerClassName,
+  )
 
-  const $containerStyles = [
-    topSeparator && $separatorTop,
-    bottomSeparator && $separatorBottom,
-    $containerStyleOverride,
-  ]
+  const touchableClasses = nwMerge("flex-row items-start", `min-h-[${height}px]`, className)
 
-  const $touchableStyles = [$styles.row, $touchableStyle, { minHeight: height }, style]
+  const textClasses = nwMerge(
+    "py-2 self-center flex-1 shrink text-text-primary",
+    textClassName,
+    TextProps?.className,
+  )
 
   return (
-    <View ref={ref} style={themed($containerStyles)}>
-      <TouchableOpacity {...TouchableOpacityProps} style={$touchableStyles}>
+    <StyledView ref={ref} className={containerClasses}>
+      <StyledTouchableOpacity {...TouchableOpacityProps} className={touchableClasses}>
         <ListItemAction
           side="left"
           size={height}
@@ -151,7 +149,7 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
           Component={LeftComponent}
         />
 
-        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions} style={themed($textStyles)}>
+        <Text {...TextProps} tx={tx} text={text} txOptions={txOptions} className={textClasses}>
           {children}
         </Text>
 
@@ -162,8 +160,8 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
           iconColor={rightIconColor}
           Component={RightComponent}
         />
-      </TouchableOpacity>
-    </View>
+      </StyledTouchableOpacity>
+    </StyledView>
   )
 })
 
@@ -173,61 +171,21 @@ export const ListItem = forwardRef<View, ListItemProps>(function ListItem(
  */
 function ListItemAction(props: ListItemActionProps) {
   const { icon, Component, iconColor, size, side } = props
-  const { themed } = useAppTheme()
 
-  const $iconContainerStyles = [$iconContainer]
+  const iconContainerClasses = nwMerge(
+    "justify-center items-center flex-grow-0",
+    side === "left" && "mr-4",
+    side === "right" && "ml-4",
+    `h-[${size}px]`,
+  )
 
   if (Component) return Component
 
   if (icon !== undefined) {
     return (
-      <Icon
-        size={24}
-        icon={icon}
-        color={iconColor}
-        containerStyle={themed([
-          $iconContainerStyles,
-          side === "left" && $iconContainerLeft,
-          side === "right" && $iconContainerRight,
-          { height: size },
-        ])}
-      />
+      <Icon size={24} icon={icon} color={iconColor} containerClassName={iconContainerClasses} />
     )
   }
 
   return null
 }
-
-const $separatorTop: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderTopWidth: 1,
-  borderTopColor: colors.separator,
-})
-
-const $separatorBottom: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderBottomWidth: 1,
-  borderBottomColor: colors.separator,
-})
-
-const $textStyle: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.xs,
-  alignSelf: "center",
-  flexGrow: 1,
-  flexShrink: 1,
-})
-
-const $touchableStyle: ViewStyle = {
-  alignItems: "flex-start",
-}
-
-const $iconContainer: ViewStyle = {
-  justifyContent: "center",
-  alignItems: "center",
-  flexGrow: 0,
-}
-const $iconContainerLeft: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginEnd: spacing.md,
-})
-
-const $iconContainerRight: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginStart: spacing.md,
-})

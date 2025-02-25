@@ -1,13 +1,14 @@
 import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { Image, View } from "react-native"
 import { Screen } from "@/components/Screen"
-import { ThemedStyle } from "@/theme"
 import { useHeader } from "@/utils/useHeader"
 import { Card, Text } from "@/components"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
 import { useBottomProps } from "@/hooks/useBottomProps"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
+const StyledImage = styled(Image)
 
 const logo = require("../../../assets/images/logo.png")
 
@@ -39,7 +40,6 @@ const cityActivities = [
 
 export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
   function ActivitiesScreen(_props) {
-    const { themed } = useAppTheme()
     const bottomProps = useBottomProps()
 
     useHeader({
@@ -47,61 +47,41 @@ export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
     })
 
     return (
-      <Screen
-        preset="scroll"
-        contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-        {...bottomProps}
-      >
-        <Text tx="activitiesScreen:subtitle" preset="subheading" style={themed($bottomSpace)} />
+      <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+        <Text tx="activitiesScreen:subtitle" preset="subheading" className="mb-2" />
         {hotelActivities.map((activity, index) => (
           <Card
             key={`hotel-${index}`}
             HeadingComponent={
-              <View>
+              <StyledView>
                 <Text>{activity}</Text>
-              </View>
+              </StyledView>
             }
             ContentComponent={
-              <View style={themed($logoContainer)}>
-                <Image source={logo} style={$logoImage} />
-              </View>
+              <StyledView className="h-14 self-start justify-center px-6">
+                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+              </StyledView>
             }
-            style={themed($bottomSpace)}
+            className="mb-2"
           />
         ))}
-        <Text tx="activitiesScreen:city" preset="subheading" style={themed($bottomSpace)} />
+        <Text tx="activitiesScreen:city" preset="subheading" className="mb-2" />
         {cityActivities.map((activity, index) => (
           <Card
             key={`city-${index}`}
             HeadingComponent={
-              <View>
+              <StyledView>
                 <Text>{activity}</Text>
-              </View>
+              </StyledView>
             }
             ContentComponent={
-              <View style={themed($logoContainer)}>
-                <Image source={logo} style={$logoImage} />
-              </View>
+              <StyledView className="h-14 self-start justify-center px-6">
+                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+              </StyledView>
             }
-            style={themed($bottomSpace)}
+            className="mb-2"
           />
         ))}
       </Screen>
     )
   }
-
-const $bottomSpace: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $logoImage: ImageStyle = {
-  height: 42,
-  width: 77,
-}
-
-const $logoContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  alignSelf: "flex-start",
-  justifyContent: "center",
-  height: 56,
-  paddingHorizontal: spacing.lg,
-})

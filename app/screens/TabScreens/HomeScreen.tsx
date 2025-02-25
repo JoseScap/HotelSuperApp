@@ -1,17 +1,17 @@
 import { FC } from "react"
-import { Image, ImageStyle, View, ViewStyle } from "react-native"
+import { Image, View } from "react-native"
 import { Screen } from "@/components/Screen"
-import { ThemedStyle } from "@/theme"
 import { useHeader } from "@/utils/useHeader"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { useBottomProps } from "@/hooks/useBottomProps"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
+const StyledImage = styled(Image)
 
 const logo = require("../../../assets/images/logo.png")
 
 export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScreen(_props) {
-  const { themed } = useAppTheme()
   const bottomProps = useBottomProps()
 
   useHeader({
@@ -19,25 +19,10 @@ export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScr
   })
 
   return (
-    <Screen
-      preset="scroll"
-      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-      {...bottomProps}
-    >
-      <View style={themed($logoContainer)}>
-        <Image source={logo} style={$logoImage} />
-      </View>
+    <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+      <StyledView className="h-14 self-start justify-center">
+        <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+      </StyledView>
     </Screen>
   )
 }
-
-const $logoImage: ImageStyle = {
-  height: 42,
-  width: 77,
-}
-
-const $logoContainer: ThemedStyle<ViewStyle> = () => ({
-  alignSelf: "flex-start",
-  justifyContent: "center",
-  height: 56,
-})

@@ -5,42 +5,31 @@ patch:
   append: "export * from \"./<%= props.subdirectory %><%= props.pascalCaseName %>\"\n"
   skip: <%= props.skipIndexFile %>
 ---
-import { StyleProp, TextStyle, View, ViewStyle } from "react-native"
-import { observer } from "mobx-react-lite" 
-import { useAppTheme } from "@/utils/useAppTheme"
-import type { ThemedStyle } from "@/theme"
+import { View } from "react-native"
+import { observer } from "mobx-react-lite"
 import { Text } from "@/components/Text"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
 
 export interface <%= props.pascalCaseName %>Props {
   /**
    * An optional style override useful for padding & margin.
    */
-  style?: StyleProp<ViewStyle>
+  className?: string
 }
 
 /**
  * Describe your component here
  */
-
-export const <%= props.pascalCaseName %> = observer(function <%= props.pascalCaseName %>(props: <%= props.pascalCaseName %>Props) {
-  const { style } = props
-  const $styles = [$container, style]
-  const { themed } = useAppTheme();
+export const <%= props.pascalCaseName %> = observer(function <%= props.pascalCaseName %>(
+  props: <%= props.pascalCaseName %>Props,
+) {
+  const { className } = props
 
   return (
-    <View style={$styles}>
-      <Text style={themed($text)}>Hello</Text>
-    </View>
+    <StyledView className={`justify-center ${className}`}>
+      <Text className="font-normal text-sm text-primary">Hello</Text>
+    </StyledView>
   )
-
-})
-
-const $container: ViewStyle = {
-  justifyContent: "center",
-}
-
-const $text: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  fontFamily: typography.primary.normal,
-  fontSize: 14,
-  color: colors.palette.primary500,
 })

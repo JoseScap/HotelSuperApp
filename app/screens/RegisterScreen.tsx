@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Platform, TextStyle, View, ViewStyle } from "react-native"
+import { Platform, View } from "react-native"
 import {
   Button,
   Screen,
@@ -10,11 +10,11 @@ import {
   PasswordRightAccessory,
 } from "../components"
 import { AppStackScreenProps } from "../navigators"
-import type { ThemedStyle } from "@/theme"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { useRegisterScreen } from "@/hooks/useRegisterScreen"
 import { useHeader } from "@/utils/useHeader"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
+
+const StyledView = styled(View)
 
 interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
@@ -49,7 +49,6 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
     register,
   } = useRegisterScreen(props)
 
-  const { themed } = useAppTheme()
   const isIos = Platform.OS === "ios"
 
   useHeader({
@@ -59,24 +58,20 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
   })
 
   return (
-    <Screen preset="auto" contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}>
+    <Screen preset="auto" contentClassName="px-4 py-6">
       <Text
         testID="register-heading"
         tx="registrationScreen:signUp"
         preset="heading"
-        style={themed($signUp)}
+        className="mb-2"
       />
-      <Text
-        tx="registrationScreen:enterDetails"
-        preset="subheading"
-        style={themed($enterDetails)}
-      />
+      <Text tx="registrationScreen:enterDetails" preset="subheading" className="mb-6" />
 
       <TextField
         ref={emailInput}
         value={email ?? ""}
         onChangeText={setEmail}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         autoCapitalize="none"
         autoComplete="email"
         autoCorrect={false}
@@ -92,7 +87,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         ref={passwordInput}
         value={password ?? ""}
         onChangeText={setPassword}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
@@ -112,7 +107,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
         ref={confirmPasswordInput}
         value={confirmPassword ?? ""}
         onChangeText={setConfirmPassword}
-        containerStyle={themed($textField)}
+        containerClassName="mb-6"
         autoCapitalize="none"
         autoComplete="password"
         autoCorrect={false}
@@ -131,46 +126,20 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
       <Button
         testID="register-button"
         tx="registrationScreen:tapToSignUp"
-        style={themed($tapButton)}
+        className="mt-2"
         preset="reversed"
         onPress={register}
       />
 
-      {signUpError && <Text tx={signUpError} preset="default" style={themed($errorText)} />}
+      {signUpError && (
+        <Text tx={signUpError} preset="default" className="mt-2 text-red-500 text-center" />
+      )}
 
-      <View style={themed($separator)}>
+      <StyledView className="my-2 items-center justify-center">
         <Text size="sm" weight="bold" tx="registrationScreen:or" />
-      </View>
+      </StyledView>
 
       {!isIos && <GoogleSignInButton />}
     </Screen>
   )
-})
-
-const $signUp: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
-})
-
-const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
-})
-
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginTop: spacing.xs,
-})
-
-const $separator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginVertical: spacing.sm,
-  alignItems: "center",
-  justifyContent: "center",
-})
-
-const $errorText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  color: colors.error,
-  marginTop: spacing.xs,
-  textAlign: "center",
 })

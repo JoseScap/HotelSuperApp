@@ -1,21 +1,15 @@
 import { ComponentType, Fragment, ReactElement } from "react"
-import {
-  StyleProp,
-  TextStyle,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewProps,
-  ViewStyle,
-} from "react-native"
-import type { ThemedStyle, ThemedStyleArray } from "@/theme"
-import { $styles } from "../theme"
+import { TouchableOpacity, TouchableOpacityProps, View, ViewProps } from "react-native"
 import { Text, TextProps } from "./Text"
-import { useAppTheme } from "@/utils/useAppTheme"
+import { styled } from "nativewind"
+import { nwMerge } from "@/utils/nwMerge"
+
+const StyledView = styled(View)
+const StyledTouchableOpacity = styled(TouchableOpacity)
 
 type Presets = "default" | "reversed"
 
-interface CardProps extends TouchableOpacityProps {
+interface CardProps extends Omit<TouchableOpacityProps, "style"> {
   /**
    * One of the different types of text presets.
    */
@@ -54,7 +48,7 @@ interface CardProps extends TouchableOpacityProps {
   /**
    * Style overrides for heading text.
    */
-  headingStyle?: StyleProp<TextStyle>
+  headingClassName?: string
   /**
    * Pass any additional props directly to the heading Text component.
    */
@@ -80,7 +74,7 @@ interface CardProps extends TouchableOpacityProps {
   /**
    * Style overrides for content text.
    */
-  contentStyle?: StyleProp<TextStyle>
+  contentClassName?: string
   /**
    * Pass any additional props directly to the content Text component.
    */
@@ -106,7 +100,7 @@ interface CardProps extends TouchableOpacityProps {
   /**
    * Style overrides for footer text.
    */
-  footerStyle?: StyleProp<TextStyle>
+  footerClassName?: string
   /**
    * Pass any additional props directly to the footer Text component.
    */
@@ -116,6 +110,37 @@ interface CardProps extends TouchableOpacityProps {
    * Overrides all other `footer*` props.
    */
   FooterComponent?: ReactElement
+  /**
+   * Style override for the container
+   */
+  className?: string
+}
+
+const CONTAINER_PRESETS: Record<Presets, string> = {
+  default: "bg-background-primary border border-secondary rounded-lg p-4",
+  reversed: "bg-background-secondary border border-secondary rounded-lg p-4",
+}
+
+const HEADING_PRESETS: Record<Presets, string> = {
+  default: "text-text-primary",
+  reversed: "text-text-primary",
+}
+
+const CONTENT_PRESETS: Record<Presets, string> = {
+  default: "text-text-secondary",
+  reversed: "text-text-secondary",
+}
+
+const FOOTER_PRESETS: Record<Presets, string> = {
+  default: "text-text-secondary text-xs",
+  reversed: "text-text-secondary text-xs",
+}
+
+const ALIGNMENT_WRAPPER_FLEX: Record<NonNullable<CardProps["verticalAlignment"]>, string> = {
+  "top": "justify-start",
+  "center": "justify-center",
+  "space-between": "justify-between",
+  "force-footer-bottom": "justify-between",
 }
 
 /**
@@ -142,20 +167,15 @@ export function Card(props: CardProps) {
     LeftComponent,
     RightComponent,
     verticalAlignment = "top",
-    style: $containerStyleOverride,
-    contentStyle: $contentStyleOverride,
-    headingStyle: $headingStyleOverride,
-    footerStyle: $footerStyleOverride,
+    className,
+    contentClassName,
+    headingClassName,
+    footerClassName,
     ContentTextProps,
     HeadingTextProps,
     FooterTextProps,
     ...WrapperProps
   } = props
-
-  const {
-    themed,
-    theme: { spacing },
-  } = useAppTheme()
 
   const preset: Presets = props.preset ?? "default"
   const isPressable = !!WrapperProps.onPress
@@ -163,51 +183,52 @@ export function Card(props: CardProps) {
   const isContentPresent = !!(ContentComponent || content || contentTx)
   const isFooterPresent = !!(FooterComponent || footer || footerTx)
 
-  const Wrapper = (isPressable ? TouchableOpacity : View) as ComponentType<
-    TouchableOpacityProps | ViewProps
+  const Wrapper = (isPressable ? StyledTouchableOpacity : StyledView) as ComponentType<
+    { className?: string } & (TouchableOpacityProps | ViewProps)
   >
-  const HeaderContentWrapper = verticalAlignment === "force-footer-bottom" ? View : Fragment
+  const HeaderContentWrapper = verticalAlignment === "force-footer-bottom" ? StyledView : Fragment
 
-  const $containerStyle: StyleProp<ViewStyle> = [
-    themed($containerPresets[preset]),
-    $containerStyleOverride,
-  ]
-  const $headingStyle = [
-    themed($headingPresets[preset]),
-    (isFooterPresent || isContentPresent) && { marginBottom: spacing.xxxs },
-    $headingStyleOverride,
-    HeadingTextProps?.style,
-  ]
-  const $contentStyle = [
-    themed($contentPresets[preset]),
-    isHeadingPresent && { marginTop: spacing.xxxs },
-    isFooterPresent && { marginBottom: spacing.xxxs },
-    $contentStyleOverride,
-    ContentTextProps?.style,
-  ]
-  const $footerStyle = [
-    themed($footerPresets[preset]),
-    (isHeadingPresent || isContentPresent) && { marginTop: spacing.xxxs },
-    $footerStyleOverride,
-    FooterTextProps?.style,
-  ]
-  const $alignmentWrapperStyle = [
-    $alignmentWrapper,
-    { justifyContent: $alignmentWrapperFlexOptions[verticalAlignment] },
-    LeftComponent && { marginStart: spacing.md },
-    RightComponent && { marginEnd: spacing.md },
-  ]
+  const containerClasses = nwMerge(CONTAINER_PRESETS[preset], className)
+
+  const headingClasses = nwMerge(
+    HEADING_PRESETS[preset],
+    (isFooterPresent || isContentPresent) && "mb-1",
+    headingClassName,
+    HeadingTextProps?.className,
+  )
+
+  const contentClasses = nwMerge(
+    CONTENT_PRESETS[preset],
+    isHeadingPresent && "mt-1",
+    isFooterPresent && "mb-1",
+    contentClassName,
+    ContentTextProps?.className,
+  )
+
+  const footerClasses = nwMerge(
+    FOOTER_PRESETS[preset],
+    (isHeadingPresent || isContentPresent) && "mt-1",
+    footerClassName,
+    FooterTextProps?.className,
+  )
+
+  const alignmentWrapperClasses = nwMerge(
+    "flex-1",
+    ALIGNMENT_WRAPPER_FLEX[verticalAlignment],
+    LeftComponent && "ml-4",
+    RightComponent && "mr-4",
+  )
 
   return (
     <Wrapper
-      style={$containerStyle}
+      className={containerClasses}
       activeOpacity={0.8}
       accessibilityRole={isPressable ? "button" : undefined}
       {...WrapperProps}
     >
       {LeftComponent}
 
-      <View style={$alignmentWrapperStyle}>
+      <StyledView className={alignmentWrapperClasses}>
         <HeaderContentWrapper>
           {HeadingComponent ||
             (isHeadingPresent && (
@@ -217,7 +238,7 @@ export function Card(props: CardProps) {
                 tx={headingTx}
                 txOptions={headingTxOptions}
                 {...HeadingTextProps}
-                style={$headingStyle}
+                className={headingClasses}
               />
             ))}
 
@@ -229,7 +250,7 @@ export function Card(props: CardProps) {
                 tx={contentTx}
                 txOptions={contentTxOptions}
                 {...ContentTextProps}
-                style={$contentStyle}
+                className={contentClasses}
               />
             ))}
         </HeaderContentWrapper>
@@ -243,70 +264,12 @@ export function Card(props: CardProps) {
               tx={footerTx}
               txOptions={footerTxOptions}
               {...FooterTextProps}
-              style={$footerStyle}
+              className={footerClasses}
             />
           ))}
-      </View>
+      </StyledView>
 
       {RightComponent}
     </Wrapper>
   )
-}
-
-const $containerBase: ThemedStyle<ViewStyle> = (theme) => ({
-  borderRadius: theme.spacing.md,
-  padding: theme.spacing.xs,
-  borderWidth: 1,
-  shadowColor: theme.colors.palette.neutral800,
-  shadowOffset: { width: 0, height: 12 },
-  shadowOpacity: 0.08,
-  shadowRadius: 12.81,
-  elevation: 16,
-  minHeight: 96,
-})
-
-const $alignmentWrapper: ViewStyle = {
-  flex: 1,
-  alignSelf: "stretch",
-}
-
-const $alignmentWrapperFlexOptions = {
-  "top": "flex-start",
-  "center": "center",
-  "space-between": "space-between",
-  "force-footer-bottom": "space-between",
-} as const
-
-const $containerPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
-  default: [
-    $styles.row,
-    $containerBase,
-    (theme) => ({
-      backgroundColor: theme.colors.palette.neutral100,
-      borderColor: theme.colors.palette.neutral300,
-    }),
-  ],
-  reversed: [
-    $styles.row,
-    $containerBase,
-    (theme) => ({
-      backgroundColor: theme.colors.palette.neutral800,
-      borderColor: theme.colors.palette.neutral500,
-    }),
-  ],
-}
-
-const $headingPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [],
-  reversed: [(theme) => ({ color: theme.colors.palette.neutral100 })],
-}
-
-const $contentPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [],
-  reversed: [(theme) => ({ color: theme.colors.palette.neutral100 })],
-}
-
-const $footerPresets: Record<Presets, ThemedStyleArray<TextStyle>> = {
-  default: [],
-  reversed: [(theme) => ({ color: theme.colors.palette.neutral100 })],
 }
