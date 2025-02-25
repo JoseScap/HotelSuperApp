@@ -1,13 +1,12 @@
 import { FC } from "react"
 import {
   GestureResponderEvent,
-  ImageStyle,
   SwitchProps,
   TextInputProps,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
-  ViewStyle,
+  ViewProps,
 } from "react-native"
 import { Text, TextProps } from "../Text"
 import { styled } from "nativewind"
@@ -45,17 +44,17 @@ export interface ToggleProps<T> extends Omit<TouchableOpacityProps, "style"> {
    * Optional input wrapper style override.
    * This gives the inputs their size, shape, "off" background-color, and outer border.
    */
-  inputOuterStyle?: ViewStyle
+  inputOuterClassName?: string
   /**
    * Optional input style override.
    * This gives the inputs their inner characteristics and "on" background-color.
    */
-  inputInnerStyle?: ViewStyle
+  inputInnerClassName?: string
   /**
    * Optional detail style override.
    * See Checkbox, Radio, and Switch for more details
    */
-  inputDetailStyle?: ViewStyle
+  inputDetailClassName?: string
   /**
    * The position of the label relative to the action component.
    * Default: right
@@ -109,9 +108,9 @@ export interface BaseToggleInputProps<T> {
   on: boolean
   status: ToggleProps<T>["status"]
   disabled: boolean
-  outerStyle: ViewStyle
-  innerStyle: ViewStyle
-  detailStyle: Omit<ViewStyle & ImageStyle, "overflow">
+  outerClassName?: string
+  innerClassName?: string
+  detailClassName?: string
 }
 
 /**
@@ -141,24 +140,39 @@ export function Toggle<T>(props: ToggleProps<T>) {
 
   const disabled = editable === false || status === "disabled" || props.disabled
 
+  const Wrapper = useMemo(
+    () =>
+      (disabled ? StyledView : StyledTouchableOpacity) as ComponentType<
+        { className?: string } & (TouchableOpacityProps | ViewProps)
+      >,
+    [disabled],
+  )
+
   function handlePress(e: GestureResponderEvent) {
     if (disabled) return
     onValueChange?.(!value)
     onPress?.(e)
   }
 
-  const content = (
-    <>
-      <StyledView className={nwMerge("flex-row items-center", inputWrapperClassName)}>
+  return (
+    <Wrapper
+      activeOpacity={1}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={{ checked: value, disabled }}
+      {...WrapperProps}
+      className={className}
+      onPress={handlePress}
+    >
+      <StyledView className={nwMerge("flex-row", inputWrapperClassName)}>
         {labelPosition === "left" && <FieldLabel<T> {...props} labelPosition={labelPosition} />}
 
         <ToggleInput
           on={!!value}
           disabled={!!disabled}
           status={status}
-          outerStyle={props.inputOuterStyle ?? {}}
-          innerStyle={props.inputInnerStyle ?? {}}
-          detailStyle={props.inputDetailStyle ?? {}}
+          outerClassName={props.inputOuterClassName}
+          innerClassName={props.inputInnerClassName}
+          detailClassName={props.inputDetailClassName}
         />
 
         {labelPosition === "right" && <FieldLabel<T> {...props} labelPosition={labelPosition} />}
@@ -172,8 +186,8 @@ export function Toggle<T>(props: ToggleProps<T>) {
           txOptions={helperTxOptions}
           {...HelperTextProps}
           className={nwMerge(
-            "mt-1",
-            status === "error" ? "text-error" : "text-text-dim",
+            "mt-1 text-text-secondary",
+            status === "error" && "text-red-500",
             HelperTextProps?.className,
           )}
         />
@@ -218,6 +232,15 @@ function FieldLabel<T>(props: ToggleProps<T>) {
 
   if (!label && !labelTx && !LabelTextProps?.children) return null
 
+  const labelClasses = nwMerge(
+    "text-text-primary flex-1",
+    status === "error" && "text-red-500",
+    labelPosition === "right" && "ml-2",
+    labelPosition === "left" && "mr-2",
+    labelClassName,
+    LabelTextProps?.className,
+  )
+
   return (
     <Text
       preset="formLabel"
@@ -225,12 +248,7 @@ function FieldLabel<T>(props: ToggleProps<T>) {
       tx={labelTx}
       txOptions={labelTxOptions}
       {...LabelTextProps}
-      className={nwMerge(
-        labelPosition === "right" ? "ml-2" : "mr-2",
-        status === "error" ? "text-error" : "text-text",
-        labelClassName,
-        LabelTextProps?.className,
-      )}
+      className={labelClasses}
     />
   )
 }

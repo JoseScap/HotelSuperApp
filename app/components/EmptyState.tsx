@@ -91,10 +91,6 @@ interface EmptyStateProps {
    */
   buttonClassName?: string
   /**
-   * Style overrides for button text.
-   */
-  buttonTextClassName?: string
-  /**
    * Called when the button is pressed.
    */
   buttonOnPress?: ButtonProps["onPress"]
@@ -111,6 +107,15 @@ interface EmptyStatePresetItem {
   button: TextProps["text"]
 }
 
+const EmptyStatePresets = {
+  generic: {
+    imageSource: sadFace,
+    heading: translate("emptyStateComponent:generic.heading"),
+    content: translate("emptyStateComponent:generic.content"),
+    button: translate("emptyStateComponent:generic.button"),
+  } as EmptyStatePresetItem,
+} as const
+
 /**
  * A component to use when there is no data to display. It can be utilized to direct the user what to do next.
  * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/EmptyState/}
@@ -118,15 +123,6 @@ interface EmptyStatePresetItem {
  * @returns {JSX.Element} The rendered `EmptyState` component.
  */
 export function EmptyState(props: EmptyStateProps) {
-  const EmptyStatePresets = {
-    generic: {
-      imageSource: sadFace,
-      heading: translate("emptyStateComponent:generic.heading"),
-      content: translate("emptyStateComponent:generic.content"),
-      button: translate("emptyStateComponent:generic.button"),
-    } as EmptyStatePresetItem,
-  } as const
-
   const preset = EmptyStatePresets[props.preset ?? "generic"]
 
   const {
@@ -142,11 +138,10 @@ export function EmptyState(props: EmptyStateProps) {
     headingTxOptions,
     imageSource = preset.imageSource,
     className,
+    buttonClassName,
     contentClassName,
     headingClassName,
     imageClassName,
-    buttonClassName,
-    buttonTextClassName,
     ButtonProps,
     ContentTextProps,
     HeadingTextProps,
@@ -158,18 +153,37 @@ export function EmptyState(props: EmptyStateProps) {
   const isContentPresent = !!(content || contentTx)
   const isButtonPresent = !!(button || buttonTx)
 
+  const containerClasses = nwMerge("items-center justify-center", className)
+
+  const imageClasses = nwMerge(
+    "self-center",
+    (isHeadingPresent || isContentPresent || isButtonPresent) && "mb-1",
+    imageClassName,
+  )
+
+  const headingClasses = nwMerge(
+    "text-center px-4 text-text-primary",
+    isImagePresent && "mt-1",
+    (isContentPresent || isButtonPresent) && "mb-1",
+    headingClassName,
+  )
+
+  const contentClasses = nwMerge(
+    "text-center px-4 text-text-secondary",
+    (isImagePresent || isHeadingPresent) && "mt-1",
+    isButtonPresent && "mb-1",
+    contentClassName,
+  )
+
+  const buttonClasses = nwMerge(
+    (isImagePresent || isHeadingPresent || isContentPresent) && "mt-8",
+    buttonClassName,
+  )
+
   return (
-    <StyledView className={nwMerge("items-center justify-center p-4", className)}>
+    <StyledView className={containerClasses}>
       {isImagePresent && (
-        <StyledImage
-          source={imageSource}
-          {...ImageProps}
-          className={nwMerge(
-            "self-center",
-            (isHeadingPresent || isContentPresent || isButtonPresent) && "mb-2",
-            imageClassName,
-          )}
-        />
+        <StyledImage source={imageSource} {...ImageProps} className={imageClasses} />
       )}
 
       {isHeadingPresent && (
@@ -179,12 +193,7 @@ export function EmptyState(props: EmptyStateProps) {
           tx={headingTx}
           txOptions={headingTxOptions}
           {...HeadingTextProps}
-          className={nwMerge(
-            "text-center px-8",
-            isImagePresent && "mt-2",
-            (isContentPresent || isButtonPresent) && "mb-2",
-            headingClassName,
-          )}
+          className={headingClasses}
         />
       )}
 
@@ -194,12 +203,7 @@ export function EmptyState(props: EmptyStateProps) {
           tx={contentTx}
           txOptions={contentTxOptions}
           {...ContentTextProps}
-          className={nwMerge(
-            "text-center px-8",
-            (isImagePresent || isHeadingPresent) && "mt-2",
-            isButtonPresent && "mb-2",
-            contentClassName,
-          )}
+          className={contentClasses}
         />
       )}
 
@@ -209,9 +213,8 @@ export function EmptyState(props: EmptyStateProps) {
           text={button}
           tx={buttonTx}
           txOptions={buttonTxOptions}
-          className={nwMerge("mt-4", buttonClassName)}
-          textClassName={buttonTextClassName}
           {...ButtonProps}
+          className={buttonClasses}
         />
       )}
     </StyledView>

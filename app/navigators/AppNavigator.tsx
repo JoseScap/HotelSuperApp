@@ -17,21 +17,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
 import { useStores } from "@/models"
 import * as Screens from "@/screens"
-import { AppStackParamList } from "./types"
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { View } from "react-native"
-import { styled } from "nativewind"
-import { useAppColors } from "@/hooks/useAppColors"
-import { Icon } from "@/components/Icon"
-import { Text } from "@/components/Text"
-import { UserTabParamList, ReservedUserTabParamList, CheckedInTabParamList } from "./types"
-
-const StyledView = styled(View)
-
-const Stack = createNativeStackNavigator<AppStackParamList>()
-const UserTab = createBottomTabNavigator<UserTabParamList>()
-const ReservedUserTab = createBottomTabNavigator<ReservedUserTabParamList>()
-const CheckedInTab = createBottomTabNavigator<CheckedInTabParamList>()
+import Config from "../config"
+import { useStores } from "../models"
+import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
+import { ComponentProps, Fragment } from "react"
+import { BottomHomeParamList, BottomHomeNavigator } from "./BottomNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -56,9 +46,9 @@ const AppStackNavigator = observer(function AppStackNavigator() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        animation: "slide_from_right",
+        navigationBarColor: "#FFFFFF",
         contentStyle: {
-          backgroundColor: "white",
+          backgroundColor: "#FFFFFF",
         },
       }}
       initialRouteName="Landing"
@@ -88,68 +78,15 @@ const AppStackNavigator = observer(function AppStackNavigator() {
   )
 })
 
-function UserTabNavigator(): ReactElement {
-  const { primary } = useAppColors()
+export interface NavigationProps extends Partial<ComponentProps<typeof NavigationContainer>> {}
+
+export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
+  useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
   return (
-    <UserTab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: primary,
-          borderTopWidth: 0,
-        },
-      }}
-    >
-      <UserTab.Screen
-        name="Explore"
-        component={Screens.ExploreScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <StyledView className="items-center">
-              <Icon
-                icon="BsViewList"
-                size="md"
-                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
-              />
-              <Text className="text-white text-xs mt-1" tx="homeNavigator:homeTab" />
-            </StyledView>
-          ),
-        }}
-      />
-      <UserTab.Screen
-        name="Booking"
-        component={Screens.BookingScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <StyledView className="items-center">
-              <Icon
-                icon="BsMenuApp"
-                size="md"
-                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
-              />
-              <Text className="text-white text-xs mt-1" tx="homeNavigator:activitiesTab" />
-            </StyledView>
-          ),
-        }}
-      />
-      <UserTab.Screen
-        name="Profile"
-        component={Screens.ProfileScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <StyledView className="items-center">
-              <Icon
-                icon="BsAirplaneEngines"
-                size={24}
-                color={focused ? "white" : "rgba(255, 255, 255, 0.6)"}
-              />
-              <Text className="text-white text-xs mt-1" tx="homeNavigator:profileTab" />
-            </StyledView>
-          ),
-        }}
-      />
-    </UserTab.Navigator>
+    <NavigationContainer ref={navigationRef} {...props}>
+      <AppStack />
+    </NavigationContainer>
   )
 }
 

@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react"
-import { View, ViewStyle, Animated } from "react-native"
+import { View, Animated } from "react-native"
 import { BaseToggleInputProps, ToggleProps, Toggle } from "./Toggle"
 import { styled } from "nativewind"
-import { useAppColors } from "@/hooks/useAppColors"
+import { nwMerge } from "@/utils/nwMerge"
 
 const StyledView = styled(View)
 const StyledAnimatedView = styled(Animated.View)
 
 export interface RadioToggleProps extends Omit<ToggleProps<RadioInputProps>, "ToggleInput"> {
   /**
-   * Optional style prop that affects the dot View.
+   * Optional class name for the radio dot
    */
-  inputDetailStyle?: ViewStyle
+  inputDetailClassName?: string
 }
 
 interface RadioInputProps extends BaseToggleInputProps<RadioToggleProps> {}
@@ -26,15 +26,7 @@ export function Radio(props: RadioToggleProps) {
 }
 
 function RadioInput(props: RadioInputProps) {
-  const {
-    on,
-    status,
-    disabled,
-    outerStyle: $outerStyleOverride,
-    innerStyle: $innerStyleOverride,
-  } = props
-
-  const { primary, text, background } = useAppColors()
+  const { on, status, disabled, outerClassName, innerClassName, detailClassName } = props
 
   const opacity = useRef(new Animated.Value(0))
 
@@ -46,51 +38,35 @@ function RadioInput(props: RadioInputProps) {
     }).start()
   }, [on])
 
-  const offBackgroundColor = [
-    disabled && text.secondary,
-    status === "error" && "#FEE2E2",
-    "#E2E8F0",
-  ].filter(Boolean)[0]
+  const outerClasses = nwMerge(
+    "h-[32px] w-[32px] rounded-full border-2 justify-center items-center",
+    disabled && "bg-neutral-400 border-neutral-400",
+    status === "error" && "bg-red-100 border-red-500",
+    !disabled && !status && !on && "border-neutral-800 bg-neutral-200",
+    !disabled && !status && on && "border-secondary bg-neutral-200",
+    outerClassName,
+  )
 
-  const outerBorderColor = [
-    disabled && text.secondary,
-    status === "error" && "#EF4444",
-    !on && text.primary,
-    primary,
-  ].filter(Boolean)[0]
+  const innerClasses = nwMerge(
+    "absolute inset-0 justify-center items-center",
+    disabled && "bg-transparent",
+    status === "error" && "bg-red-100",
+    !disabled && !status && "bg-background-primary",
+    innerClassName,
+  )
 
-  const onBackgroundColor = [
-    disabled && "transparent",
-    status === "error" && "#FEE2E2",
-    background.primary,
-  ].filter(Boolean)[0]
-
-  const dotBackgroundColor = [
-    disabled && text.secondary,
-    status === "error" && "#EF4444",
-    primary,
-  ].filter(Boolean)[0]
+  const dotClasses = nwMerge(
+    "w-3 h-3 rounded-full",
+    disabled && "bg-neutral-600",
+    status === "error" && "bg-red-500",
+    !disabled && !status && "bg-secondary",
+    detailClassName,
+  )
 
   return (
-    <StyledView
-      className="h-6 w-6 rounded-full border"
-      style={[
-        { backgroundColor: offBackgroundColor, borderColor: outerBorderColor },
-        $outerStyleOverride,
-      ]}
-    >
-      <StyledAnimatedView
-        className="flex h-full w-full items-center justify-center"
-        style={[
-          { backgroundColor: onBackgroundColor },
-          $innerStyleOverride,
-          { opacity: opacity.current },
-        ]}
-      >
-        <StyledView
-          className="h-3 w-3 rounded-full"
-          style={{ backgroundColor: dotBackgroundColor }}
-        />
+    <StyledView className={outerClasses}>
+      <StyledAnimatedView style={{ opacity: opacity.current }} className={innerClasses}>
+        <StyledView className={dotClasses} />
       </StyledAnimatedView>
     </StyledView>
   )

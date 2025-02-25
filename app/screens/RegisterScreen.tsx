@@ -13,7 +13,6 @@ import { AppStackScreenProps } from "../navigators"
 import { useRegisterScreen } from "@/hooks/useRegisterScreen"
 import { useHeader } from "@/utils/useHeader"
 import { styled } from "nativewind"
-import { BsCaretLeft } from "react-icons/bs"
 
 const StyledView = styled(View)
 
@@ -59,83 +58,86 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
   })
 
   return (
-    <Screen preset="auto" safeAreaEdges={["top"]} className="bg-sky-500">
-      {/* Header colored section */}
-      <StyledView className="bg-sky-500 h-24" />
+    <Screen preset="auto" contentClassName="px-4 py-6">
+      <Text
+        testID="register-heading"
+        tx="registrationScreen:signUp"
+        preset="heading"
+        className="mb-2"
+      />
+      <Text tx="registrationScreen:enterDetails" preset="subheading" className="mb-6" />
 
-      {/* Content section */}
-      <StyledView className="flex-1 bg-white px-4 rounded-t-3xl h-full">
-        <StyledView className="mt-8 mb-2">
-          <Text testID="register-heading" tx="registrationScreen:signUp" preset="heading" />
-        </StyledView>
+      <TextField
+        ref={emailInput}
+        value={email ?? ""}
+        onChangeText={setEmail}
+        containerClassName="mb-6"
+        autoCapitalize="none"
+        autoComplete="email"
+        autoCorrect={false}
+        keyboardType="email-address"
+        labelTx="registrationScreen:emailFieldLabel"
+        placeholderTx="registrationScreen:emailFieldPlaceholder"
+        helperTx={isSubmitted ? emailValidation : undefined}
+        status={isSubmitted && emailValidation ? "error" : undefined}
+        onSubmitEditing={() => passwordInput.current?.focus()}
+      />
 
-        <StyledView className="mb-6">
-          <Text tx="registrationScreen:enterDetails" preset="subheading" />
-        </StyledView>
+      <TextField
+        ref={passwordInput}
+        value={password ?? ""}
+        onChangeText={setPassword}
+        containerClassName="mb-6"
+        autoCapitalize="none"
+        autoComplete="password"
+        autoCorrect={false}
+        secureTextEntry={isPasswordHidden}
+        labelTx="registrationScreen:passwordFieldLabel"
+        placeholderTx="registrationScreen:passwordFieldPlaceholder"
+        helperTx={isSubmitted ? passwordValidation : undefined}
+        status={isSubmitted && passwordValidation ? "error" : undefined}
+        onSubmitEditing={() => confirmPasswordInput.current?.focus()}
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isPasswordHidden,
+          onTogglePassword: togglePassword,
+        })}
+      />
 
-        <TextField
-          ref={emailInput}
-          value={email ?? ""}
-          onChangeText={setEmail}
-          containerClassName="mb-6"
-          autoCapitalize="none"
-          autoComplete="email"
-          autoCorrect={false}
-          keyboardType="email-address"
-          labelTx="registrationScreen:emailFieldLabel"
-          placeholderTx="registrationScreen:emailFieldPlaceholder"
-          helperTx={isSubmitted ? emailValidation : undefined}
-          status={isSubmitted && emailValidation ? "error" : undefined}
-          onSubmitEditing={() => passwordInput.current?.focus()}
-        />
+      <TextField
+        ref={confirmPasswordInput}
+        value={confirmPassword ?? ""}
+        onChangeText={setConfirmPassword}
+        containerClassName="mb-6"
+        autoCapitalize="none"
+        autoComplete="password"
+        autoCorrect={false}
+        secureTextEntry={isConfirmPasswordHidden}
+        labelTx="registrationScreen:confirmPasswordFieldLabel"
+        placeholderTx="registrationScreen:confirmPasswordFieldPlaceholder"
+        helperTx={isSubmitted ? confirmPasswordValidation : undefined}
+        status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
+        onSubmitEditing={register}
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isConfirmPasswordHidden,
+          onTogglePassword: toggleConfirmPassword,
+        })}
+      />
 
-        <TextField
-          ref={passwordInput}
-          value={password ?? ""}
-          onChangeText={setPassword}
-          containerClassName="mb-6"
-          autoCapitalize="none"
-          autoComplete="password"
-          autoCorrect={false}
-          secureTextEntry={isPasswordHidden}
-          labelTx="registrationScreen:passwordFieldLabel"
-          placeholderTx="registrationScreen:passwordFieldPlaceholder"
-          helperTx={isSubmitted ? passwordValidation : undefined}
-          status={isSubmitted && passwordValidation ? "error" : undefined}
-          onSubmitEditing={() => confirmPasswordInput.current?.focus()}
-          RightAccessory={PasswordRightAccessory({
-            isPasswordHidden: isPasswordHidden,
-            onTogglePassword: togglePassword,
-          })}
-        />
+      <Button
+        testID="register-button"
+        tx="registrationScreen:tapToSignUp"
+        className="mt-2"
+        preset="reversed"
+        onPress={register}
+      />
 
-        <TextField
-          ref={confirmPasswordInput}
-          value={confirmPassword ?? ""}
-          onChangeText={setConfirmPassword}
-          containerClassName="mb-6"
-          autoCapitalize="none"
-          autoComplete="password"
-          autoCorrect={false}
-          secureTextEntry={isConfirmPasswordHidden}
-          labelTx="registrationScreen:confirmPasswordFieldLabel"
-          placeholderTx="registrationScreen:confirmPasswordFieldPlaceholder"
-          helperTx={isSubmitted ? confirmPasswordValidation : undefined}
-          status={isSubmitted && confirmPasswordValidation ? "error" : undefined}
-          onSubmitEditing={register}
-          RightAccessory={PasswordRightAccessory({
-            isPasswordHidden: isConfirmPasswordHidden,
-            onTogglePassword: toggleConfirmPassword,
-          })}
-        />
+      {signUpError && (
+        <Text tx={signUpError} preset="default" className="mt-2 text-red-500 text-center" />
+      )}
 
-        <Button
-          testID="register-button"
-          tx="registrationScreen:tapToSignUp"
-          className="mt-2"
-          preset="filled"
-          onPress={register}
-        />
+      <StyledView className="my-2 items-center justify-center">
+        <Text size="sm" weight="bold" tx="registrationScreen:or" />
+      </StyledView>
 
         {signUpError && (
           <StyledView className="mt-2">

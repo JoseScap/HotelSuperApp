@@ -4,10 +4,8 @@ import { isRTL, translate } from "@/i18n"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { Icon } from "./Icon"
 import { Text, TextProps } from "./Text"
-import { useAppColors } from "@/hooks/useAppColors"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
-import { IconName } from "@/utils/iconMapping"
 
 const StyledView = styled(View)
 const StyledTouchableOpacity = styled(TouchableOpacity)
@@ -20,25 +18,25 @@ export interface HeaderProps {
    */
   titleMode?: "center" | "flex"
   /**
-   * Optional title style override.
+   * Optional title style class name.
    */
   titleClassName?: string
   /**
-   * Optional outer title container style override.
+   * Optional outer title container class name.
    */
   titleContainerClassName?: string
   /**
-   * Optional inner header wrapper style override.
+   * Optional inner header wrapper class name.
    */
   className?: string
   /**
-   * Optional outer header container style override.
+   * Optional outer header container class name.
    */
   containerClassName?: string
   /**
-   * Background color
+   * Background color class from Tailwind
    */
-  backgroundColor?: string
+  backgroundClassName?: string
   /**
    * Title text to display if not using `tx` or nested components.
    */
@@ -125,8 +123,8 @@ export interface HeaderProps {
 }
 
 interface HeaderActionProps {
-  backgroundColor?: string
-  icon?: IconName
+  backgroundClassName?: string
+  icon?: IconTypes
   iconColor?: string
   text?: TextProps["text"]
   tx?: TextProps["tx"]
@@ -145,7 +143,7 @@ interface HeaderActionProps {
 export function Header(props: HeaderProps) {
   const { primary } = useAppColors()
   const {
-    backgroundColor = primary,
+    backgroundClassName = "bg-background-primary",
     LeftActionComponent,
     leftIcon,
     leftIconColor,
@@ -175,12 +173,19 @@ export function Header(props: HeaderProps) {
 
   const titleContent = titleTx ? translate(titleTx, titleTxOptions) : title
 
+  const containerClasses = nwMerge(backgroundClassName, containerClassName)
+  const wrapperClasses = nwMerge("flex-row items-center min-h-[56px] px-4", className)
+  const titleWrapperClasses = nwMerge(
+    "flex-1",
+    titleMode === "center" && "absolute inset-x-0 items-center justify-center",
+    titleMode === "flex" && "mx-2 justify-center",
+    titleContainerClassName,
+  )
+  const titleClasses = nwMerge("text-text-primary text-base", isRTL && "text-right", titleClassName)
+
   return (
-    <StyledView
-      className={nwMerge("w-full", containerClassName)}
-      style={[$containerInsets, { backgroundColor }]}
-    >
-      <StyledView className={nwMerge("flex-row items-center h-14 px-4", className)}>
+    <StyledView style={$containerInsets} className={containerClasses}>
+      <StyledView className={wrapperClasses}>
         <HeaderAction
           tx={leftTx}
           text={leftText}
@@ -188,24 +193,13 @@ export function Header(props: HeaderProps) {
           iconColor={leftIconColor}
           onPress={onLeftPress}
           txOptions={leftTxOptions}
-          backgroundColor={backgroundColor}
+          backgroundClassName={backgroundClassName}
           ActionComponent={LeftActionComponent}
         />
 
         {!!titleContent && (
-          <StyledView
-            className={nwMerge(
-              titleMode === "flex" ? "flex-1 justify-center" : "absolute inset-x-0",
-              titleContainerClassName,
-            )}
-            pointerEvents="none"
-          >
-            <Text
-              weight="medium"
-              size="md"
-              text={titleContent}
-              className={nwMerge("text-center text-white", isRTL && "writing-rtl", titleClassName)}
-            />
+          <StyledView className={titleWrapperClasses} pointerEvents="none">
+            <Text weight="medium" size="md" text={titleContent} className={titleClasses} />
           </StyledView>
         )}
 
@@ -216,7 +210,7 @@ export function Header(props: HeaderProps) {
           iconColor={rightIconColor}
           onPress={onRightPress}
           txOptions={rightTxOptions}
-          backgroundColor={backgroundColor}
+          backgroundClassName={backgroundClassName}
           ActionComponent={RightActionComponent}
         />
       </StyledView>
@@ -224,12 +218,9 @@ export function Header(props: HeaderProps) {
   )
 }
 
-/**
- * @param {HeaderActionProps} props - The props for the `HeaderAction` component.
- * @returns {JSX.Element} The rendered `HeaderAction` component.
- */
 function HeaderAction(props: HeaderActionProps) {
-  const { icon, text, tx, txOptions, onPress, ActionComponent, iconColor } = props
+  const { backgroundClassName, icon, text, tx, txOptions, onPress, ActionComponent, iconColor } =
+    props
 
   const content = tx ? translate(tx, txOptions) : text
 
@@ -238,18 +229,33 @@ function HeaderAction(props: HeaderActionProps) {
   if (content) {
     return (
       <StyledTouchableOpacity
+        className={nwMerge("flex-row items-center min-h-[56px] px-4", backgroundClassName)}
         onPress={onPress}
         disabled={!onPress}
         className="active:opacity-80 min-w-[48px]"
       >
-        <Text weight="medium" size="md" text={content} className="text-white" />
+        <Text
+          weight="medium"
+          size="md"
+          text={content}
+          className={nwMerge("text-text-primary", isRTL && "text-right")}
+        />
       </StyledTouchableOpacity>
     )
   }
 
   if (icon) {
-    return <Icon icon={icon} size={24} color={iconColor || "white"} />
+    return (
+      <StyledTouchableOpacity
+        className={nwMerge("items-center justify-center min-h-[56px] px-4", backgroundClassName)}
+        onPress={onPress}
+        disabled={!onPress}
+        activeOpacity={0.8}
+      >
+        <Icon size={24} icon={icon} color={iconColor} />
+      </StyledTouchableOpacity>
+    )
   }
 
-  return <StyledView className="min-w-[48px]" />
+  return <StyledView className="min-h-[56px] px-4" />
 }

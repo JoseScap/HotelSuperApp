@@ -94,19 +94,19 @@ export interface TextFieldProps extends Omit<TextInputProps, "ref"> {
 
 // Base styles
 const CONTAINER_BASE = ""
-const LABEL_BASE = "mb-1"
+const LABEL_BASE = "mb-1 text-text-primary"
 const INPUT_WRAPPER_BASE =
-  "flex-row items-start border rounded overflow-hidden bg-white border-sky-500 focus:border-sky-600"
-const INPUT_BASE = "flex-1 self-stretch font-normal text-base py-0 px-0 my-2 mx-3 text-neutral-800"
-const HELPER_BASE = "mt-1"
+  "flex-row items-start border rounded overflow-hidden bg-background-secondary border-secondary"
+const INPUT_BASE = "flex-1 self-stretch font-normal text-base py-0 px-0 my-2 mx-3 text-text-primary"
+const HELPER_BASE = "mt-1 text-text-secondary"
 const ACCESSORY_BASE = "h-10 justify-center items-center z-[1]"
 
-// Estado error
+// Error state
 const ERROR_INPUT_WRAPPER = "border-red-500"
 const ERROR_HELPER = "text-red-500"
 
-// Estado disabled
-const DISABLED_INPUT = "text-neutral-400 bg-neutral-100"
+// Disabled state
+const DISABLED_INPUT = "text-text-secondary opacity-50"
 
 export const TextField = forwardRef(function TextField(props: TextFieldProps, ref: Ref<TextInput>) {
   const {

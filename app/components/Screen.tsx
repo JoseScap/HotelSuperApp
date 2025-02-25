@@ -9,6 +9,7 @@ import {
   ScrollView,
   ScrollViewProps,
   View,
+  ViewStyle,
 } from "react-native"
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
@@ -17,8 +18,15 @@ import { nwMerge } from "@/utils/nwMerge"
 
 const StyledView = styled(View)
 const StyledKeyboardAvoidingView = styled(KeyboardAvoidingView)
+const StyledKeyboardAwareScrollView = styled(KeyboardAwareScrollView)
 
 export const DEFAULT_BOTTOM_OFFSET = 50
+
+const $contentContainerStyle: ViewStyle = {
+  flexGrow: 1,
+  width: "100%",
+  height: "100%",
+}
 
 interface BaseScreenProps {
   /**
@@ -37,6 +45,10 @@ interface BaseScreenProps {
    * Override the default edges for the safe area.
    */
   safeAreaEdges?: ExtendedEdge[]
+  /**
+   * Background color class from Tailwind (e.g. "bg-background-primary")
+   */
+  backgroundClassName?: string
   /**
    * Status bar setting. Defaults to dark.
    */
@@ -95,12 +107,6 @@ function isNonScrolling(preset?: ScreenPreset) {
   return !preset || preset === "fixed"
 }
 
-// Base styles
-const SCREEN_BASE = "flex-1 h-full w-full bg-background-primary"
-const OUTER_CONTENT = "flex-1 h-full w-full"
-const INNER_CONTENT = "justify-start items-stretch"
-const INNER_CONTENT_FIXED = "justify-end"
-
 function useAutoPreset(props: AutoScreenProps) {
   const { preset, scrollEnabledToggleThreshold } = props
   const { percent = 0.92, point = 0 } = scrollEnabledToggleThreshold || {}
@@ -147,14 +153,8 @@ function useAutoPreset(props: AutoScreenProps) {
 function ScreenWithoutScrolling(props: ScreenProps) {
   const { className, contentClassName, children, preset } = props
   return (
-    <StyledView className={nwMerge(OUTER_CONTENT, className)}>
-      <StyledView
-        className={nwMerge(
-          INNER_CONTENT,
-          preset === "fixed" && INNER_CONTENT_FIXED,
-          contentClassName,
-        )}
-      >
+    <StyledView className={nwMerge("flex-1 h-full w-full", className)}>
+      <StyledView className={nwMerge(preset === "fixed" && "justify-end", contentClassName)}>
         {children}
       </StyledView>
     </StyledView>
@@ -178,7 +178,7 @@ function ScreenWithScrolling(props: ScreenProps) {
   useScrollToTop(ref)
 
   return (
-    <KeyboardAwareScrollView
+    <StyledKeyboardAwareScrollView
       bottomOffset={keyboardBottomOffset}
       {...{ keyboardShouldPersistTaps, scrollEnabled, ref }}
       {...ScrollViewProps}
@@ -190,38 +190,32 @@ function ScreenWithScrolling(props: ScreenProps) {
         onContentSizeChange(w, h)
         ScrollViewProps?.onContentSizeChange?.(w, h)
       }}
-      style={ScrollViewProps?.style}
-      contentContainerStyle={[
-        ScrollViewProps?.contentContainerStyle,
-        // eslint-disable-next-line react-native/no-inline-styles
-        {
-          justifyContent: "flex-start",
-          alignItems: "stretch",
-        },
-      ]}
+      className="flex-1"
+      contentContainerStyle={$contentContainerStyle}
     >
-      <StyledView className={nwMerge(OUTER_CONTENT, className)}>
-        <StyledView className={nwMerge(INNER_CONTENT, contentClassName)}>{children}</StyledView>
-      </StyledView>
-    </KeyboardAwareScrollView>
+      <StyledView className={nwMerge(contentClassName, className)}>{children}</StyledView>
+    </StyledKeyboardAwareScrollView>
   )
 }
 
 export function Screen(props: ScreenProps) {
   const {
+    backgroundClassName = "bg-background-primary",
     KeyboardAvoidingViewProps,
     keyboardOffset = 0,
     safeAreaEdges,
     StatusBarProps,
-    statusBarStyle,
-    className,
+    statusBarStyle = "dark",
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
 
   return (
-    <StyledView className={nwMerge(SCREEN_BASE, className)} style={$containerInsets}>
-      <StatusBar style={statusBarStyle || "dark"} {...StatusBarProps} />
+    <StyledView
+      className={nwMerge("flex-1 h-full w-full", backgroundClassName)}
+      style={$containerInsets}
+    >
+      <StatusBar style={statusBarStyle} {...StatusBarProps} />
 
       <StyledKeyboardAvoidingView
         className="flex-1"

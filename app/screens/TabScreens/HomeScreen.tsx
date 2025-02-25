@@ -1,43 +1,41 @@
 import { FC } from "react"
-import { Image, ImageStyle, View, ViewStyle } from "react-native"
+import { Image, View } from "react-native"
 import { Screen } from "@/components/Screen"
-import { ThemedStyle } from "@/theme"
 import { useHeader } from "@/utils/useHeader"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { useBottomProps } from "@/hooks/useBottomProps"
 import { BottomHomeTabScreenProps } from "@/navigators/BottomNavigator"
-import { $SCREEN_CONTENT_CONTAINER } from "@/constants/common"
+import { styled } from "nativewind"
 
-const logo = require("../../../assets/images/logo.png")
+const StyledView = styled(View)
+const StyledImage = styled(Image)
+
+const StyledView = styled(View)
+const StyledScrollView = styled(ScrollView)
+const StyledTextInput = styled(TextInput)
+const StyledImage = styled(Image)
 
 export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScreen(_props) {
-  const { themed } = useAppTheme()
   const bottomProps = useBottomProps()
 
-  useHeader({
-    leftTx: "homeScreen:title",
-  })
+const ACTIVITY_CARD_WIDTH = 280
+
+export function HomeScreen() {
+  const { name: hotelName } = useHotelConfig()
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>()
+
+  const handleActivityPress = (activity: Activity) => {
+    navigation.navigate("ActivityDetail", { activityId: activity.id })
+  }
+
+  const handleDestinationPress = (destination: Destination) => {
+    navigation.navigate("DestinationDetail", { destinationId: destination.id })
+  }
 
   return (
-    <Screen
-      preset="scroll"
-      contentContainerStyle={themed($SCREEN_CONTENT_CONTAINER)}
-      {...bottomProps}
-    >
-      <View style={themed($logoContainer)}>
-        <Image source={logo} style={$logoImage} />
-      </View>
+    <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+      <StyledView className="h-14 self-start justify-center">
+        <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+      </StyledView>
     </Screen>
   )
 }
-
-const $logoImage: ImageStyle = {
-  height: 42,
-  width: 77,
-}
-
-const $logoContainer: ThemedStyle<ViewStyle> = () => ({
-  alignSelf: "flex-start",
-  justifyContent: "center",
-  height: 56,
-})

@@ -1,12 +1,18 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { View } from "react-native"
-import { Button, Screen, Text, TextField, PasswordRightAccessory } from "../components"
-import { AppStackScreenProps } from "@/navigators/types"
+import { Platform, View } from "react-native"
+import {
+  Button,
+  Screen,
+  Text,
+  TextField,
+  GoogleSignInButton,
+  PasswordRightAccessory,
+} from "../components"
+import { AppStackScreenProps } from "../navigators"
 import { useLoginScreen } from "@/hooks/useLoginScreen"
 import { useHeader } from "@/utils/useHeader"
 import { styled } from "nativewind"
-import { BsCaretLeft } from "react-icons/bs"
 
 const StyledView = styled(View)
 
@@ -37,6 +43,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     login,
   } = useLoginScreen()
 
+  const isIos = Platform.OS === "ios"
+
   useHeader({
     leftIcon: BsCaretLeft,
     rightTx: "loginScreen:logIn",
@@ -44,63 +52,61 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   })
 
   return (
-    <Screen preset="auto" safeAreaEdges={["top"]} className="bg-sky-500">
-      {/* Header colored section */}
-      <StyledView className="bg-sky-500 h-24" />
+    <Screen preset="auto" contentClassName="px-4 py-6">
+      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" className="mb-2" />
+      <Text tx="loginScreen:enterDetails" preset="subheading" className="mb-6" />
 
-      {/* Content section */}
-      <StyledView className="flex bg-white h-full px-4 rounded-t-3xl">
-        <StyledView className="mt-8 mb-2">
-          <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" />
-        </StyledView>
+      <TextField
+        ref={emailInput}
+        value={email ?? ""}
+        onChangeText={setEmail}
+        containerClassName="mb-6"
+        autoCapitalize="none"
+        autoComplete="email"
+        autoCorrect={false}
+        keyboardType="email-address"
+        labelTx="loginScreen:emailFieldLabel"
+        placeholderTx="loginScreen:emailFieldPlaceholder"
+        helperTx={isSubmitted ? emailValidation : undefined}
+        status={isSubmitted && emailValidation ? "error" : undefined}
+        onSubmitEditing={() => passwordInput.current?.focus()}
+      />
 
-        <StyledView className="mb-6">
-          <Text tx="loginScreen:enterDetails" preset="subheading" />
-        </StyledView>
+      <TextField
+        ref={passwordInput}
+        value={password ?? ""}
+        onChangeText={setPassword}
+        containerClassName="mb-6"
+        autoCapitalize="none"
+        autoComplete="password"
+        autoCorrect={false}
+        secureTextEntry={isAuthPasswordHidden}
+        labelTx="loginScreen:passwordFieldLabel"
+        placeholderTx="loginScreen:passwordFieldPlaceholder"
+        helperTx={isSubmitted ? passwordValidation : undefined}
+        status={isSubmitted && passwordValidation ? "error" : undefined}
+        onSubmitEditing={login}
+        RightAccessory={PasswordRightAccessory({
+          isPasswordHidden: isAuthPasswordHidden,
+          onTogglePassword: togglePassword,
+        })}
+      />
 
-        <TextField
-          ref={emailInput}
-          value={email ?? ""}
-          onChangeText={setEmail}
-          containerClassName="mb-6"
-          autoCapitalize="none"
-          autoComplete="email"
-          autoCorrect={false}
-          keyboardType="email-address"
-          labelTx="loginScreen:emailFieldLabel"
-          placeholderTx="loginScreen:emailFieldPlaceholder"
-          helperTx={isSubmitted ? emailValidation : undefined}
-          status={isSubmitted && emailValidation ? "error" : undefined}
-          onSubmitEditing={() => passwordInput.current?.focus()}
-        />
+      <Button
+        testID="login-button"
+        tx="loginScreen:tapToLogIn"
+        className="mt-2"
+        preset="reversed"
+        onPress={login}
+      />
 
-        <TextField
-          ref={passwordInput}
-          value={password ?? ""}
-          onChangeText={setPassword}
-          containerClassName="mb-6"
-          autoCapitalize="none"
-          autoComplete="password"
-          autoCorrect={false}
-          secureTextEntry={isAuthPasswordHidden}
-          labelTx="loginScreen:passwordFieldLabel"
-          placeholderTx="loginScreen:passwordFieldPlaceholder"
-          helperTx={isSubmitted ? passwordValidation : undefined}
-          status={isSubmitted && passwordValidation ? "error" : undefined}
-          onSubmitEditing={login}
-          RightAccessory={PasswordRightAccessory({
-            isPasswordHidden: isAuthPasswordHidden,
-            onTogglePassword: togglePassword,
-          })}
-        />
+      {loginError && (
+        <Text tx={loginError} preset="default" className="mt-2 text-red-500 text-center" />
+      )}
 
-        <Button
-          testID="login-button"
-          tx="loginScreen:tapToLogIn"
-          className="mt-2"
-          preset="filled"
-          onPress={login}
-        />
+      <StyledView className="my-2 items-center justify-center">
+        <Text size="sm" weight="bold" tx="loginScreen:or" />
+      </StyledView>
 
         {loginError && (
           <StyledView className="mt-2">
