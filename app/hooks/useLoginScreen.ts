@@ -55,17 +55,19 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
   const login = async () => {
     if (!email || !password) {
-      setLoginError("loginScreen:errors.emailRequired")
+      setLoginError(
+        !email ? "loginScreen:errors.emailRequired" : "loginScreen:errors.passwordRequired",
+      )
       return false
     }
 
-    if (!emailValidation || !passwordValidation) {
-      setLoginError("loginScreen:errors.emailRequired")
+    if (emailValidation || passwordValidation) {
+      setLoginError(emailValidation || passwordValidation)
       return false
     }
 
     try {
-      setLoginError("loginScreen:errors.emailRequired")
+      setLoginError(undefined)
       setIsSubmitted(true)
 
       const result = await trpcClient.auth.login.mutate({
@@ -78,7 +80,7 @@ export function useLoginScreen(): UseLoginScreenReturn {
       setEmail(null)
       setAuthToken(result.accessToken)
       return true
-    } catch (error) {
+    } catch {
       setLoginError("loginScreen:errors.loginFailed")
       return false
     }

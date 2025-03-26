@@ -10,11 +10,26 @@ export const publicProcedure = t.procedure
 export const appRouter = router({
   auth: router({
     login: publicProcedure.input(loginRequestSchema).mutation(async ({ input }) => {
-      // TODO: Implement actual login logic here
-      // For now, we'll just return a mock token
-      return {
-        accessToken: "mock-token",
-      } satisfies z.infer<typeof loginResponseSchema>
+      try {
+        const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(input),
+        })
+
+        if (!response.ok) {
+          throw new Error("Invalid credentials")
+        }
+
+        const data = await response.json()
+        return {
+          accessToken: data.accessToken,
+        } satisfies z.infer<typeof loginResponseSchema>
+      } catch {
+        throw new Error("Invalid credentials")
+      }
     }),
   }),
 })
