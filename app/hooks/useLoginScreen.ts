@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
-import { supabase } from "@/utils/supabaseClient"
 import { TxKeyPath } from "@/i18n"
+import { useAuth } from "./useAuth"
+import { MMKV } from "react-native-mmkv"
+
+const storage = new MMKV()
+const TOKEN_KEY = "accessToken"
 
 interface UseLoginScreenReturn {
   // Refs
@@ -24,7 +28,7 @@ interface UseLoginScreenReturn {
   setPassword: (value: string) => void
   setEmail: (value: string) => void
   togglePassword: () => void
-  login: () => Promise<void>
+  login: () => Promise<boolean>
 }
 
 export function useLoginScreen(): UseLoginScreenReturn {
@@ -36,9 +40,8 @@ export function useLoginScreen(): UseLoginScreenReturn {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [loginError, setLoginError] = useState<TxKeyPath>()
 
-  const {
-    authenticationStore: { setAuthToken, setDisplayName },
-  } = useStores()
+  const { authenticationStore } = useStores()
+  const { login: authLogin } = useAuth()
 
   const emailValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!email) return "loginScreen:errors.emailRequired"
@@ -49,41 +52,54 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
   const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!password) return "loginScreen:errors.passwordRequired"
-    if (password.length < 12) return "loginScreen:errors.passwordTooShort"
-    if (!/^[a-zA-Z0-9]+$/.test(password)) return "loginScreen:errors.passwordInvalid"
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]+$/.test(password))
+      return "loginScreen:errors.passwordInvalid"
     return undefined
   }, [password])
 
-  async function login() {
-    setIsSubmitted(true)
-    setLoginError(undefined)
-
-    if (!password || !email || emailValidation || passwordValidation) return undefined
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-
-    if (error) {
-      setLoginError("loginScreen:errors.loginFailed")
-      return undefined
+  const login = async () => {
+    if (!email || !password) {
+      setLoginError(
+        !email ? "loginScreen:errors.emailRequired" : "loginScreen:errors.passwordRequired",
+      )
+      return false
     }
 
-    setIsSubmitted(false)
-    setPassword(null)
-    setEmail(null)
-    setAuthToken(data.session?.access_token || "")
-    setDisplayName(data.user?.user_metadata?.display_name || "")
+    if (emailValidation || passwordValidation) {
+      setLoginError(emailValidation || passwordValidation)
+      return false
+    }
+
+    try {
+      setLoginError(undefined)
+      setIsSubmitted(true)
+
+      const success = await authLogin(email, password)
+
+      setIsSubmitted(false)
+
+      if (success) {
+        setPassword(null)
+        setEmail(null)
+        // Sync with the store for backward compatibility
+        const token = storage.getString(TOKEN_KEY)
+        if (token) {
+          authenticationStore.setAuthToken(token)
+        }
+        return true
+      } else {
+        setLoginError("loginScreen:errors.loginFailed")
+        return false
+      }
+    } catch {
+      setLoginError("loginScreen:errors.loginFailed")
+      return false
+    }
   }
 
   function togglePassword() {
     setIsAuthPasswordHidden(!isAuthPasswordHidden)
   }
-
-  useEffect(() => {
-    setEmail("test@tuzgle.com")
-  }, [])
 
   return {
     // Refs

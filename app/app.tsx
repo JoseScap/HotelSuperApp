@@ -32,6 +32,8 @@ import i18next from "i18next"
 import { useEffect, useState } from "react"
 import { loadDateFnsLocale } from "@/utils/formatDate"
 import { styled } from "nativewind"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { trpc, trpcClient } from "@/utils/trpc"
 
 const StyledGestureHandlerRootView = styled(GestureHandlerRootView)
 
@@ -57,6 +59,8 @@ const config = {
 }
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
+
+const queryClient = new QueryClient()
 
 /**
  * This is the root component of our app.
@@ -95,13 +99,17 @@ export function App() {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
         <StyledGestureHandlerRootView className="flex-1">
-          <I18nextProvider i18n={i18next}>
-            <AppNavigator
-              linking={linking}
-              initialState={initialNavigationState}
-              onStateChange={onNavigationStateChange}
-            />
-          </I18nextProvider>
+          <trpc.Provider client={trpcClient} queryClient={queryClient}>
+            <QueryClientProvider client={queryClient}>
+              <I18nextProvider i18n={i18next}>
+                <AppNavigator
+                  linking={linking}
+                  initialState={initialNavigationState}
+                  onStateChange={onNavigationStateChange}
+                />
+              </I18nextProvider>
+            </QueryClientProvider>
+          </trpc.Provider>
         </StyledGestureHandlerRootView>
       </ErrorBoundary>
     </SafeAreaProvider>
