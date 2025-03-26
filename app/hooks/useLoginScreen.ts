@@ -1,8 +1,12 @@
 import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
-import { trpcClient } from "@/utils/trpc"
 import { TxKeyPath } from "@/i18n"
+import { useAuth } from "./useAuth"
+import { MMKV } from "react-native-mmkv"
+
+const storage = new MMKV()
+const TOKEN_KEY = "accessToken"
 
 interface UseLoginScreenReturn {
   // Refs
@@ -36,9 +40,8 @@ export function useLoginScreen(): UseLoginScreenReturn {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [loginError, setLoginError] = useState<TxKeyPath>()
 
-  const {
-    authenticationStore: { setAuthToken },
-  } = useStores()
+  const { authenticationStore } = useStores()
+  const { login: authLogin } = useAuth()
 
   const emailValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!email) return "loginScreen:errors.emailRequired"
@@ -49,7 +52,8 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
   const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!password) return "loginScreen:errors.passwordRequired"
-    if (!/^[a-zA-Z0-9]+$/.test(password)) return "loginScreen:errors.passwordInvalid"
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9]+$/.test(password))
+      return "loginScreen:errors.passwordInvalid"
     return undefined
   }, [password])
 
@@ -70,16 +74,23 @@ export function useLoginScreen(): UseLoginScreenReturn {
       setLoginError(undefined)
       setIsSubmitted(true)
 
-      const result = await trpcClient.auth.login.mutate({
-        email,
-        password,
-      })
+      const success = await authLogin(email, password)
 
       setIsSubmitted(false)
-      setPassword(null)
-      setEmail(null)
-      setAuthToken(result.accessToken)
-      return true
+
+      if (success) {
+        setPassword(null)
+        setEmail(null)
+        // Sync with the store for backward compatibility
+        const token = storage.getString(TOKEN_KEY)
+        if (token) {
+          authenticationStore.setAuthToken(token)
+        }
+        return true
+      } else {
+        setLoginError("loginScreen:errors.loginFailed")
+        return false
+      }
     } catch {
       setLoginError("loginScreen:errors.loginFailed")
       return false

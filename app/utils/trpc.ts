@@ -5,7 +5,8 @@ import { MMKV } from "react-native-mmkv"
 
 const storage = new MMKV()
 
-export const BACKEND_URL = "https://belfastcorems-int.up.railway.app"
+// Use environment variable with fallback
+export const BACKEND_URL = process.env.BACKEND_URL || "https://belfastcorems-int.up.railway.app"
 
 // React Query hooks
 export const trpc = createTRPCReact<AppRouter>()
@@ -24,3 +25,12 @@ export const trpcClient = createTRPCProxyClient<AppRouter>({
     }),
   ],
 })
+
+// Custom error logging in development
+export const logTRPCError = (err: Error) => {
+  if (__DEV__) {
+    console.error("API Error:", err)
+  }
+
+  return err
+}

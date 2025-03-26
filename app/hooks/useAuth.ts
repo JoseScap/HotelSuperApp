@@ -1,36 +1,35 @@
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { useMutation } from "@tanstack/react-query"
-import { trpcClient } from "../utils/trpc"
+import { trpcClient, logTRPCError } from "../utils/trpc"
 import { MMKV } from "react-native-mmkv"
 import { type RouterInput } from "../types/trpc"
 
 const storage = new MMKV()
+const TOKEN_KEY = "accessToken"
 
 export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (credentials: RouterInput["auth"]["login"]) => {
-      console.log("Attempting login with credentials:", credentials)
       return trpcClient.auth.login.mutate(credentials)
     },
     onSuccess: (data) => {
-      console.log("Login successful:", data)
       if (data?.accessToken) {
-        storage.set("accessToken", data.accessToken)
+        storage.set(TOKEN_KEY, data.accessToken)
       }
     },
     onError: (error) => {
-      console.error("Login mutation error:", error)
+      // Log error in development
+      logTRPCError(error)
     },
   })
 
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        console.log("Login attempt with:", { email, password: "***" })
         await loginMutation.mutateAsync({ email, password })
         return true
-      } catch (error) {
-        console.error("Login error:", error)
+      } catch {
+        // Error is already handled by onError
         return false
       }
     },
@@ -38,18 +37,22 @@ export const useAuth = () => {
   )
 
   const logout = useCallback(() => {
-    storage.delete("accessToken")
+    storage.delete(TOKEN_KEY)
   }, [])
 
   const getAccessToken = useCallback(() => {
-    return storage.getString("accessToken")
+    return storage.getString(TOKEN_KEY)
   }, [])
+
+  const isAuthenticated = useMemo(() => {
+    return !!getAccessToken()
+  }, [getAccessToken])
 
   return {
     login,
     logout,
     getAccessToken,
-    isAuthenticated: !!getAccessToken(),
+    isAuthenticated,
     isLoading: loginMutation.isPending,
     error: loginMutation.error,
   }
