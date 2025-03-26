@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { TextInput } from "react-native"
 import { useStores } from "@/models"
-import { supabase } from "@/utils/supabaseClient"
+import { trpcClient } from "@/utils/trpc"
 import { TxKeyPath } from "@/i18n"
 
 interface UseLoginScreenReturn {
@@ -24,7 +24,7 @@ interface UseLoginScreenReturn {
   setPassword: (value: string) => void
   setEmail: (value: string) => void
   togglePassword: () => void
-  login: () => Promise<void>
+  login: () => Promise<boolean>
 }
 
 export function useLoginScreen(): UseLoginScreenReturn {
@@ -37,7 +37,7 @@ export function useLoginScreen(): UseLoginScreenReturn {
   const [loginError, setLoginError] = useState<TxKeyPath>()
 
   const {
-    authenticationStore: { setAuthToken, setDisplayName },
+    authenticationStore: { setAuthToken },
   } = useStores()
 
   const emailValidation = useMemo<TxKeyPath | undefined>(() => {
@@ -49,7 +49,6 @@ export function useLoginScreen(): UseLoginScreenReturn {
 
   const passwordValidation = useMemo<TxKeyPath | undefined>(() => {
     if (!password) return "loginScreen:errors.passwordRequired"
-    if (password.length < 12) return "loginScreen:errors.passwordTooShort"
     if (!/^[a-zA-Z0-9]+$/.test(password)) return "loginScreen:errors.passwordInvalid"
     return undefined
   }, [password])
@@ -58,32 +57,42 @@ export function useLoginScreen(): UseLoginScreenReturn {
     setIsSubmitted(true)
     setLoginError(undefined)
 
-    if (!password || !email || emailValidation || passwordValidation) return undefined
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-
-    if (error) {
-      setLoginError("loginScreen:errors.loginFailed")
-      return undefined
+    if (!password || !email || emailValidation || passwordValidation) {
+      console.log("Validation failed:", {
+        email,
+        password: password ? "***" : null,
+        emailValidation,
+        passwordValidation,
+      })
+      return false
     }
 
-    setIsSubmitted(false)
-    setPassword(null)
-    setEmail(null)
-    setAuthToken(data.session?.access_token || "")
-    setDisplayName(data.user?.user_metadata?.display_name || "")
+    try {
+      console.log("Attempting login with tRPC...", {
+        email,
+        password: "***",
+      })
+      const result = await trpcClient.auth.login.mutate({
+        email,
+        password,
+      })
+
+      console.log("Login successful:", result)
+      setIsSubmitted(false)
+      setPassword(null)
+      setEmail(null)
+      setAuthToken(result.accessToken)
+      return true
+    } catch (error) {
+      console.error("Login error:", error)
+      setLoginError("loginScreen:errors.loginFailed")
+      return false
+    }
   }
 
   function togglePassword() {
     setIsAuthPasswordHidden(!isAuthPasswordHidden)
   }
-
-  useEffect(() => {
-    setEmail("test@tuzgle.com")
-  }, [])
 
   return {
     // Refs
