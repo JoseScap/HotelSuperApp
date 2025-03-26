@@ -53,38 +53,32 @@ export function useLoginScreen(): UseLoginScreenReturn {
     return undefined
   }, [password])
 
-  async function login() {
-    setIsSubmitted(true)
-    setLoginError(undefined)
+  const login = async () => {
+    if (!email || !password) {
+      setLoginError("loginScreen:errors.emailRequired")
+      return false
+    }
 
-    if (!password || !email || emailValidation || passwordValidation) {
-      console.log("Validation failed:", {
-        email,
-        password: password ? "***" : null,
-        emailValidation,
-        passwordValidation,
-      })
+    if (!emailValidation || !passwordValidation) {
+      setLoginError("loginScreen:errors.emailRequired")
       return false
     }
 
     try {
-      console.log("Attempting login with tRPC...", {
-        email,
-        password: "***",
-      })
+      setLoginError("loginScreen:errors.emailRequired")
+      setIsSubmitted(true)
+
       const result = await trpcClient.auth.login.mutate({
         email,
         password,
       })
 
-      console.log("Login successful:", result)
       setIsSubmitted(false)
       setPassword(null)
       setEmail(null)
       setAuthToken(result.accessToken)
       return true
     } catch (error) {
-      console.error("Login error:", error)
       setLoginError("loginScreen:errors.loginFailed")
       return false
     }
