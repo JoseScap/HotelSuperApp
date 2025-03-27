@@ -5,8 +5,11 @@ import { initReactI18next } from "react-i18next"
 import "intl-pluralrules"
 
 // if English isn't your default language, move Translations to the appropriate language file.
-import en, { Translations } from "./en"
+import en from "./en"
 import es from "./es"
+
+export type TranslationKeys = keyof typeof en
+export type Translations = Record<TranslationKeys, string | Record<string, any>>
 
 const fallbackLocale = "en-US"
 
@@ -77,5 +80,5 @@ type RecursiveKeyOfHandleValue<
   : TValue extends object
     ? IsFirstLevel extends true
       ? Text | `${Text}:${RecursiveKeyOfInner<TValue>}`
-      : Text | `${Text}.${RecursiveKeyOfInner<TValue>}`
+      : Text | `${Text}:${RecursiveKeyOfInner<TValue>}`
     : Text

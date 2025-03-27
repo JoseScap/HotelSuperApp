@@ -2,6 +2,7 @@ import { ComponentType } from "react"
 import { Image, TouchableOpacity, TouchableOpacityProps, View, ViewProps } from "react-native"
 import { styled } from "nativewind"
 import { nwMerge } from "@/utils/nwMerge"
+import { IconProvider, IconSet } from "./IconProvider"
 
 const StyledImage = styled(Image)
 const StyledView = styled(View)
@@ -9,11 +10,16 @@ const StyledTouchableOpacity = styled(TouchableOpacity)
 
 export type IconTypes = keyof typeof iconRegistry
 
-interface IconProps extends Omit<TouchableOpacityProps, "style"> {
+export interface IconProps extends Omit<TouchableOpacityProps, "style"> {
   /**
-   * The name of the icon
+   * The name of the icon - either an image icon from iconRegistry or a vector icon name
    */
-  icon: IconTypes
+  icon: IconTypes | string
+
+  /**
+   * The icon set to use for vector icons
+   */
+  iconSet?: IconSet
 
   /**
    * An optional tint color for the icon
@@ -34,17 +40,31 @@ interface IconProps extends Omit<TouchableOpacityProps, "style"> {
    * Style overrides for the icon container
    */
   containerClassName?: string
+
+  /**
+   * Whether to force use a vector icon instead of an image icon.
+   * If false, we'll try to find a matching image icon first, and if not found, use vector icon.
+   */
+  isVectorIcon?: boolean
 }
 
 /**
- * A component to render a registered icon.
+ * A component to render a registered icon or a vector icon.
  * It is wrapped in a <TouchableOpacity /> if `onPress` is provided, otherwise a <View />.
- * @see [Documentation and Examples]{@link https://docs.infinite.red/ignite-cli/boilerplate/app/components/Icon/}
  * @param {IconProps} props - The props for the `Icon` component.
  * @returns {JSX.Element} The rendered `Icon` component.
  */
 export function Icon(props: IconProps) {
-  const { icon, color, size, className, containerClassName, ...WrapperProps } = props
+  const {
+    icon,
+    iconSet = "MaterialIcons",
+    color,
+    size,
+    className,
+    containerClassName,
+    isVectorIcon = false,
+    ...WrapperProps
+  } = props
 
   const isPressable = !!WrapperProps.onPress
   const Wrapper = (WrapperProps?.onPress ? StyledTouchableOpacity : StyledView) as ComponentType<
@@ -53,24 +73,41 @@ export function Icon(props: IconProps) {
 
   const imageClasses = nwMerge("object-contain", className)
 
+  // Determine if we should use a vector icon or an image icon
+  // Use vector icon if:
+  // 1. isVectorIcon is true OR
+  // 2. icon is not in the iconRegistry (assuming it's a vector icon name)
+  const useVectorIcon = isVectorIcon || !Object.prototype.hasOwnProperty.call(iconRegistry, icon)
+
   return (
     <Wrapper
       accessibilityRole={isPressable ? "imagebutton" : undefined}
       {...WrapperProps}
       className={containerClassName}
     >
-      <StyledImage
-        className={imageClasses}
-        style={[
-          color ? { tintColor: color } : undefined,
-          size ? { width: size, height: size } : undefined,
-        ].filter(Boolean)}
-        source={iconRegistry[icon]}
-      />
+      {useVectorIcon ? (
+        <IconProvider
+          name={icon as string}
+          iconSet={iconSet}
+          size={size || 24}
+          color={color || "black"}
+          style={[]}
+        />
+      ) : (
+        <StyledImage
+          className={imageClasses}
+          style={[
+            color ? { tintColor: color } : undefined,
+            size ? { width: size, height: size } : undefined,
+          ].filter(Boolean)}
+          source={iconRegistry[icon as IconTypes]}
+        />
+      )}
     </Wrapper>
   )
 }
 
+// Legacy image icons (consider migrating these to vector icons)
 export const iconRegistry = {
   back: require("../../assets/icons/back.png"),
   bell: require("../../assets/icons/bell.png"),

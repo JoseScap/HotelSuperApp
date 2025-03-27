@@ -90,16 +90,39 @@ const en = {
     title: "Home",
   },
   profileScreen: {
-    title: "Profile",
-    sectionPersonalDataTitle: "Personal Data",
-    sectionPreferencesTitle: "Preferences",
-    darkModeTitle: "Dark Mode",
-    activateDarkMode: "Activate Dark Mode",
-    deactivateDarkMode: "Deactivate Dark Mode",
-    displayNameLabel: "Display Name",
-    errors: {
-      updateFailed: "Failed to update display name. Please try again.",
+    header: {
+      title: "My Profile",
     },
+    userProfile: {
+      status: {
+        goldMember: "Gold Member",
+      },
+    },
+    settings: {
+      title: "Settings",
+      personalInfo: "Personal Information",
+      paymentMethods: "Payment Methods",
+      language: {
+        title: "Language",
+        spanish: "Spanish",
+        english: "English",
+      },
+      notifications: "Notifications",
+      privacySecurity: "Privacy & Security",
+      helpCenter: "Help Center",
+      logout: "Log out",
+    },
+    bookingHistory: {
+      grandHotel: "Grand Hotel",
+      cityResort: "City Resort",
+      oceanView: "Ocean View",
+      status: {
+        completed: "Completed",
+        upcoming: "Upcoming",
+        cancelled: "Cancelled",
+      },
+    },
+    appVersion: "App version: {{version}}",
   },
   activitiesScreen: {
     title: "Activities",
@@ -123,7 +146,31 @@ const en = {
   homeNavigator: {
     homeTab: "Home",
     profileTab: "Profile",
-    activitiesTab: "Activities",
+    paymentsTab: "Payments",
+    exploreTab: "Explore",
+  },
+
+  paymentsScreen: {
+    header: {
+      title: "Payments",
+      subtitle: "Manage your payment methods and bills",
+    },
+    account: {
+      title: "Your Account",
+      summary: "Account Summary",
+      totalBalance: "Total Balance",
+      paymentStatus: "Payment Status",
+      paid: "Paid",
+    },
+    paymentMethods: {
+      title: "Payment Methods",
+      cardEnding: "VISA ending in {{number}}",
+      default: "Default",
+      addNew: "Add payment method",
+    },
+    recentExpenses: {
+      title: "Recent Expenses",
+    },
   },
 
   // To delete
@@ -200,8 +247,90 @@ const en = {
     },
   },
 
+  exploreScreen: {
+    header: {
+      title: "Explore",
+      searchPlaceholder: "Search experiences...",
+    },
+    categories: {
+      title: "Explore our hotel",
+      all: "All",
+      amenities: "Amenities",
+      facilities: "Facilities",
+      services: "Services",
+    },
+    sections: {
+      featured: {
+        title: "Featured",
+        viewAll: "View all",
+      },
+      allFacilities: {
+        title: "All Facilities",
+        filter: "Filter",
+      },
+    },
+    items: {
+      pool: {
+        title: "Swimming Pool",
+        description: "Enjoy our Olympic-sized pool with heated water.",
+      },
+      gym: {
+        title: "Gym",
+        description: "State-of-the-art equipment and trainers available.",
+      },
+      spa: {
+        title: "Spa Services",
+        description: "Relax with our professional massages and wellness services.",
+      },
+      restaurant: {
+        title: "Restaurant",
+        description: "Try our gourmet menu with international cuisine.",
+      },
+      businessCenter: {
+        title: "Business Center",
+        description: "Work comfortably with high-speed internet and printing services.",
+      },
+      roomService: {
+        title: "Room Service",
+        description: "24/7 room service available for all guests.",
+      },
+    },
+  },
+
+  bookingConfirmationScreen: {
+    success: {
+      title: "Booking confirmed!",
+      subtitle:
+        "Your reservation has been successfully processed. You'll find your booking details below.",
+    },
+    bookingDetails: {
+      hotelName: "Hotel Sunshine Resort",
+      location: "Cancun, Mexico",
+      dates: {
+        label: "Check-in/out dates",
+        value: "October 12 - October 15, 2023",
+      },
+      room: {
+        label: "Room",
+        value: "Deluxe Suite with Ocean View",
+      },
+      guests: {
+        label: "Guests",
+        value: "2 Adults",
+      },
+      bookingId: {
+        label: "Booking ID",
+        value: "#BOOK-28547",
+      },
+    },
+    buttons: {
+      returnHome: "Return to home",
+      share: "Share booking details",
+    },
+    shareMessage: "I just booked a room at our hotel! My booking reference is: {{bookingId}}",
+  },
+
   ...demoEn,
-}
+} as const
 
 export default en
-export type Translations = typeof en
