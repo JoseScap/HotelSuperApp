@@ -6,12 +6,15 @@ import { translate } from "@/i18n"
 import { Icon } from "@/components"
 import { HomeScreen } from "@/screens/TabScreens/HomeScreen"
 import { ProfileScreen } from "@/screens/TabScreens/ProfileScreen"
-import { ActivitiesScreen } from "@/screens/TabScreens/ActivitiesScreen"
+import { ExploreScreen } from "@/screens/TabScreens/ExploreScreen"
+import { PaymentsScreen } from "@/screens/TabScreens/PaymentsScreen"
+import { View } from "react-native"
 
 export type BottomHomeParamList = {
   Home: undefined
+  Payments: undefined
+  Explore: undefined
   Profile: undefined
-  Activities: undefined
 }
 
 /**
@@ -27,11 +30,11 @@ export type BottomHomeTabScreenProps<T extends keyof BottomHomeParamList> = Comp
 const Tab = createBottomTabNavigator<BottomHomeParamList>()
 
 /**
- * This is the main navigator for the demo screens with a bottom tab bar.
+ * This is the main navigator for the hotel app with a bottom tab bar.
  * Each tab is a stack navigator with its own set of screens.
  *
  * More info: https://reactnavigation.org/docs/bottom-tab-navigator/
- * @returns {JSX.Element} The rendered `DemoNavigator`.
+ * @returns {JSX.Element} The rendered `BottomHomeNavigator`.
  */
 export function BottomHomeNavigator() {
   const { bottom } = useSafeAreaInsets()
@@ -45,16 +48,20 @@ export function BottomHomeNavigator() {
           backgroundColor: "#FFFFFF",
           borderTopColor: "transparent",
           height: bottom + 70,
+          paddingTop: 12,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          elevation: 5,
         },
-        tabBarActiveTintColor: "#000000",
-        tabBarInactiveTintColor: "#6B7280",
+        tabBarActiveTintColor: "#304FFE", // Primary blue color from the design
+        tabBarInactiveTintColor: "#9E9E9E",
         tabBarLabelStyle: {
           fontFamily: "Montserrat-Regular",
           fontSize: 12,
-          paddingBottom: 8,
-        },
-        tabBarItemStyle: {
-          paddingTop: 16,
+          marginTop: 4,
+          marginBottom: 6,
         },
       }}
     >
@@ -63,22 +70,40 @@ export function BottomHomeNavigator() {
         component={HomeScreen}
         options={{
           tabBarLabel: translate("homeNavigator:homeTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon
-              icon="components"
-              className={focused ? "text-primary" : "text-neutral-500"}
-              size={30}
-            />
+          tabBarIcon: ({ focused, color }) => (
+            <View className={`p-1 ${focused ? "bg-blue-50 rounded-full" : ""}`}>
+              <Icon icon="home" iconSet="MaterialIcons" isVectorIcon size={24} color={color} />
+            </View>
           ),
         }}
       />
       <Tab.Screen
-        name="Activities"
-        component={ActivitiesScreen}
+        name="Explore"
+        component={ExploreScreen}
         options={{
-          tabBarLabel: translate("homeNavigator:activitiesTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="clap" className={focused ? "text-primary" : "text-neutral-500"} size={30} />
+          tabBarLabel: translate("homeNavigator:exploreTab"),
+          tabBarIcon: ({ focused, color }) => (
+            <View className={`p-1 ${focused ? "bg-blue-50 rounded-full" : ""}`}>
+              <Icon icon="search" iconSet="MaterialIcons" isVectorIcon size={24} color={color} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Payments"
+        component={PaymentsScreen}
+        options={{
+          tabBarLabel: translate("homeNavigator:paymentsTab"),
+          tabBarIcon: ({ focused, color }) => (
+            <View className={`p-1 ${focused ? "bg-blue-50 rounded-full" : ""}`}>
+              <Icon
+                icon="credit-card"
+                iconSet="MaterialIcons"
+                isVectorIcon
+                size={24}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -87,12 +112,10 @@ export function BottomHomeNavigator() {
         component={ProfileScreen}
         options={{
           tabBarLabel: translate("homeNavigator:profileTab"),
-          tabBarIcon: ({ focused }) => (
-            <Icon
-              icon="heart"
-              className={focused ? "text-primary" : "text-neutral-500"}
-              size={30}
-            />
+          tabBarIcon: ({ focused, color }) => (
+            <View className={`p-1 ${focused ? "bg-blue-50 rounded-full" : ""}`}>
+              <Icon icon="person" iconSet="MaterialIcons" isVectorIcon size={24} color={color} />
+            </View>
           ),
         }}
       />

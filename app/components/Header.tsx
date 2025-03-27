@@ -38,6 +38,10 @@ export interface HeaderProps {
    */
   backgroundClassName?: string
   /**
+   * Background color for the header (string value)
+   */
+  backgroundColor?: string
+  /**
    * Title text to display if not using `tx` or nested components.
    */
   title?: TextProps["text"]
@@ -166,6 +170,7 @@ export function Header(props: HeaderProps) {
     className,
     titleClassName,
     containerClassName,
+    backgroundColor,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
@@ -183,7 +188,10 @@ export function Header(props: HeaderProps) {
   const titleClasses = nwMerge("text-text-primary text-base", isRTL && "text-right", titleClassName)
 
   return (
-    <StyledView style={$containerInsets} className={containerClasses}>
+    <StyledView
+      style={[$containerInsets, backgroundColor ? { backgroundColor } : null].filter(Boolean)}
+      className={containerClasses}
+    >
       <StyledView className={wrapperClasses}>
         <HeaderAction
           tx={leftTx}

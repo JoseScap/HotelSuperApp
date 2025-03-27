@@ -1,5 +1,5 @@
 import demoEs from "./demo-es"
-import { Translations } from "./en"
+import type { Translations } from "./i18n"
 
 const es: Translations = {
   // Common and generics
@@ -93,6 +93,39 @@ const es: Translations = {
     title: "Inicio",
   },
   profileScreen: {
+    header: {
+      title: "Mi Perfil",
+    },
+    userProfile: {
+      status: {
+        goldMember: "Miembro Gold",
+      },
+    },
+    settings: {
+      title: "Ajustes",
+      personalInfo: "Información Personal",
+      paymentMethods: "Métodos de Pago",
+      language: {
+        title: "Idioma",
+        spanish: "Español",
+        english: "Inglés",
+      },
+      notifications: "Notificaciones",
+      privacySecurity: "Privacidad y Seguridad",
+      helpCenter: "Centro de Ayuda",
+      logout: "Cerrar Sesión",
+    },
+    bookingHistory: {
+      grandHotel: "Grand Hotel",
+      cityResort: "City Resort",
+      oceanView: "Ocean View",
+      status: {
+        completed: "Completado",
+        upcoming: "Próximo",
+        cancelled: "Cancelado",
+      },
+    },
+    appVersion: "Versión de la app: {{version}}",
     title: "Perfil",
     sectionPersonalDataTitle: "Datos Personales",
     sectionPreferencesTitle: "Preferencias",
@@ -126,7 +159,8 @@ const es: Translations = {
   homeNavigator: {
     homeTab: "Inicio",
     profileTab: "Perfil",
-    activitiesTab: "Actividades",
+    paymentsTab: "Pagos",
+    exploreTab: "Explorar",
   },
 
   // To delete
@@ -202,6 +236,113 @@ const es: Translations = {
       content:
         "No se han agregado episodios favoritos todavía. ¡Presiona el corazón dentro de un episodio para agregarlo a tus favoritos!",
     },
+  },
+
+  paymentsScreen: {
+    header: {
+      title: "Pagos",
+      subtitle: "Gestiona tus métodos de pago y facturas",
+    },
+    account: {
+      title: "Tu Cuenta",
+      summary: "Resumen de Cuenta",
+      totalBalance: "Saldo Total",
+      paymentStatus: "Estado de Pago",
+      paid: "Pagado",
+    },
+    paymentMethods: {
+      title: "Métodos de Pago",
+      cardEnding: "VISA terminada en {{number}}",
+      default: "Predeterminado",
+      addNew: "Añadir método de pago",
+    },
+    recentExpenses: {
+      title: "Gastos Recientes",
+    },
+  },
+
+  exploreScreen: {
+    header: {
+      title: "Explorar",
+      searchPlaceholder: "Buscar experiencias...",
+    },
+    categories: {
+      title: "Explora nuestro hotel",
+      all: "Todos",
+      amenities: "Amenidades",
+      facilities: "Instalaciones",
+      services: "Servicios",
+    },
+    sections: {
+      featured: {
+        title: "Destacados",
+        viewAll: "Ver todos",
+      },
+      allFacilities: {
+        title: "Todas las instalaciones",
+        filter: "Filtrar",
+      },
+    },
+    items: {
+      pool: {
+        title: "Piscina",
+        description: "Disfruta de nuestra piscina olímpica con agua climatizada.",
+      },
+      gym: {
+        title: "Gimnasio",
+        description: "Equipamiento de última generación y entrenadores disponibles.",
+      },
+      spa: {
+        title: "Servicios de Spa",
+        description: "Relájate con nuestros masajes profesionales y servicios de bienestar.",
+      },
+      restaurant: {
+        title: "Restaurante",
+        description: "Prueba nuestro menú gourmet con cocina internacional.",
+      },
+      businessCenter: {
+        title: "Centro de Negocios",
+        description: "Trabaja cómodamente con internet de alta velocidad y servicios de impresión.",
+      },
+      roomService: {
+        title: "Servicio de Habitación",
+        description: "Servicio de habitación disponible 24/7 para todos los huéspedes.",
+      },
+    },
+  },
+
+  bookingConfirmationScreen: {
+    success: {
+      title: "¡Reserva confirmada!",
+      subtitle:
+        "Tu reservación ha sido procesada con éxito. Encontrarás los detalles de tu reserva a continuación.",
+    },
+    bookingDetails: {
+      hotelName: "Hotel Sunshine Resort",
+      location: "Cancún, México",
+      dates: {
+        label: "Fecha de entrada/salida",
+        value: "12 de Octubre - 15 de Octubre, 2023",
+      },
+      room: {
+        label: "Habitación",
+        value: "Suite Deluxe con Vista al Mar",
+      },
+      guests: {
+        label: "Huéspedes",
+        value: "2 Adultos",
+      },
+      bookingId: {
+        label: "ID de Reserva",
+        value: "#BOOK-28547",
+      },
+    },
+    buttons: {
+      returnHome: "Volver al inicio",
+      share: "Compartir detalles de la reserva",
+    },
+    shareMessage:
+      "¡Acabo de reservar una habitación en nuestro hotel! Mi referencia de reserva es: {{bookingId}}",
   },
 
   ...demoEs,

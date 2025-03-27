@@ -38,50 +38,51 @@ const cityActivities = [
   "Tour de bares y pubs",
 ]
 
-export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Activities">> =
-  function ActivitiesScreen(_props) {
-    const bottomProps = useBottomProps()
+export const ActivitiesScreen: FC<BottomHomeTabScreenProps<"Explore">> = function ActivitiesScreen(
+  _props,
+) {
+  const bottomProps = useBottomProps()
 
-    useHeader({
-      leftTx: "activitiesScreen:title",
-    })
+  useHeader({
+    leftTx: "activitiesScreen:title",
+  })
 
-    return (
-      <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
-        <Text tx="activitiesScreen:subtitle" preset="subheading" className="mb-2" />
-        {hotelActivities.map((activity, index) => (
-          <Card
-            key={`hotel-${index}`}
-            HeadingComponent={
-              <StyledView>
-                <Text>{activity}</Text>
-              </StyledView>
-            }
-            ContentComponent={
-              <StyledView className="h-14 self-start justify-center px-6">
-                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
-              </StyledView>
-            }
-            className="mb-2"
-          />
-        ))}
-        <Text tx="activitiesScreen:city" preset="subheading" className="mb-2" />
-        {cityActivities.map((activity, index) => (
-          <Card
-            key={`city-${index}`}
-            HeadingComponent={
-              <StyledView>
-                <Text>{activity}</Text>
-              </StyledView>
-            }
-            ContentComponent={
-              <StyledView className="h-14 self-start justify-center px-6">
-                <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
-              </StyledView>
-            }
-            className="mb-2"
-          />
-        ))}
-      </Screen>
-    )
-  }
+  return (
+    <Screen preset="scroll" contentClassName="px-4 py-6" {...bottomProps}>
+      <Text tx="activitiesScreen:subtitle" preset="subheading" className="mb-2" />
+      {hotelActivities.map((activity, index) => (
+        <Card
+          key={`hotel-${index}`}
+          HeadingComponent={
+            <StyledView>
+              <Text>{activity}</Text>
+            </StyledView>
+          }
+          ContentComponent={
+            <StyledView className="h-14 self-start justify-center px-6">
+              <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+            </StyledView>
+          }
+          className="mb-2"
+        />
+      ))}
+      <Text tx="activitiesScreen:city" preset="subheading" className="mb-2" />
+      {cityActivities.map((activity, index) => (
+        <Card
+          key={`city-${index}`}
+          HeadingComponent={
+            <StyledView>
+              <Text>{activity}</Text>
+            </StyledView>
+          }
+          ContentComponent={
+            <StyledView className="h-14 self-start justify-center px-6">
+              <StyledImage source={logo} className="h-[42px] w-[77px]" resizeMode="contain" />
+            </StyledView>
+          }
+          className="mb-2"
+        />
+      ))}
+    </Screen>
+  )
+}
