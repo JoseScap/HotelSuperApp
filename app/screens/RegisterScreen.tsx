@@ -14,6 +14,7 @@ import {
   StyledSafeAreaView,
   StyledScrollView,
 } from "@/components/StyledComponents"
+import { colors } from "@/constants/colors"
 
 interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
@@ -51,7 +52,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
 
   return (
     <StyledSafeAreaView className="flex-1 bg-white">
-      <StatusBar backgroundColor="#304FFE" barStyle="light-content" />
+      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
 
       {/* Header */}
       <StyledView className="bg-primary p-4 pb-5">
@@ -67,7 +68,7 @@ export const RegisterScreen: FC<RegisterScreenProps> = observer(function Registe
 
       {/* Content */}
       <StyledScrollView
-        className="flex-1"
+        className="flex-1 p-4 "
         contentContainerClassName="p-[20px] pb-10"
         showsVerticalScrollIndicator={false}
       >

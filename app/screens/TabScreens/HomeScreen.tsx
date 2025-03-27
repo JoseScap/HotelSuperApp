@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, ImageBackground, Modal } from
 import { BottomHomeTabScreenProps } from "../../navigators/BottomNavigator"
 import { Icon, Header } from "../../components"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { colors } from "@/constants/colors"
 
 interface Activity {
   id: string
@@ -57,7 +58,7 @@ const QuickActivity: FC<{
 }> = ({ title, icon, onPress }) => (
   <TouchableOpacity onPress={onPress} className="mr-3 items-center">
     <View className="w-14 h-14 bg-gray-100 rounded-full items-center justify-center mb-2">
-      <Icon icon={icon} iconSet="MaterialIcons" isVectorIcon size={24} color="#304FFE" />
+      <Icon icon={icon} iconSet="MaterialIcons" isVectorIcon size={24} color={colors.primary} />
     </View>
     <Text className="text-center text-xs">{title}</Text>
   </TouchableOpacity>
@@ -124,7 +125,7 @@ export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScr
         </View>
         <View className="bg-white rounded-t-3xl">
           {/* Book now feature */}
-          <View className="px-4 pt-6">
+          <View className="px-4 pt-6 w-full">
             <FeatureCard
               title="Reserva tu habitación"
               description="Encuentra la mejor tarifa garantizada"
@@ -136,7 +137,7 @@ export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScr
 
             {/* Quick actions */}
             <Text className="text-lg font-bold mb-3">Acciones rápidas</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
+            <View className="mb-6 w-full flex-row justify-around items-center">
               <QuickActivity
                 title="Check-in"
                 icon="login"
@@ -145,8 +146,7 @@ export const HomeScreen: FC<BottomHomeTabScreenProps<"Home">> = function HomeScr
               <QuickActivity title="Restaurante" icon="restaurant" onPress={() => {}} />
               <QuickActivity title="Servicio" icon="room_service" onPress={() => {}} />
               <QuickActivity title="Spa" icon="spa" onPress={() => {}} />
-              <QuickActivity title="Taxi" icon="local_taxi" onPress={() => {}} />
-            </ScrollView>
+            </View>
           </View>
 
           {/* Experiences section */}

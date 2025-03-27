@@ -10,7 +10,7 @@ import {
   StyledScrollView,
   StyledTouchableOpacity,
 } from "@/components/StyledComponents"
-
+import { colors } from "@/constants/colors"
 interface BookingDetails {
   id: string
   guestName: string
@@ -66,14 +66,14 @@ export const CheckInScreen: FC<AppStackScreenProps<"CheckIn">> = function CheckI
   return (
     <StyledView className="flex-1 bg-white">
       {/* Header with back button */}
-      <StyledView className="pt-[20px]" style={{ paddingTop: insets.top }}>
+      <StyledView className="bg-primary">
         <Header
           leftIcon="caretLeft"
-          leftIconColor="#000"
+          leftIconColor={colors.white}
           onLeftPress={() => navigation.goBack()}
           title="Check-in"
-          titleClassName="text-black"
-          backgroundColor="white"
+          backgroundClassName="bg-primary"
+          titleClassName="text-white"
         />
       </StyledView>
 
@@ -162,18 +162,18 @@ export const CheckInScreen: FC<AppStackScreenProps<"CheckIn">> = function CheckI
 
       {/* Bottom button */}
       <StyledView
-        className="bg-white p-4 flex-row items-center"
+        className="bg-white p-4 flex-col items-center"
         style={{ paddingBottom: insets.bottom + 10 }}
       >
         <StyledTouchableOpacity
           className={`p-4 rounded-lg justify-center items-center ${
             loading ? "bg-gray-300" : "bg-primary"
-          } flex-1`}
+          } `}
           onPress={handleCheckIn}
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <StyledText className="font-semibold text-white">Complete Check-In</StyledText>
           )}

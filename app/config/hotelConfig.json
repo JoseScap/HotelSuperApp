@@ -4,14 +4,14 @@
     "shortName": "Grand Resort",
     "logo": "/assets/images/logo.png",
     "colors": {
-      "primary": "#304FFE",
+      "primary": "#2E4BC2",
       "secondary": "#F59E0B",
       "text": {
         "primary": "#0F172A",
         "secondary": "#64748B"
       },
       "background": {
-        "primary": "#FFFFFF",
+        "primary": "#2E4BC2",
         "secondary": "#F1F5F9"
       }
     }

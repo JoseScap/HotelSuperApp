@@ -1,5 +1,5 @@
 export const colors = {
-  primary: "#304FFE", // Main blue
+  primary: "#2E4BC2", // Main blue
   primaryLight: "#E6EAFF", // Light blue for backgrounds
   primaryDark: "#0026CA", // Darker blue for accents
   secondary: "#FF3B30", // Red for alerts/logout

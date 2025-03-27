@@ -14,6 +14,7 @@ import {
   StyledSafeAreaView,
   StyledScrollView,
 } from "@/components/StyledComponents"
+import { colors } from "@/constants/colors"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -57,8 +58,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }
 
   return (
-    <StyledSafeAreaView className="flex-1 bg-white">
-      <StatusBar backgroundColor="#304FFE" barStyle="light-content" />
+    <StyledSafeAreaView className="flex-1 bg-whites">
+      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
 
       {/* Header */}
       <StyledView className="bg-primary p-4 pb-5">
@@ -74,7 +75,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
       {/* Content */}
       <StyledScrollView
-        className="flex-1"
+        className="flex-1 p-4"
         contentContainerClassName="p-[20px] pb-10"
         showsVerticalScrollIndicator={false}
       >
